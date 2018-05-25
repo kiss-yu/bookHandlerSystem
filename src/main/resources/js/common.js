@@ -15,6 +15,9 @@ function getQueryString() {
     }
     return args;
 }
+let getOption = function(value,text) {
+    return `<option value='${value}'>${text}</option>`;
+};
 function getMemberRoleName() {
     return JSON.parse(localStorage.getItem("member")).role.value;
 }

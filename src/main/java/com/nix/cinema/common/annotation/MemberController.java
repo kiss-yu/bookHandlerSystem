@@ -1,5 +1,7 @@
 package com.nix.cinema.common.annotation;
 
+import org.springframework.web.bind.annotation.RestController;
+
 import java.lang.annotation.*;
 
 /**
@@ -9,5 +11,6 @@ import java.lang.annotation.*;
 @Target( {ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@RestController
 public @interface MemberController {
 }

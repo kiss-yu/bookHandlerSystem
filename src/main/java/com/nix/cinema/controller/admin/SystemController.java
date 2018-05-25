@@ -1,17 +1,8 @@
 package com.nix.cinema.controller.admin;
-
-import com.nix.cinema.common.ReturnObject;
 import com.nix.cinema.common.annotation.AdminController;
-import com.nix.cinema.util.ReturnUtil;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,7 +10,6 @@ import java.util.Map;
  * @author Kiss
  * @date 2018/05/05 20:02
  */
-@RestController
 @AdminController
 @RequestMapping("/system")
 public class SystemController {
@@ -43,4 +33,5 @@ public class SystemController {
         data.put("url", url);
         return data;
     }
+
 }

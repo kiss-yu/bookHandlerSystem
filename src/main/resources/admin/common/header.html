@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <link href="/css/style.css" rel="stylesheet" type="text/css" media="all" />
-    <script>
+    <!--<script>
         function loginOut() {
             console.log("out")
             localStorage.removeItem("member");
@@ -19,31 +19,13 @@
             <li><a href="/admin/member/list.html" class="act4">用户管理<span>详情</span></a></li>
             <li><a href="/admin/role/list.html" class="act4">角色管理<span>详情</span></a></li>
             <li><a href="/admin/roleInterface/list.html" class="act4">接口管理<span>详情</span></a></li>
-            <li><a href="/admin/cinema/list.html" class="act4">电影院中心<span>详情</span></a></li>
-            <li><a href="/admin/movie/list.html" class="act4">电影中心<span>测试</span></a></li>
-            <li><a href="/admin/ticket/list.html" class="act3">电影票中心<span>详情</span></a></li>
-            <li><a href="/admin/login/login.html" onclick="loginOut()" class="act1">退出账号<span>退出</span></a></li>`;
-        };
-        let temp1 = () => {
-            return ` <li><a href="/admin/index.html" class="act">HOME<span>START HERE</span></a></li>
-            <li><a href="/admin/cinema/list.html" class="act4">电影院中心<span>详情</span></a></li>
-            <li><a href="/admin/ticket/list.html" class="act3">电影票中心<span>详情</span></a></li>
-            <li><a href="/admin/login/login.html" onclick="loginOut()" class="act1">退出账号<span>退出</span></a></li>`;
-        };
-        let temp2 = () => {
-            return ` <li><a href="/admin/index.html" class="act">HOME<span>START HERE</span></a></li>
-            <li><a href="/admin/movie/list.html" class="act4">电影中心<span>详情</span></a></li>
+            <li><a href="/admin/cinema/list.html" class="act4">图书管理<span>详情</span></a></li>
+            <li><a href="/admin/movie/list.html" class="act4">学院管理<span>详情</span></a>
+            <li><a href="/admin/movie/list.html" class="act4">借阅记录<span>详情</span></a></li>
             <li><a href="/admin/login/login.html" onclick="loginOut()" class="act1">退出账号<span>退出</span></a></li>`;
         };
         function setNav(member) {
-            console.log(member);
-            if (member.role.value === "admin") {
-                $("#nav").html(temp());
-            } else if (member.role.value === "cinema") {
-                $("#nav").html(temp1());
-            } else if (member.role.value === "movie") {
-                $("#nav").html(temp2());
-            }
+            $("#nav").html(temp());
         }
         jQuery(document).ready(function($) {
             var member = JSON.parse(localStorage.getItem("member"));
@@ -70,6 +52,80 @@
                 setNav(member)
             }
         });
+    </script>-->
+    <style>
+        .my_act{
+            display: block;
+            color: #626262;
+            font-size: 15px;
+            padding: 0 0 0 20px;
+        }
+        .my_act1{
+            background: url("/images/1.png") no-repeat;
+        }
+        .my_act2{
+            background: url("/images/2.png") no-repeat;
+        }
+        .my_act span{
+            display:block;
+            color:#C4C4C4;
+            font-weight:400;
+            font-family: 'Titillium Web', sans-serif;
+            font-style:normal;
+            margin:0em;
+            letter-spacing:-1px;
+            font-size:13px;
+            display:block;
+        }
+
+        .my_act:hover{
+            text-decoration:none;
+        }
+        .nav-block{
+            padding: 55px 0 0 0;
+            float: left;
+            width: 116px;
+            height: 129px;
+            transition:0.5s all;
+            -webkit-transition:0.5s all;
+            -moz-transition:0.5s all;
+            -o-transition:0.5s all;
+            -ms-transition:0.5s all;
+        }
+        .nav-block:hover{
+            background:#F5F5F5;
+            border-top:10px solid #FFAE00;
+            padding: 45px 0 0 0;
+        }
+        .my_act3:first-child{
+            padding: 0 0 0 10px;
+        }
+        .my_act3:last-child{
+            padding: 10px 0 0 10px;
+        }
+        .cap{
+            background:#F5F5F5;
+            border-top:10px solid #FFAE00;
+            padding: 45px 0 0 0;
+        }
+    </style>
+    <script>
+        $(function () {
+            $(".nav-block").mouseover(function () {
+                var nav = $(this);
+                if (nav.children(".pro").length != 0) {
+                    nav.children(".my_act").hide();
+                    nav.children(".pro").show();
+                }
+            });
+            $(".nav-block").mouseleave(function () {
+                var nav = $(this);
+                if (nav.children(".pro").length != 0) {
+                    nav.children(".my_act").show();
+                    nav.children(".pro").hide();
+                }
+            });
+        });
     </script>
 </head>
 <body>
@@ -80,7 +136,35 @@
     <div class="logo-right">
         <span class="menu"><img src="/images/menu.png" alt=" "/></span>
         <ul class="nav1" id="nav">
-
+            <div style="display: inline-block" class="nav-block">
+                <a href="/admin/index.html" class="my_act my_act1">主页<span>START HERE</span></a>
+            </div>
+            <div style="display: inline-block" class="nav-block">
+                <a href="/admin/member/list.html" class="my_act my_act1">用户管理<span>详情</span></a>
+            </div>
+            <div style="display: inline-block" class="nav-block">
+                <a class="my_act2 my_act">权限管理<span>详情</span></a>
+                <div class="pro" style="display: none">
+                    <a href="/admin/role/list.html" class="my_act my_act3">角色管理</a>
+                    <a href="/admin/roleInterface/list.html" class="my_act my_act3">接口管理</a>
+                </div>
+            </div>
+            <div style="display: inline-block" class="nav-block">
+                <a href="#" class="my_act2 my_act">学院管理<span>详情</span></a>
+                <div class="pro" style="display: none">
+                    <a href="/admin/college/list.html" class="my_act my_act3">学院管理</a>
+                    <a href="/admin/professional/list.html" class="my_act my_act3">专业管理</a>
+                </div>
+            </div>
+            <div style="display: inline-block" class="nav-block">
+                <a href="#" class="my_act my_act1">借阅记录<span>详情</span></a>
+            </div>
+            <div style="display: inline-block" class="nav-block">
+                <a href="#" class="my_act my_act1">个人信息<span>详情</span></a>
+            </div>
+            <div style="display: inline-block" class="nav-block">
+                <a href="/admin/login/login.html" onclick="loginOut()" class="my_act my_act1">退出账号</a>
+            </div>
         </ul>
     </div>
     <div class="clearfix"> </div>

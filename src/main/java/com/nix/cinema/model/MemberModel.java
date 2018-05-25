@@ -26,6 +26,17 @@ public class MemberModel extends BaseModel<MemberModel> {
     //用户角色
     private RoleModel role;
 
+    //额外资料
+    private MemberInfoModel memberInfo;
+
+    public MemberInfoModel getMemberInfo() {
+        return memberInfo;
+    }
+
+    public void setMemberInfo(MemberInfoModel memberInfo) {
+        this.memberInfo = memberInfo;
+    }
+
     public String getPhone() {
         return phone;
     }

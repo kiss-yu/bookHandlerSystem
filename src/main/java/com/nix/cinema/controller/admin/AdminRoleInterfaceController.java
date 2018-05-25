@@ -18,7 +18,6 @@ import java.util.Map;
  * @author Kiss
  * @date 2018/05/03 11:46
  */
-@RestController
 @AdminController
 @RequestMapping("/admin/roleInterface")
 public class AdminRoleInterfaceController {

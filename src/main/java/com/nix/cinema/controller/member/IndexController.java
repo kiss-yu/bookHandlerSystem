@@ -18,7 +18,6 @@ import javax.servlet.http.HttpSession;
  * @author Kiss
  * @date 2018/04/25 11:30
  */
-@RestController
 @RequestMapping("/member")
 @MemberController
 public class IndexController {

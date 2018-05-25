@@ -21,7 +21,7 @@
     <script type="text/javascript" src="/js/easing.js"></script>
     <script type="text/javascript" src="/js/common.js"></script>
     <script type="text/javascript">
-        apiRoot = "/admin/roleInterface";
+        apiRoot = "/admin/college";
 
         var TableInit = function () {
             var oTableInit = new Object();
@@ -70,30 +70,18 @@
                         checkbox: true
                     }, {
                         field: 'id',
-                        title: 'id'
+                        title: 'id',
+                        visible : false
                     },{
                         field: 'createDate',
                         title: '创建日期'
                     }, {
-                        field: 'group',
-                        title: '分组'
+                        field: 'sn',
+                        title: '编号'
                     }, {
                         field: 'name',
-                        title: '名称'
-                    },  {
-                        field: 'url',
-                        title: 'url'
-                    },  {
-                        field: 'enabled',
-                        title: '是否启用',
-                        align : 'center',// 水平居中显示
-                        formatter:function (value) {
-                            return value ? "是" : "否";
-                        }
+                        title: '学院名称'
                     }, {
-                        field: 'description',
-                        title: '描述'
-                    },{
                         field : '',// 返回值名称
                         title : '操作',// 列名
                         formatter: function (value, row, index) {
@@ -128,13 +116,13 @@
         <script>
             $("#header").load("/admin/common/header.html");
             setTimeout(function () {
-                $("#nav").children().eq(2).addClass("cap");
+                $("#nav").children().eq(3).addClass("cap");
             },100);
         </script>
         <!-- //header -->
         <!-- portfolio -->
         <div class="contact">
-            <h3>接口管理</h3>
+            <h3>学院管理</h3>
             <div id="toolbar" class="btn-group">
                 <button id="btn_add" type="button" class="btn btn-default">
                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>添加

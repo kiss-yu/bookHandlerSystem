@@ -34,8 +34,10 @@ public class RoleService extends BaseService<RoleModel> {
     @Transactional(rollbackFor = Exception.class)
     public RoleModel add(RoleModel model) throws Exception{
         super.add(model);
-        for (RoleInterfaceModel roleInterfaceModel:model.getRoleInterfaces()) {
-            roleMapper.insertRoleMiddleInterface(model.getId(),roleInterfaceModel.getId());
+        if (model.getRoleInterfaces() != null) {
+            for (RoleInterfaceModel roleInterfaceModel : model.getRoleInterfaces()) {
+                roleMapper.insertRoleMiddleInterface(model.getId(), roleInterfaceModel.getId());
+            }
         }
         return model;
     }
