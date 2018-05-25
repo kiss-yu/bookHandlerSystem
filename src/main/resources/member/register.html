@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>注册</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/resource/bootstrap-3.3.7-dist/css/bootstrap.min.css"  type="text/css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/member/css/style.css">
+
+    <!-- Owl Carousel Assets -->
+    <link href="/member/owl-carousel/owl.carousel.css" rel="stylesheet">
+    <link href="/member/owl-carousel/owl.theme.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link rel="stylesheet" href="/member/font-awesome-4.4.0/css/font-awesome.min.css"  type="text/css">
+
+    <!-- jQuery -->
+    <script src="/member/js/jquery-2.1.1.js"></script>
+    <script type="text/javascript" src="/js/jquery.validate.js"></script>
+
+    <!-- Core JavaScript Files -->
+    <script src="/member/js/bootstrap.min.js"></script>
+    <script src="/js/common.js"></script>
+    <script>
+        jQuery.validator.addMethod("passwordIsEq", function(value, element) {
+        return this.optional(element) || value === $("#password").val();
+    }, "两次密码不一致");
+        function validateForm(){
+        return $("#inputForm").validate({
+            rules: {
+                "age": {
+                    required: true,
+                    min: 0,
+                    max : 200
+                },
+                "password" : {
+                    minlength : 6,
+                    maxlength : 20
+                },
+                "t_password" : {
+                    passwordIsEq : true
+                },
+                "username": {
+                    required: true,
+                    minlength : 6,
+                    maxlength : 20,
+                    remote: {
+                        url: "checkUsername",
+                        cache: false
+                    }
+                },
+                "phone": {
+                    required: true,
+                    pattern:/^(((13[0-9]{1})|(15[0-9]{1})|(17[0-9]{1})|(18[0-9]{1}))+\d{8})$/,
+                    minlength: 11,
+                    maxlength:11,
+                    digits:true,
+                    number:true
+                }
+            },
+            messages: {
+                "username" : {
+                    required: "不能为空",
+                    minlength: "不能低于6位",
+                    maxlength:"不能高于20位",
+                    remote : "用户名已存在"
+                },
+                "password" : {
+                    minlength: "不能低于6位",
+                    maxlength:"不能高于20位"
+                },
+                "t_password" : {
+                    passwordIsEq : "两次密码不一致"
+                },
+                "age" : {
+                    required: "不能为空",
+                    min:"不合格",
+                    max : "不合法"
+                },
+                "phone" : {
+                    required: "不能为空",
+                    minlength: "必须11位数字",
+                    maxlength:"必须11位数字",
+                    digits:"必须是数字"    ,
+                    number:"请输入有效数字",
+                    pattern : "手机号格式错误"
+                }
+            }
+        });
+    }
+        let temp1 = (movie) => {
+            return `
+             <div class="post wrap-vid">
+                  <div class="zoom-container">
+                       <div class="zoom-caption">
+                            <a href="single.html">
+                                 <i class="fa fa-play-circle-o fa-5x" style="color: #fff"></i>
+                            </a>
+                       </div>
+                       <img src="${movie.img}" />
+                  </div>
+                  <div class="wrapper">
+                       <h5 class="vid-name"><a href="#">${movie.name}</a></h5>
+                       <div class="info">
+                            <h6>版权方 <a href="#">${movie.member.name}</a></h6>
+                            <span><i class="fa fa-calendar"></i>结束时间:${getEndTime(movie.releaseTime)}</span>
+                       </div>
+                  </div>
+             </div>
+            `;
+        };
+        let temp4 = (movie,top) => {
+            return `<div class="wrap-vid">
+                        <div class="zoom-container">
+                                <div class="zoom-caption">
+                                    <span>Top${top}</span>
+                                    <a href="single.html">
+                                        <i class="fa fa-play-circle-o fa-5x" style="color: #fff"></i>
+                                    </a>
+                                    <p>${movie.name}</p>
+                                </div>
+                                <img src="images/3.jpg" />
+                            </div>
+                            <h3 class="vid-name"><a href="#">${movie.name}</a></h3>
+                            <div class="info">
+                                <h5>版权方 <a href="#">${movie.member.name}</a></h5>
+                                <span><i class="fa fa-calendar"></i>${movie.createDate}</span>
+                                <span><i class="fa fa-heart"></i>${movie.hitCount}</span>
+                            </div>
+                    </div>`;
+        };
+        function getEndTime(now) {
+            var date = new Date(now);
+            return `${date.getHours() - 2}:${date.getMinutes()}:${date.getSeconds()}`;
+
+        }
+        jQuery(document).ready(function($) {
+            $.ajax({
+                cache: true,
+                type: "POST",
+                url: "/movie/list",
+                data: {page: 1, limit: 4, order: "releaseTime", sort: "asc",conditionsSql:"UNIX_TIMESTAMP()-1000*60*60 < UNIX_TIMESTAMP(releaseTime) AND UNIX_TIMESTAMP() > UNIX_TIMESTAMP(releaseTime)"},
+                success: function (data) {
+                    if (data.status == 1) {
+                        if (data.data != null) {
+                            var array = data.data;
+                            var contentDiv = $("#now-content");
+                            contentDiv.html("");
+                            for (var i = 0; i < array.length; i++) {
+                                contentDiv.append($(temp1(array[i])));
+                            }
+                        }
+                    } else {
+                        alert("错误");
+                    }
+                }
+            });
+            $.ajax({
+                cache: true,
+                type: "POST",
+                url: "/movie/list",
+                data: {page: 1, limit: 3, order: "hitCount", sort: "desc"},
+                success: function (data) {
+                    if (data.status == 1) {
+                        if (data.data != null) {
+                            var array = data.data;
+                            var div = $("#hot-content");
+                            for (var i = 0; i < array.length; i++) {
+                                div.append($(temp4(array[i],i+1)));
+                            }
+                        }
+                    } else {
+                        alert("错误");
+                    }
+                }
+            });
+            $("#register").click(function () {
+                $.ajax({
+                    cache: true,
+                    type: "POST",
+                    url: "/login",
+                    data: $("#ff").serialize(),
+                    success: function (data) {
+                        if (data.status == 1) {
+                            if (data.data != null) {
+                                location.href = "./index.html";
+                                localStorage.setItem("member",data.data);
+                            }
+                        } else {
+                            alert("错误");
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+    <style>
+        .ticket-btn{
+            margin: 10px 5px;
+            width: 44px;
+        }
+        .ticket-btn-clicked{
+            background-color: red;
+        }
+        .tickets{
+            text-align: center;
+        }
+        #tickets li h4{
+            color: red;
+        }
+        #tickets li h4 span{
+            color: #ffae2c;
+        }
+        .sell-nav{
+            background-color: #bfbfbc;
+            width: 100%;
+            min-height: 100px;
+        }
+        #btn_sell{
+            position: absolute;
+            display: block;
+            right: 10px;
+            bottom: 10px;
+            font-size: 24px;
+        }
+        #balance{
+            text-align: center;
+        }
+        #sell-tickets{
+            position: relative;
+            float: left;
+            width: 50%;
+        }
+        #center{
+            float: left;
+            width: 100%;
+        }
+        #price-msg{
+            float: left;
+            width: 30%;
+        }
+        .price{
+            font-size: 22px;
+            color: #bf8606;
+        }
+        .price span{
+            color: #bf0400;
+        }
+        .close-sell{
+            position: absolute;
+            right: 5px;
+            top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+<header>
+    <script>
+        $("header").load("/member/common/header.html");
+    </script>
+</header>
+<!-- Header -->
+
+<div id="page-content" class="archive-page">
+    <div class="container">
+        <div class="row">
+            <div id="main-content" class="col-md-8">
+                <div class="box">
+                    <center><div class="art-header">
+                        <h1 class="center">注册</h1>
+                    </div></center>
+                    <div class="art-content">
+                        <div id="contact_form">
+                            <form name="form1" id="ff" method="post" action="contact.php">
+                                <label>
+                                    <span>用户名：</span>
+                                    <input type="text"  name="username" id="name" required>
+                                </label>
+                                <label>
+                                    <span>密码：</span>
+                                    <input type="password"  name="password" id="email" required>
+                                </label>
+                                <label>
+                                    <span>再次输入密码：</span>
+                                    <input type="password"  name="_password"  required>
+                                </label>
+                                <label>
+                                    <span>姓名：</span>
+                                    <input type="text"  name="name" required>
+                                </label>
+                                <label>
+                                    <span>年龄：</span>
+                                    <input type="text"  name="age" required>
+                                </label>
+                                <label>
+                                    <span>性别：</span>
+                                    <input style="display:inline;width: auto" id="boy" type="radio" name="sex" value="1" checked/>男
+                                    <input style="display:inline;width: auto" id="girl" type="radio"  name="sex" value="0"/>女
+                                </label>
+                                <center><input class="sendButton" id="register" type="button" name="Submit" value="提交"></center>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="sidebar" class="col-md-4">
+                <!---- Start Widget ---->
+                <div class="widget wid-post">
+                    <div class="heading"><h4><i class="fa fa-globe"></i> 正在上映</h4></div>
+                    <div class="content" id="now-content">
+                    </div>
+                    <div class="line"></div>
+                </div>
+                <!---- Start Widget ---->
+                <div class="widget wid-news">
+                    <div class="heading"><h4><i class="fa fa-clock-o"></i> 热门电影TOP3</h4></div>
+                    <div class="content" id="hot-content">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <script>
+        $("footer").load("/member/common/footer.html");
+    </script>
+</footer>
+<!-- Footer -->
+
+<!-- JS -->
+<script src="owl-carousel/owl.carousel.js"></script>
+<div id="sell-nav" class="navbar-fixed-bottom sell-nav" hidden>
+    <p id="balance">金额：<span id="price-sum">0</span>元</p>
+    <div id="center">
+        <div id="sell-tickets">
+
+        </div>
+    </div>
+    <button type="button" class="close-sell btn btn-danger" onclick="{
+        window.location.reload();
+    }">
+        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>关闭
+    </button>
+    <button id="btn_sell" type="button" class="btn btn-warning" onclick="payment()">
+        <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>支付购买
+    </button>
+</div>
+</body>
+</html>

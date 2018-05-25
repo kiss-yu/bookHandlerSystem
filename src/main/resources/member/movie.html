@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>电影中心</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/member/css/bootstrap.min.css"  type="text/css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/member/css/style.css">
+
+    <!-- Owl Carousel Assets -->
+    <link href="/member/owl-carousel/owl.carousel.css" rel="stylesheet">
+    <link href="/member/owl-carousel/owl.theme.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link rel="stylesheet" href="/member/font-awesome-4.4.0/css/font-awesome.min.css"  type="text/css">
+
+    <!-- jQuery -->
+    <script src="/member/js/jquery-2.1.1.js"></script>
+
+    <!-- Core JavaScript Files -->
+    <script src="/member/js/bootstrap.min.js"></script>
+    <script>
+        var limit = 5;
+        var nowPage = 1;
+        let temp1 = (movie) => {
+            return `
+             <div class="post wrap-vid">
+                  <div class="zoom-container">
+                       <div class="zoom-caption">
+                            <a href="/member/movieView.html?id=${movie.id}">
+                                 <i class="fa fa-play-circle-o fa-5x" style="color: #fff"></i>
+                            </a>
+                       </div>
+                       <img src="${movie.img}" />
+                  </div>
+                  <div class="wrapper">
+                       <h5 class="vid-name"><a href="#">${movie.name}</a></h5>
+                       <div class="info">
+                            <h6>版权方 <a href="#">${movie.member.name}</a></h6>
+                            <span><i class="fa fa-calendar"></i>结束时间:${getEndTime(movie.releaseTime)}</span>
+                       </div>
+                  </div>
+             </div>
+            `;
+        };
+        let temp3 = (movie) => {
+            return `
+            <article>
+                    <a href="#"><h2 class="vid-name">${movie.name}</h2></a>
+                    <div class="info">
+                        <h5>版权方 <a href="#">${movie.member.name}</a></h5>
+                        <span><i class="fa fa-calendar"></i> ${movie.createDate}</span>
+                        <span><i class="fa fa-comment"></i> ${movie.hitCount}</span>
+                        <span><i class="fa fa-heart"></i>${movie.hitCount}</span>
+                    </div>
+                    <div class="wrap-vid">
+                        <div class="zoom-container">
+                            <div class="zoom-caption">
+                                <span>上映时间:${movie.releaseTime}</span>
+                                <a href="/member/movieView.html?id=${movie.id}">
+                                    <i class="fa fa-play-circle-o fa-5x" style="color: #fff"></i>
+                                </a>
+                                <p>${movie.name}</p>
+                            </div>
+                            <img src="${movie.img}" />
+                        </div>
+                        <p>${movie.introduction}</p>
+                    </div>
+             </article>
+                <div class="line"></div>
+            `;
+        };
+        let temp4 = (movie,top) => {
+            console.log("temp4");
+            return `<div class="wrap-vid">
+                        <div class="zoom-container">
+                                <div class="zoom-caption">
+                                    <span>Top${top}</span>
+                                    <a href="/member/movieView.html?id=${movie.id}">
+                                        <i class="fa fa-play-circle-o fa-5x" style="color: #fff"></i>
+                                    </a>
+                                    <p>${movie.name}</p>
+                                </div>
+                                <img src="${movie.img}" />
+                            </div>
+                            <h3 class="vid-name"><a href="#">${movie.name}</a></h3>
+                            <div class="info">
+                                <h5>版权方 <a href="#">${movie.member.name}</a></h5>
+                                <span><i class="fa fa-calendar"></i>${movie.createDate}</span>
+                                <span><i class="fa fa-heart"></i>${movie.hitCount}</span>
+                            </div>
+                    </div>`;
+        };
+        function getEndTime(now) {
+            var date = new Date(now);
+            return `${date.getHours() - 2}:${date.getMinutes()}:${date.getSeconds()}`;
+
+        };
+        function setPage(total) {
+            var page = $("#page");
+            page.html("");
+            if (total/limit + 1 > 5) {
+                var con = "";
+                if (nowPage >2 && nowPage < total/limit - 1) {
+                    for (var i = nowPage - 2;i <= nowPage + 2;i ++) {
+                        con += `<li><a href="#" ${i == nowPage ? 'style="background-color: #ff5044"' : ''} class="a-page" onclick="setMainMovie(${i})">${i}</a></li>`;
+                    }
+                } else if (nowPage <=2 ) {
+                    for (var i = 1;i <= 5;i ++) {
+                        con += `<li><a href="#" ${i == nowPage ? 'style="background-color: #ff5044"' : ''} class="a-page" onclick="setMainMovie(${i})">${i}</a></li>`;
+                    }
+                } else {
+                    for (var i = total/limit  - 3;i <= total/limit + 1;i ++) {
+                        con += `<li><a href="#" ${i == nowPage ? 'style="background-color: #ff5044"' : ''} class="a-page" onclick="setMainMovie(${i})">${i}</a></li>`;
+                    }
+                }
+                page.html(`<li>
+                            <a href="#" onclick="setMainMovie(1,'')" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        ${con}
+                        <li>
+                            <a href="#" onclick="setMainMovie(${total}/10 + 1,'')" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>`);
+            } else {
+                for (var i = 1;i < Math.ceil((total-1)/limit + 1);i ++) {
+                    page.append(`<li><a href="#" ${i == nowPage ? 'style="background-color: #ff5044"' : ''} class="a-page" onclick="setMainMovie(${i})">${i}</a></li>`)
+                }
+            }
+        }
+        function setMainMovie(page,a) {
+            nowPage = page;
+            $.ajax({
+                cache: true,
+                type: "POST",
+                url: "/movie/list",
+                data: {page: nowPage, limit: limit, order: "releaseTime", sort: "asc",conditionsSql:"UNIX_TIMESTAMP() < UNIX_TIMESTAMP(`releaseTime`)"},
+                success: function (data) {
+                    if (data.status == 1) {
+                        if (data.data != null) {
+
+                            var array = data.data;
+                            var contentDiv = $("#content");
+                            contentDiv.html("");
+                            for (var i = 0; i < array.length; i++) {
+                                contentDiv.append($(temp3(array[i])));
+                            }
+                            setPage(data.additionalData.total);
+                            if (a != null) {
+                                var as = $(".a-page");
+                                if (nowPage == 1) {
+                                    as[0].style.backgroundColor = "red";
+                                } else {
+                                    as[as.length - 1].style.backgroundColor = "red";
+                                }
+                            }
+                            
+                        }
+                    } else {
+                        alert("错误");
+                    }
+                }
+            });
+        }
+        jQuery(document).ready(function($) {
+            setMainMovie(1);
+            $.ajax({
+                cache: true,
+                type: "POST",
+                url: "/movie/list",
+                data: {page: 1, limit: 4, order: "releaseTime", sort: "asc",conditionsSql:"UNIX_TIMESTAMP()-1000*60*60 < UNIX_TIMESTAMP(releaseTime) AND UNIX_TIMESTAMP() > UNIX_TIMESTAMP(releaseTime)"},
+                success: function (data) {
+                    if (data.status == 1) {
+                        if (data.data != null) {
+                            var array = data.data;
+                            var contentDiv = $("#now-content");
+                            contentDiv.html("");
+                            for (var i = 0; i < array.length; i++) {
+                                contentDiv.append($(temp1(array[i])));
+                            }
+                        }
+                    } else {
+                        alert("错误");
+                    }
+                }
+            });
+
+            $.ajax({
+                cache: true,
+                type: "POST",
+                url: "/movie/list",
+                data: {page: 1, limit: 3, order: "hitCount", sort: "desc"},
+                success: function (data) {
+                    if (data.status == 1) {
+                        if (data.data != null) {
+                            var array = data.data;
+                            var div = $("#hot-content");
+                            for (var i = 0; i < array.length; i++) {
+                                console.log(array[i]);
+                                div.append($(temp4(array[i],i+1)));
+                            }
+                        }
+                    } else {
+                        alert("错误");
+                    }
+                }
+            });
+        });
+    </script>
+</head>
+
+<body>
+<header>
+    <script>
+        $("header").load("/member/common/header.html");
+    </script>
+</header>
+<!-- Header -->
+
+<div id="page-content" class="archive-page">
+    <div class="container">
+        <div class="row">
+            <div id="main-content" class="col-md-8">
+                <div id="content">
+
+                </div>
+
+                <center>
+                    <ul class="pagination" id="page">
+
+                    </ul>
+                </center>
+            </div>
+            <div id="sidebar" class="col-md-4">
+                <!---- Start Widget ---->
+                <div class="widget wid-post">
+                    <div class="heading"><h4><i class="fa fa-globe"></i> 正在上映</h4></div>
+                    <div class="content" id="now-content">
+                    </div>
+                    <div class="line"></div>
+                </div>
+                <!---- Start Widget ---->
+                <div class="widget wid-news">
+                    <div class="heading"><h4><i class="fa fa-clock-o"></i> 热门电影TOP3</h4></div>
+                    <div class="content" id="hot-content">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <script>
+        $("footer").load("/member/common/footer.html");
+    </script>
+</footer>
+<!-- Footer -->
+
+<!-- JS -->
+<script src="owl-carousel/owl.carousel.js"></script>
+<script>
+</script>
+
+</body>
+</html>

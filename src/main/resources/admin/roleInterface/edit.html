@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>personalInfo</title>
+    <link href="/css/style.css" rel="stylesheet" type="text/css" media="all" />
+    <link href="/css/myTable.css" rel="stylesheet" type="text/css" media="all" />
+    <link href="/resource/bootstrap-3.3.7-dist/css/bootstrap.css" rel="stylesheet" type="text/css" media="all" />
+    <!-- js -->
+    <script src="/resource/js/jquery.min.js"></script>
+    <script src="/js/common.js"></script>
+    <!-- //js -->
+    <!-- for-mobile-apps -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <!-- //for-mobile-apps -->
+    <!-- start-smoth-scrolling -->
+    <script type="text/javascript" src="/js/move-top.js"></script>
+    <script type="text/javascript" src="/js/easing.js"></script>
+    <script type="text/javascript" src="/js/jquery.validate.js"></script>
+    <script type="text/javascript" src="/js/jquery.tools.js"></script>
+    <script type="text/javascript" src="/js/jquery.lSelect.js"></script>
+    <script type="text/javascript">
+        var apiRoot = "/admin/roleInterface";
+        jQuery(document).ready(function($) {
+            //根据界面传参获取role详情
+            $.ajax({
+                cache : true,
+                type : "GET",
+                url : apiRoot + "/view?id=" + id,
+                success : function(data) {
+                    if (data.status == 1) {
+                        var model = data.data;
+                        $("#id").val(model.id);
+                        $("#name").val(model.name);
+                        $("#url").val(model.url);
+                        model.enabled ? $("#enabled,#_enabled").prop("checked",true) : $("#enabled,#_enabled").prop("checked",false);
+                        model.enabled ? $("#_enabled").val(true) : $("#_enabled").val(false);
+                        $("#description").val(model.description);
+                        $("#group").val(model.group);
+                    } else {
+                        alert("错误");
+                    }
+                }
+            });
+            function validateForm(){
+                return $("#inputForm").validate({
+                    rules: {
+                        "name": {
+                            required: true
+                        },
+                        "url": {
+                            required: true
+                        }
+                    },
+                    messages: {
+                        "name": {
+                            required: "不能为空"
+                        },
+                        "url": {
+                            required: "不能为空"
+                        }
+                    }
+                });
+            }
+            $(validateForm());
+            // 表单验证
+            $("#submit").click(function () {
+                if(validateForm().form()) {
+                    $.ajax({
+                        cache : true,
+                        type : "POST",
+                        url : apiRoot + "/update",
+                        data : $('#inputForm').serialize(),
+                        async : false,
+                        success : function(data) {
+                            if (data.status == 1) {
+                                location.href = apiRoot + "/list.html";
+                            }
+                        }
+                    });
+                }
+            });
+            $("#enabled").click(function() {
+                if (this.checked) {
+                    $("#_enabled").val(true);
+                } else {
+                    $("#_enabled").val(false);
+                }
+            });
+        });
+
+
+    </script>
+</head>
+
+<body>
+<div class="psd">
+    <div class="container">
+        <div id="header">
+        </div>
+        <script>
+            $("#header").load("/admin/common/header.html");
+            setTimeout(function () {
+                $("#nav").children().eq(3).addClass("cap");
+            },100);
+        </script>
+        <div class="contact">
+            <h3>修改权限管理接口</h3>
+            <div class="blog" style="height: 650px;">
+                <div class="blog-left">
+                    <form id="inputForm" method="post">
+                        <table class="input tab-content" style="display: table">
+                            <tr>
+                                <th>
+                                    <span class="glyphicon-class">权限接口名称</span>
+                                </th>
+                                <td>
+                                    <input type="text" class="text" id="name" value="" name="name"/>
+                                    <input type="text" class="text" id="id" hidden name="id"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <span class="glyphicon-class">url</span>
+                                </th>
+                                <td>
+                                    <input type="text" class="text" id="url" value="" name="url"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <span class="glyphicon-class">分组</span>
+                                </th>
+                                <td>
+                                    <input type="text" class="text" id="group" value="" name="group"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+
+                                </th>
+                                <td>
+                                    <label>
+                                        <input type="checkbox" id="enabled" name="enabled" value="1"/>是否启用
+                                    </label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <span class="glyphicon-class">描述</span>
+                                </th>
+                                <td>
+                                    <input type="text" class="text" id="description" name="description" value="管理添加用户"/>
+                                </td>
+                            </tr>
+                        </table>
+                        <table class="input">
+                            <tr>
+                                <th>
+                                    &nbsp;
+                                </th>
+                                <td>
+                                    <input type="button" class="button" value="提交" id="submit"/>
+                                    <input type="button" class="button" value="返回" onclick="history.back(); return false;" />
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+
+                <div class="clearfix"> </div>
+            </div>
+        </div>
+        <iframe src="/admin/common/footer.html" width='100%' height='100%' frameborder='0' name="_blank" id="_blank" />
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $().UItoTop({ easingType: 'easeOutQuart' });
+
+    });
+</script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta name="description" content="">
+	<meta name="author" content="">
+
+	<title>首页</title>
+
+	<!-- Bootstrap Core CSS -->
+	<link rel="stylesheet" href="/resource/bootstrap-3.3.7-dist/css/bootstrap.min.css"  type="text/css">
+
+	<!-- Custom CSS -->
+	<link rel="stylesheet" href="/member/css/style.css">
+
+	<!-- Owl Carousel Assets -->
+	<link href="/member/owl-carousel/owl.carousel.css" rel="stylesheet">
+	<link href="/member/owl-carousel/owl.theme.css" rel="stylesheet">
+
+	<!-- Custom Fonts -->
+	<link rel="stylesheet" href="/member/font-awesome-4.4.0/css/font-awesome.min.css"  type="text/css">
+
+	<!-- jQuery -->
+	<script src="/member/js/jquery-2.1.1.js"></script>
+
+	<!-- Core JavaScript Files -->
+	<script src="/member/js/bootstrap.min.js"></script>
+	<script src="/js/common.js"></script>
+
+	<script>
+        let temp1 = (data) => {
+            return `
+            <div class="zoom-caption">
+				<span>上映时间:${data.releaseTime}</span>
+				<a href="/member/movieView.html?id=${data.id}">
+					<i class="fa fa-play-circle-o fa-5x" style="color: #fff"></i>
+				</a>
+				<p>${data.name}</p>
+			</div>
+			<img src="${data.img}" />
+            `;
+		};
+
+        let temp = (data) => {
+            return `
+					<div class="item">
+					<div class="zoom-container">
+						<div class="zoom-caption">
+							<span>热度:${data.hitCount}</span>
+							<a href="/member/movieView.html?id=${data.id}">
+								<i class="fa fa-play-circle-o fa-5x" style="color: #fff"></i>
+							</a>
+							<p>${data.name}</p>
+						</div>
+						<img src="${data.img}">
+					</div>
+					</div>
+				`;
+        };
+        let temp2 = (data) => {
+            return `
+            <li><a href="/member/cinemaView.html?id=${data.id}">${data.name}</a></li>
+            `;
+        };
+        jQuery(document).ready(function($) {
+            $.ajax({
+                cache: true,
+                type: "POST",
+                url: "/movie/list",
+                data: {page: 1, limit: 8, order: "hitCount", sort: "desc"},
+                success: function (data) {
+                    if (data.status == 1) {
+                        if (data.data != null) {
+                            var array = data.data;
+                            var div = $("#owl-demo");
+                            for (var i = 0; i < array.length; i++) {
+                                div.append($(temp(array[i])));
+                            }
+                            $("#owl-demo").owlCarousel({
+                                autoPlay: 3000,
+                                items : 5,
+                                itemsDesktop : [1199,4],
+                                itemsDesktopSmall : [979,4]
+                            });
+                        }
+                    } else {
+                        alert("错误");
+                    }
+                }
+            });
+            $.ajax({
+                cache: true,
+                type: "POST",
+                url: "/cinema/list",
+                data: {page: 1, limit: 4, order: "createDate", sort: "desc"},
+                success: function (data) {
+                    if (data.status == 1) {
+                        if (data.data != null) {
+                            var array = data.data;
+                            for (var i = 0; i < array.length; i++) {
+                                $("#hotCinema").append($(temp2(array[i])));
+                            }
+                        }
+                    } else {
+                        alert("错误");
+                    }
+                }
+            });
+            $.ajax({
+                cache: true,
+                type: "POST",
+                url: "/movie/list",
+                data: {page: 1, limit: 5, order: "releaseTime", sort: "asc",conditionsSql:"UNIX_TIMESTAMP() < UNIX_TIMESTAMP(`releaseTime`)"},
+                success: function (data) {
+                    if (data.status == 1) {
+                        if (data.data != null) {
+                            var array = data.data;
+                            for (var i = 0; i < array.length; i++) {
+                                $("#newMovie" + (i+1)).append($(temp1(array[i])));
+                            }
+							setTimeout(1000)
+                            $("#owl-demo").owlCarousel({
+                                autoPlay: 3000,
+                                items : 5,
+                                itemsDesktop : [1199,4],
+                                itemsDesktopSmall : [979,4]
+                            });
+                        }
+                    } else {
+                        alert("错误");
+                    }
+                }
+            });
+        });
+
+        function loginOut() {
+            console.log("out")
+            localStorage.removeItem("member");
+            $.ajax({
+                cache: true,
+                type: "GET",
+                url: "/logout"
+            });
+        }
+	</script>
+</head>
+
+<body>
+<header>
+
+	<!--Top-->
+	<nav id="top">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-6 col-sm-6" id="header1">
+				</div>
+				<script>
+                    var member = JSON.parse(localStorage.getItem("member"));
+                    if (member == null) {
+                        $("#header1").html(`<strong>Welcome <a href="/member/login.html"><i class="fa"></i> 登录</a></strong>`);
+                    } else {
+                        $("#header1").html(`<strong>Welcome <a href="/member/member.html"><i class="fa"></i> ${member.name}</a></strong>`)
+                    }
+				</script>
+				<div class="col-md-6 col-sm-6" >
+					<ul class="list-inline top-link link" id="header2">
+						<li><a href="/member/index.html"><i class="fa fa-home"></i> 主页</a></li>
+					</ul>
+					<script>
+                        var member = localStorage.getItem("member");
+                        if (member == null) {
+                            $("#header2").append($(`<li><a href="/member/register.html"><i class="fa"></i> 注册</a></li>`));
+                        } else {
+                            $("#header2").append($(`<li><a onclick="loginOut()" href="/member/index.html"><i class="fa fa-comments"></i> 退出</a></li>`))
+                        }
+					</script>
+				</div>
+			</div>
+		</div>
+	</nav>
+
+	<!--Navigation-->
+	<nav id="menu" class="navbar">
+		<div class="container">
+			<div class="navbar-header"><span id="heading" class="visible-xs">Categories</span>
+				<button type="button" class="btn btn-navbar navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse"><i class="fa fa-bars"></i></button>
+			</div>
+			<div class="collapse navbar-collapse navbar-ex1-collapse">
+				<ul class="nav navbar-nav">
+					<li><a href="index.html"><i class="fa fa-home"></i> 主页</a></li>
+					<li><a href="/member/movie.html" class="" ><i class="fa fa-play-circle-o"></i> 电影</a>
+					<li><a href="/member/member.html" class=""><i class="fa fa-list"></i> 个人中心</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+
+	<div class="header-slide">
+		<div id="owl-demo" class="owl-carousel">
+
+		</div>
+	</div>
+</header>
+<!-- Header -->
+	<div id="page-content" class="index-page">
+
+		<div class="container">
+			<div class="row">
+				<div class="featured">
+					<div class="main-vid">
+						<div class="col-md-6">
+							<div class="zoom-container" id="newMovie1">
+							</div>
+						</div>
+					</div>
+					<div class="sub-vid">
+						<div class="col-md-3">
+							<div class="zoom-container" id="newMovie2">
+
+							</div>
+							<div class="zoom-container" id="newMovie3">
+
+							</div>
+						</div>
+						<div class="col-md-3">
+							<div class="zoom-container" id="newMovie4">
+
+							</div>
+							<div class="zoom-container" id="newMovie5">
+
+							</div>
+						</div>
+					</div>
+					<div class="clear"></div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<footer>
+		<script>
+            $("footer").load("/member/common/footer.html");
+		</script>
+	</footer>
+	<!-- Footer -->
+
+
+<!-- JS -->
+<script src="owl-carousel/owl.carousel.js"></script>
+</body>
+</html>

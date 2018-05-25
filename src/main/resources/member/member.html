@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>用户中心</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/member/css/bootstrap.min.css"  type="text/css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/member/css/style.css">
+    <link href="/css/myTable.css" rel="stylesheet" type="text/css" media="all" />
+
+    <!-- Owl Carousel Assets -->
+    <link href="/member/owl-carousel/owl.carousel.css" rel="stylesheet">
+    <link href="/member/owl-carousel/owl.theme.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link rel="stylesheet" href="/member/font-awesome-4.4.0/css/font-awesome.min.css"  type="text/css">
+
+    <!-- jQuery -->
+    <script src="/member/js/jquery-2.1.1.js"></script>
+    <script type="text/javascript" src="/js/jquery.validate.js"></script>
+
+    <!-- Core JavaScript Files -->
+    <script src="/member/js/bootstrap.min.js"></script>
+    <script src="/js/common.js"></script>
+    <script>
+        var limit = 3;
+        var nowPage = 1;
+
+        jQuery.validator.addMethod("passwordIsEq", function(value, element) {
+            return this.optional(element) || value === $("#password").val();
+        }, "两次密码不一致");
+        function validateForm(){
+            return $("#inputForm").validate({
+                rules: {
+                    "age": {
+                        required: true,
+                        min: 0,
+                        max : 200
+                    },
+                    "password" : {
+                        minlength : 6,
+                        maxlength : 20
+                    },
+                    "t_password" : {
+                        passwordIsEq : true
+                    },
+                    "username": {
+                        required: true,
+                        minlength : 6,
+                        maxlength : 20,
+                        remote: {
+                            url: "checkUsername",
+                            cache: false
+                        }
+                    },
+                    "phone": {
+                        required: true,
+                        pattern:/^(((13[0-9]{1})|(15[0-9]{1})|(17[0-9]{1})|(18[0-9]{1}))+\d{8})$/,
+                        minlength: 11,
+                        maxlength:11,
+                        digits:true,
+                        number:true
+                    }
+                },
+                messages: {
+                    "username" : {
+                        required: "不能为空",
+                        minlength: "不能低于6位",
+                        maxlength:"不能高于20位",
+                        remote : "用户名已存在"
+                    },
+                    "password" : {
+                        minlength: "不能低于6位",
+                        maxlength:"不能高于20位"
+                    },
+                    "t_password" : {
+                        passwordIsEq : "两次密码不一致"
+                    },
+                    "age" : {
+                        required: "不能为空",
+                        min:"不合格",
+                        max : "不合法"
+                    },
+                    "phone" : {
+                        required: "不能为空",
+                        minlength: "必须11位数字",
+                        maxlength:"必须11位数字",
+                        digits:"必须是数字"    ,
+                        number:"请输入有效数字",
+                        pattern : "手机号格式错误"
+                    }
+                }
+            });
+        }
+        let temp3 = (payment,ticket) => {
+            return `
+            <article>
+                        <a href="#"><h2 class="vid-name">${payment.ticket.cinema.name}${payment.ticket.room}房间</h2></a>
+                        <div class="info">
+                            <h5>版权方 <a href="#">${payment.ticket.movie.member.name}</a></h5>
+                            <span>创建时间：<i class="fa fa-calendar"></i> ${payment.createDate}</span><br/>
+                            <span>票价<i class="fa "></i>${payment.ticket.price}元</span><br/>
+                            <span>支付金额<i class="fa "></i>${payment.amount}元</span>
+                        </div>
+                        <div class="wrap-vid">
+                            <div class="zoom-container">
+                                <div class="zoom-caption">
+                                    <span>${payment.ticket.movie.releaseTime}</span>
+                                    <a href="/member/movieView.html?id=${payment.ticket.movie.id}">
+                                        <i class="fa fa-play-circle-o fa-5x" style="color: #fff"></i>
+                                    </a>
+                                    <p>${payment.ticket.movie.name}</p>
+                                </div>
+                                <img src="${payment.ticket.movie.img}" />
+                            </div>
+                        </div>
+                    </article>
+                    <div class="line"></div>
+            `;
+        };
+        let temp4 = (movie,top) => {
+            console.log("temp4");
+            return `<div class="wrap-vid">
+                        <div class="zoom-container">
+                                <div class="zoom-caption">
+                                    <span>Top${top}</span>
+                                    <a href="/member/movieView.html?id=${movie.id}">
+                                        <i class="fa fa-play-circle-o fa-5x" style="color: #fff"></i>
+                                    </a>
+                                    <p>${movie.name}</p>
+                                </div>
+                                <img src="${movie.img}" />
+                            </div>
+                            <h3 class="vid-name"><a href="#">${movie.name}</a></h3>
+                            <div class="info">
+                                <h5>版权方 <a href="#">${movie.member.name}</a></h5>
+                                <span><i class="fa fa-calendar"></i>${movie.createDate}</span>
+                                <span><i class="fa fa-heart"></i>${movie.hitCount}</span>
+                            </div>
+                    </div>`;
+        };
+        let temp1 = (member) => {
+            return `<ul class="list-group">
+                            <li class="list-group-item">用户名：${member.username}</li>
+                            <li class="list-group-item">姓名：${member.name}</li>
+                            <li class="list-group-item">电话：${member.phone}</li>
+                            <li class="list-group-item">年龄：${member.age}</li>
+                            <li class="list-group-item">性别：${member.sex ? "男" : "女"}</li>
+                            <li class="list-group-item"><button type="button" class="btn btn-primary" onclick='modify(${JSON.stringify(member)})'>修改</button></li>
+                        </ul>`;
+        };
+        let temp5 = (member) => {
+            return `<form id="inputForm" method="post" enctype="multipart/form-data">
+                            <table class="input tab-content" style="display: table">
+                                <tr>
+                                    <th>
+                                        <span class="glyphicon-class">用户名</span>
+                                    </th>
+                                    <td>
+                                        <input type="text" class="text" id="username" value="${member.username}" disabled/>
+                                        <input type="text" class="text" id="id" value="${member.id}" name="id" style="display: none"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        <span class="glyphicon-class">头像</span>
+                                    </th>
+                                    <td>
+                                        <input class="hidden" id="file" type="file" name="portraitImg" onchange="clickImage(this)">
+                                        <img id="portrait" src="${member.img}" onclick="{document.getElementById('file').click();}">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        <span class="glyphicon-class">密码</span>
+                                    </th>
+                                    <td>
+                                        <input type="text" class="text" id="password"  name="password"/>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <th>
+                                        <span class="glyphicon-class">再次输入</span>
+                                    </th>
+                                    <td>
+                                        <input type="text" class="text" id="t_password" name="t_password"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        <span class="glyphicon-class">姓名</span>
+                                    </th>
+                                    <td>
+                                        <input type="text" class="text" id="name" value="${member.name}" name="name"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        <span class="glyphicon-class">电话</span>
+                                    </th>
+                                    <td>
+                                        <input type="text" class="text" id="phone" value="${member.phone}" name="phone"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        <span class="glyphicon-class">年龄</span>
+                                    </th>
+                                    <td>
+                                        <input type="text" class="text" id="age" value="${member.age}" name="age" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        <span class="glyphicon-class">余额</span>
+                                    </th>
+                                    <td>
+                                        <input type="text" class="text" id="balance" value="${member.balance}" name="balance" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        <span class="glyphicon-class">性别</span>
+                                    </th>
+                                    <td>
+                                        <input id="boy" type="radio" name="1" ${member.sex ? "checked" : ""}/>男
+                                        <input id="girl" type="radio"  name="1" ${member.sex ? "" : "checked"}/>女
+                                    </td>
+                                </tr>
+                            </table>
+                            <table class="input">
+                                <tr>
+                                    <th>
+                                        &nbsp;
+                                    </th>
+                                    <td>
+                                        <input type="button" class="button" value="提交" onclick="updateMember()"/>
+                                        <input type="button" class="button" value="返回" onclick="setMemberMessage(); return false;" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </form>`;
+        };
+        function setPage(total) {
+            var page = $("#page");
+            page.html("");
+            if (total/limit + 1 > 5) {
+                var con = "";
+                if (nowPage >2 && nowPage < total/limit - 1) {
+                    for (var i = nowPage - 2;i <= nowPage + 2;i ++) {
+                        con += `<li><a href="#" ${i == nowPage ? 'style="background-color: #ff5044"' : ''} class="a-page" onclick="setMainMovie(${i})">${i}</a></li>`;
+                    }
+                } else if (nowPage <=2 ) {
+                    for (var i = 1;i <= 5;i ++) {
+                        con += `<li><a href="#" ${i == nowPage ? 'style="background-color: #ff5044"' : ''} class="a-page" onclick="setMainMovie(${i})">${i}</a></li>`;
+                    }
+                } else {
+                    for (var i = total/limit  - 3;i <= total/limit + 1;i ++) {
+                        con += `<li><a href="#" ${i == nowPage ? 'style="background-color: #ff5044"' : ''} class="a-page" onclick="setMainMovie(${i})">${i}</a></li>`;
+                    }
+                }
+                page.html(`<li>
+                            <a href="#" onclick="setMainMovie(1,'')" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        ${con}
+                        <li>
+                            <a href="#" onclick="setMainMovie(${total}/10 + 1,'')" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>`);
+            } else {
+                for (var i = 1;i < Math.ceil((total-1)/limit + 1);i ++) {
+                    page.append(`<li><a href="#" ${i == nowPage ? 'style="background-color: #ff5044"' : ''} class="a-page" onclick="setMainMovie(${i})">${i}</a></li>`)
+                }
+            }
+        }
+        function setMainMovie(page,a) {
+            nowPage = page;
+            $.ajax({
+                cache: true,
+                type: "POST",
+                url: "/member/payment/list",
+                data: {page: nowPage, limit: limit},
+                success: function (data) {
+                    if (data.status == 1) {
+                        if (data.data != null) {
+                            var array = data.data;
+                            var contentDiv = $("#content");
+                            contentDiv.html("");
+                            for (var i = 0; i < array.length; i++) {
+                                contentDiv.append($(temp3(array[i])));
+                            }
+                            setPage(data.additionalData.total);
+                            if (a != null) {
+                                var as = $(".a-page");
+                                if (nowPage == 1) {
+                                    as[0].style.backgroundColor = "red";
+                                } else {
+                                    as[as.length - 1].style.backgroundColor = "red";
+                                }
+                            }
+
+                        }
+                    }
+                }
+            });
+        }
+        function setMemberMessage() {
+            $.ajax({
+                cache: true,
+                type: "GET",
+                url: "/currentUser",
+                success: function (data) {
+                    if (data.status == 1) {
+                        if (data.data != null) {
+                            var div = $("#now-content");
+                            div.html("");
+                            div.append($(temp1(data.data)))
+                        } else {
+                            alert("请登录");
+                            location.href = "./login.html";
+                        }
+                    } else {
+                        location.href = "./login.html";
+                    }
+                }
+            });
+        }
+        function modify(member) {
+            var div = $("#now-content");
+            div.html("");
+            div.append($(temp5(member)));
+        }
+        function postMessage() {
+            if(validateForm().form()) {
+                $.ajax({
+                    cache : true,
+                    type : "POST",
+                    url : "/member/update",
+                    data: new FormData($('#inputForm')[0]),
+                    processData: false,
+                    contentType: false,
+                    async : false,
+                    success : function(data) {
+                        if (data.status == 1) {
+                            localStorage.setItem("member",JSON.stringify(data.data));
+                            window.location.reload();
+                        }
+                    }
+                });
+            }
+        }
+        jQuery(document).ready(function($) {
+            setMainMovie(1);
+            $.ajax({
+                cache: true,
+                type: "POST",
+                url: "/movie/list",
+                data: {page: 1, limit: 3, order: "hitCount", sort: "desc"},
+                success: function (data) {
+                    if (data.status == 1) {
+                        if (data.data != null) {
+                            var array = data.data;
+                            var div = $("#hot-content");
+                            for (var i = 0; i < array.length; i++) {
+                                console.log(array[i]);
+                                div.append($(temp4(array[i],i+1)));
+                            }
+                        }
+                    } else {
+                        alert("错误");
+                    }
+                }
+            });
+            setMemberMessage();
+        });
+    </script>
+    <style>
+        table.input th{
+            width: auto;
+            padding: 0;
+        }
+        input.text{
+            height: 22px;
+            line-height: 22px;
+        }
+        #portrait{
+            width: 50px;
+            height: 50px;
+        }
+    </style>
+</head>
+
+<body>
+<header>
+    <script>
+        $("header").load("/member/common/header.html");
+    </script>
+</header>
+<!-- Header -->
+
+<div id="page-content" class="archive-page">
+    <div class="container">
+        <div class="row">
+            <div id="main-content" class="col-md-8">
+                <div id="content">
+                </div>
+
+                <center>
+                    <ul class="pagination" id="page">
+
+                    </ul>
+                </center>
+            </div>
+            <div id="sidebar" class="col-md-4">
+                <!---- Start Widget ---->
+                <div class="widget wid-post">
+                    <div class="heading"><h4><i class="fa fa-globe"></i> 个人资料</h4></div>
+                    <div class="content" id="now-content">
+                    </div>
+                    <div class="line"></div>
+                </div>
+                <!---- Start Widget ---->
+                <div class="widget wid-news">
+                    <div class="heading"><h4><i class="fa fa-clock-o"></i> 热门电影TOP3</h4></div>
+                    <div class="content" id="hot-content">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <script>
+        $("footer").load("/member/common/footer.html");
+    </script>
+</footer>
+<!-- Footer -->
+
+<!-- JS -->
+<script src="owl-carousel/owl.carousel.js"></script>
+<script>
+</script>
+
+</body>
+</html>

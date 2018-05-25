@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>KoolTube</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/resource/bootstrap-3.3.7-dist/css/bootstrap.min.css"  type="text/css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/member/css/style.css">
+
+    <!-- Owl Carousel Assets -->
+    <link href="/member/owl-carousel/owl.carousel.css" rel="stylesheet">
+    <link href="/member/owl-carousel/owl.theme.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link rel="stylesheet" href="/member/font-awesome-4.4.0/css/font-awesome.min.css"  type="text/css">
+
+    <!-- jQuery -->
+    <script src="/member/js/jquery-2.1.1.js"></script>
+
+    <!-- Core JavaScript Files -->
+    <script src="/member/js/bootstrap.min.js"></script>
+    <script src="/js/common.js"></script>
+    <script>
+        var limit = 2;
+        var nowPage = 1;
+        var ticketIds = {};
+        let temp1 = (movie) => {
+            return `
+             <div class="post wrap-vid">
+                  <div class="zoom-container">
+                       <div class="zoom-caption">
+                            <a href="/member/movieView.html?id=${movie.id}">
+                                 <i class="fa fa-play-circle-o fa-5x" style="color: #fff"></i>
+                            </a>
+                       </div>
+                       <img src="${movie.img}" />
+                  </div>
+                  <div class="wrapper">
+                       <h5 class="vid-name"><a href="#">${movie.name}</a></h5>
+                       <div class="info">
+                            <h6>版权方 <a href="#">${movie.member.name}</a></h6>
+                            <span><i class="fa fa-calendar"></i>结束时间:${getEndTime(movie.releaseTime)}</span>
+                       </div>
+                  </div>
+             </div>
+            `;
+        };
+        let temp3 = (movie) => {
+            return ` <h1 class="vid-name"><a href="#">${movie.name}</a></h1>
+                    <div class="info">
+                        <h5>版权方 <a href="#">${movie.member.name}</a></h5>
+                        <span><i class="fa fa-calendar"></i>创建时间：${movie.createDate}</span><br/>
+                        <span><i class="fa fa-calendar"></i>放映时间：${movie.releaseTime}</span><br/>
+                        <span><i class="fa fa-heart"></i>点击量：${movie.hitCount}</span>
+                    </div>
+                    <p style="margin-top: 20px">${movie.introduction}</p>
+                    <div style="margin-top: 20px" id="introduce"><h4>介绍</h4>${movie.introduce}</div>`;
+        };
+        let temp4 = (movie,top) => {
+            return `<div class="wrap-vid">
+                        <div class="zoom-container">
+                                <div class="zoom-caption">
+                                    <span>Top${top}</span>
+                                    <a href="/member/movieView.html?id=${movie.id}">
+                                        <i class="fa fa-play-circle-o fa-5x" style="color: #fff"></i>
+                                    </a>
+                                    <p>${movie.name}</p>
+                                </div>
+                                <img src="${movie.img}" />
+                            </div>
+                            <h3 class="vid-name"><a href="#">${movie.name}</a></h3>
+                            <div class="info">
+                                <h5>版权方 <a href="#">${movie.member.name}</a></h5>
+                                <span><i class="fa fa-calendar"></i>${movie.createDate}</span>
+                                <span><i class="fa fa-heart"></i>${movie.hitCount}</span>
+                            </div>
+                    </div>`;
+        };
+        let temp5 = (ticket) => {
+            var inputs = "";
+            for (var i = 0,k = 0;i < ticket.ticketSum;i ++,k++) {
+                if (ticket.sellTicketIndex[k] == i) {
+                    inputs += `<input type="button" class="btn btn-success ticket-btn"
+                                room = "${ticket.room}" price="${ticket.price}"
+                                cinema="${ticket.cinema.name}" ticketId="${ticket.id}" sell="true" value="${i}" onclick="clickTicketBtn($(this))">`;
+                } else {
+                    k--;
+                    inputs += `<input type="button" class="btn ticket-btn" value="${i}" onclick="" disabled>`;
+                }
+                if (i % 10 == 9) {
+                    inputs += `<br/>`
+                }
+            }
+            return `<li  class="list-group-item">
+                      <h4>${ticket.cinema.name}<span>  ${ticket.room}房间</span></h4>
+                      <p class="price">票价：<span>${ticket.price}</span>元</p>
+                      <div class="tickets">
+                          <p>选择座位号</p>
+                          ${inputs}
+                      </div>
+                 </li>`;
+        };
+        function getEndTime(now) {
+            var date = new Date(now);
+            return `${date.getHours() - 2}:${date.getMinutes()}:${date.getSeconds()}`;
+
+        };
+        function setPage(total) {
+            var page = $("#page");
+            page.html("");
+            if (total/limit + 1 > 5) {
+                var con = "";
+                if (nowPage >2 && nowPage < total/limit - 1) {
+                    for (var i = nowPage - 2;i <= nowPage + 2;i ++) {
+                        con += `<li><a href="#" ${i == nowPage ? 'style="background-color: #ff5044"' : ''} class="a-page" onclick="setMainMovie(${i})">${i}</a></li>`;
+                    }
+                } else if (nowPage <=2 ) {
+                    for (var i = 1;i <= 5;i ++) {
+                        con += `<li><a href="#" ${i == nowPage ? 'style="background-color: #ff5044"' : ''} class="a-page" onclick="setMainMovie(${i})">${i}</a></li>`;
+                    }
+                } else {
+                    for (var i = total/limit  - 3;i <= total/limit + 1;i ++) {
+                        con += `<li><a href="#" ${i == nowPage ? 'style="background-color: #ff5044"' : ''} class="a-page" onclick="setMainMovie(${i})">${i}</a></li>`;
+                    }
+                }
+                page.html(`<li>
+                            <a href="#" onclick="setMainMovie(1,'')" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        ${con}
+                        <li>
+                            <a href="#" onclick="setMainMovie(${total}/10 + 1,'')" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>`);
+            } else {
+                for (var i = 1;i < Math.ceil((total-1)/limit + 1);i ++) {
+                    page.append(`<li><a href="#" ${i == nowPage ? 'style="background-color: #ff5044"' : ''} class="a-page" onclick="setMainMovie(${i})">${i}</a></li>`)
+                }
+            }
+        }
+        function setMainMovie(page,a) {
+            nowPage = page;
+            $("#sell-nav").show();
+            $.ajax({
+                cache: true,
+                type: "POST",
+                url: "/member/movie/ticket?id=" + id,
+                data: {page: nowPage, limit: limit, order: "price", sort: "asc"},
+                success: function (data) {
+                    if (data.status == 1) {
+                        if (data.data != null) {
+                            var array = data.data;
+                            var contentDiv = $("#tickets");
+                            contentDiv.html("");
+                            contentDiv.show();
+                            $("#introduce").hide();
+                            for (var i = 0; i < array.length; i++) {
+                                contentDiv.append($(temp5(array[i])));
+                            }
+                            setPage(data.additionalData.total);
+                            if (a != null) {
+                                var as = $(".a-page");
+                                if (nowPage == 1) {
+                                    as[0].style.backgroundColor = "red";
+                                } else {
+                                    as[as.length - 1].style.backgroundColor = "red";
+                                }
+                            }
+
+                        }
+                    } else {
+                        alert("错误");
+                    }
+                }
+            });
+        }
+        var priceSum = 0;
+        function clickTicketBtn(ticketBtn) {
+            var classes = ticketBtn.attr('class');
+            var ticketId = ticketBtn.attr("ticketId");
+            var price = parseFloat(ticketBtn.attr("price"));
+            var map = ticketIds[ticketId];
+            if (map == null) {
+                map = {};
+            }
+            if (classes === "btn btn-success ticket-btn") {
+                ticketBtn.attr('class',"btn ticket-btn-clicked ticket-btn");
+                map[ticketBtn.val()] = ticketBtn.val();
+                ticketIds[ticketId] = map;
+                var input = ticketBtn.clone();
+                input.attr("sell",false);
+                input.attr("id",ticketId + "_" + ticketBtn.val());
+                ticketBtn.attr("id","_" + ticketId + "_" + ticketBtn.val());
+                addSellTicketBtn(input);
+                priceSum += price;
+            } else if (classes === "btn ticket-btn-clicked ticket-btn") {
+                var b = ticketBtn.attr("sell");
+                priceSum -= price;
+                if (b != "false") {
+                    ticketBtn.attr('class',"btn btn-success ticket-btn");
+                    $("#" + ticketId + "_" + ticketBtn.val()).remove();
+                } else {
+                    $("#_" + ticketId + "_" + ticketBtn.val()).attr('class',"btn btn-success ticket-btn");
+                    ticketBtn.remove();
+                }
+                delete map[ticketBtn.val()];
+                if (Object.keys(map).length == 0) {
+                    $("#" + ticketBtn.attr("cinema") + "_" + ticketBtn.attr("room")).remove();
+                }
+            }
+            $("#price-sum").html(priceSum);
+        }
+        function addSellTicketBtn(btn) {
+            var cinema = btn.attr("cinema");
+            var room = btn.attr("room");
+            var boxId = cinema + "_" + room;
+            var box = $("#" + boxId);
+            var ticketId = btn.attr("ticketId");
+            if (box.length <= 0) {
+                var test = `<div id="${boxId}" class="tickets-box"><p>${cinema}<span>${room}</span></p></div>`;
+                box = $(test);
+                box.append(btn);
+                $("#sell-tickets").append(box);
+            } else {
+                box.append(btn);
+            }
+        }
+        function payment() {
+            var data = {};
+            var ids = new Array();
+            var indexes = new Array();
+            for(key in ticketIds){
+                map = ticketIds[key];
+                if (Object.keys(map).length != 0) {
+                    ids.push(key);
+                    var indexes1 = new Array();
+                    for (key1 in map) {
+                        indexes1.push(map[key1]);
+                    }
+                    indexes.push(indexes1);
+                }
+            }
+            //支付订单
+            $.ajax({
+                cache: true,
+                type: "POST",
+                url: "/member/payment/payment",
+                traditional:true,
+                data:{ticketIds:ids,indexes:indexes},
+                success: function (data) {
+                    if (data.status == 1) {
+                        alert("购票成功");
+                        window.location.reload();
+                    } else {
+                        alert(data.msg);
+                    }
+                }
+            });
+        }
+        jQuery(document).ready(function($) {
+            $.ajax({
+                cache: true,
+                type: "POST",
+                url: "/movie/list",
+                data: {page: 1, limit: 4, order: "releaseTime", sort: "asc",conditionsSql:"UNIX_TIMESTAMP()-1000*60*60 < UNIX_TIMESTAMP(releaseTime) AND UNIX_TIMESTAMP() > UNIX_TIMESTAMP(releaseTime)"},
+                success: function (data) {
+                    if (data.status == 1) {
+                        if (data.data != null) {
+                            var array = data.data;
+                            var contentDiv = $("#now-content");
+                            contentDiv.html("");
+                            for (var i = 0; i < array.length; i++) {
+                                contentDiv.append($(temp1(array[i])));
+                            }
+                        }
+                    } else {
+                        alert("错误");
+                    }
+                }
+            });
+            $.ajax({
+                cache: true,
+                type: "POST",
+                url: "/movie/list",
+                data: {page: 1, limit: 3, order: "hitCount", sort: "desc"},
+                success: function (data) {
+                    if (data.status == 1) {
+                        if (data.data != null) {
+                            var array = data.data;
+                            var div = $("#hot-content");
+                            for (var i = 0; i < array.length; i++) {
+                                div.append($(temp4(array[i],i+1)));
+                            }
+                        }
+                    } else {
+                        alert("错误");
+                    }
+                }
+            });
+            $.ajax({
+                cache: true,
+                type: "POST",
+                url: "/movie/list",
+                data: {page: 1, limit: 1, conditionsSql:"id = " + id},
+                success: function (data) {
+                    if (data.status == 1) {
+                        if (data.data != null) {
+                            var movie = data.data[0];
+                            $("#movie-img").attr("src",movie.img);
+                            $("#movie-msg").append($(temp3(movie)));
+                            if (new Date(movie.releaseTime) > new Date() && localStorage.getItem("member") != null) {
+                                $("#sell-button").html("<li><button onclick='setMainMovie(nowPage,1)' class=\"btn btn-facebook\"><i></i> 购票</button></li>");
+                            }
+                            $(document).attr('title',`${movie.name}`);
+                        }
+                    } else {
+                        alert("错误");
+                    }
+                }
+            });
+            $.ajax({
+                cache: true,
+                type: "GET",
+                url: "/member/movie/hit?id=" + id,
+                success: function (data) {
+                }
+            });
+        });
+    </script>
+    <style>
+        .ticket-btn{
+            margin: 10px 5px;
+            width: 44px;
+        }
+        .ticket-btn-clicked{
+            background-color: red;
+        }
+        .tickets{
+            text-align: center;
+        }
+        #tickets li h4{
+            color: red;
+        }
+        #tickets li h4 span{
+            color: #ffae2c;
+        }
+        .sell-nav{
+            background-color: #bfbfbc;
+            width: 100%;
+            min-height: 100px;
+        }
+        #btn_sell{
+            position: absolute;
+            display: block;
+            right: 10px;
+            bottom: 10px;
+            font-size: 24px;
+        }
+        #balance{
+            text-align: center;
+        }
+        #sell-tickets{
+            position: relative;
+            float: left;
+            width: 50%;
+        }
+        #center{
+            float: left;
+            width: 100%;
+        }
+        #price-msg{
+            float: left;
+            width: 30%;
+        }
+        .price{
+            font-size: 22px;
+            color: #bf8606;
+        }
+        .price span{
+            color: #bf0400;
+        }
+        .close-sell{
+            position: absolute;
+            right: 5px;
+            top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+<header>
+    <script>
+        $("header").load("/member/common/header.html");
+    </script>
+</header>
+<!-- Header -->
+
+<div id="page-content" class="archive-page">
+    <div class="container">
+        <div class="row">
+            <div id="main-content" class="col-md-8">
+                <div class="wrap-vid">
+                    <img id="movie-img"/>
+                </div>
+                <div class="share">
+                    <ul class="list-inline center" id="sell-button">
+                    </ul>
+                </div>
+                <div class="line"></div>
+                <div id="movie-msg">
+                </div>
+                <ul class="list-group" id="tickets">
+
+                </ul>
+                <center>
+                <ul class="pagination" id="page">
+
+                </ul>
+                </center>
+                <div class="line"></div>
+                <div class="comment">
+                    <h3>评论</h3>
+                    <form name="form1" method="post" action="">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+										<textarea name="message" id="message" class="form-control" rows="4" cols="25" required
+                                                  placeholder="你的评价"></textarea>
+                                </div>
+                                <button type="button" class="btn btn-4 btn-block" name="btnSend" id="btnSend">
+                                    提交</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="line"></div>
+            </div>
+            <div id="sidebar" class="col-md-4">
+                <!---- Start Widget ---->
+                <div class="widget wid-post">
+                    <div class="heading"><h4><i class="fa fa-globe"></i> 正在上映</h4></div>
+                    <div class="content" id="now-content">
+                    </div>
+                    <div class="line"></div>
+                </div>
+                <!---- Start Widget ---->
+                <div class="widget wid-news">
+                    <div class="heading"><h4><i class="fa fa-clock-o"></i> 热门电影TOP3</h4></div>
+                    <div class="content" id="hot-content">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<footer>
+    <script>
+        $("footer").load("/member/common/footer.html");
+    </script>
+</footer>
+<!-- Footer -->
+
+<!-- JS -->
+<script src="owl-carousel/owl.carousel.js"></script>
+<div id="sell-nav" class="navbar-fixed-bottom sell-nav" hidden>
+    <p id="balance">金额：<span id="price-sum">0</span>元</p>
+    <div id="center">
+        <div id="sell-tickets">
+
+        </div>
+    </div>
+    <button type="button" class="close-sell btn btn-danger" onclick="{
+        window.location.reload();
+    }">
+        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>关闭
+    </button>
+    <button id="btn_sell" type="button" class="btn btn-warning" onclick="payment()">
+        <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>支付购买
+    </button>
+</div>
+</body>
+</html>

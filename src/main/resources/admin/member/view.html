@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>personalInfo</title>
+
+    <link href="/css/style.css" rel="stylesheet" type="text/css" media="all" />
+    <link href="/css/myTable.css" rel="stylesheet" type="text/css" media="all" />
+    <link href="/resource/bootstrap-3.3.7-dist/css/bootstrap.css" rel="stylesheet" type="text/css" media="all" />
+    <!-- js -->
+    <script src="/resource/js/jquery.min.js"></script>
+    <script src="/js/common.js"></script>
+    <!-- //js -->
+    <!-- for-mobile-apps -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <!-- //for-mobile-apps -->
+    <!-- start-smoth-scrolling -->
+    <script type="text/javascript" src="/js/move-top.js"></script>
+    <script type="text/javascript" src="/js/easing.js"></script>
+    <script type="text/javascript" src="/js/jquery.validate.js"></script>
+    <script type="text/javascript" src="/js/jquery.tools.js"></script>
+    <script type="text/javascript" src="/js/jquery.lSelect.js"></script>
+    <script type="text/javascript">
+        var apiRoot = "/admin/member";
+        jQuery(document).ready(function($) {
+            //获取用户信息设置
+            $.ajax({
+                cache : true,
+                type : "GET",
+                url : apiRoot + "/view?id=" + id,
+                success : function(data) {
+                    if (data.status == 1) {
+                        var model = data.data;
+                        console.log(model)
+                        $("#id").val(model.id);
+                        $("#username").html(model.username);
+                        $("#name").html(model.name);
+                        $("#phone").html(model.phone);
+                        $("#age").html(model.age);
+                        $("#portrait").attr("src",model.img)
+                        $("#sex").html(model.sex ? "男" : "女");
+                        $("#role").html(model.role.name);
+                    } else {
+                        alert("错误");
+                    }
+                }
+            });
+        });
+    </script>
+
+    <style>
+        #portrait{
+            width: 50px;
+            height: 50px;
+        }
+    </style>
+</head>
+<body>
+<div class="psd">
+    <div class="container">
+        <div id="header">
+        </div>
+        <script>
+            $("#header").load("/admin/common/header.html");
+            setTimeout(function () {
+                $("#nav").children().eq(1).addClass("cap");
+            },100);
+        </script>
+        <div class="contact">
+            <h3>用户详情</h3>
+            <div class="blog" style="height: 650px;">
+                <div class="blog-left">
+                    <form id="inputForm" method="post" enctype="multipart/form-data">
+                        <table class="input tab-content" style="display: table">
+                            <tr>
+                                <th>
+                                    <span class="glyphicon-class">用户名</span>
+                                </th>
+                                <td>
+                                    <span id="username"></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <span class="glyphicon-class">头像</span>
+                                </th>
+                                <td>
+                                    <img id="portrait" src="">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <span class="glyphicon-class">姓名</span>
+                                </th>
+                                <td>
+                                    <span id="name"></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <span class="glyphicon-class">电话</span>
+                                </th>
+                                <td>
+                                    <span id="phone"></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <span class="glyphicon-class">年龄</span>
+                                </th>
+                                <td>
+                                    <span id="age"></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <span class="glyphicon-class">性别</span>
+                                </th>
+                                <td>
+                                    <span id="sex" ></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <span class="glyphicon-class">角色</span>
+                                </th>
+                                <td>
+                                   <span id="role"></span>
+                                </td>
+                            </tr>
+                        </table>
+                        <table class="input">
+                            <tr>
+                                <th>
+                                    &nbsp;
+                                </th>
+                                <td>
+                                    <input type="button" class="button" value="返回" onclick="history.back(); return false;" />
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+
+                <div class="clearfix"> </div>
+            </div>
+        </div>
+        <iframe src="/admin/common/footer.html" width='100%' height='100%' frameborder='0' name="_blank" id="_blank" />
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $().UItoTop({ easingType: 'easeOutQuart' });
+
+    });
+</script>
+
+
+</body>
+
+</html>

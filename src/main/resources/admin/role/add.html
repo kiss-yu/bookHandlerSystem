@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>personalInfo</title>
+    <link href="/css/style.css" rel="stylesheet" type="text/css" media="all" />
+    <link href="/css/myTable.css" rel="stylesheet" type="text/css" media="all" />
+    <link href="/resource/bootstrap-3.3.7-dist/css/bootstrap.css" rel="stylesheet" type="text/css" media="all" />
+    <!-- js -->
+    <script src="/resource/js/jquery.min.js"></script>
+    <!-- //js -->
+    <!-- for-mobile-apps -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <!-- //for-mobile-apps -->
+    <!-- start-smoth-scrolling -->
+    <script type="text/javascript" src="/js/move-top.js"></script>
+    <script type="text/javascript" src="/js/easing.js"></script>
+    <script type="text/javascript" src="/js/jquery.validate.js"></script>
+    <script type="text/javascript" src="/js/jquery.tools.js"></script>
+    <script type="text/javascript" src="/js/jquery.lSelect.js"></script>
+    <script type="text/javascript" src="/js/common.js"></script>
+    <script type="text/javascript">
+        var apiRoot = "/admin/role";
+        jQuery(document).ready(function($) {
+            function validateForm(){
+                return $("#inputForm").validate({
+                    rules: {
+                        "name": {
+                            required: true,
+                            remote: {
+                                url: "checkName",
+                                cache: false
+                            }
+                        },
+                        "value": {
+                            required: true
+                        }
+                    },
+                    messages: {
+                        "name": {
+                            required: "不能为空",
+                            remote: "角色名已存在"
+                        },
+                        "value": {
+                            required: "不能为空"
+                        }
+                    }
+                });
+            }
+            $(validateForm());
+            // 表单验证
+            $("#submit").click(function () {
+                if(validateForm().form()) {
+                    $.ajax({
+                        cache : true,
+                        type : "POST",
+                        url : apiRoot + "/add",
+                        data : $('#inputForm').serialize(),
+                        async : false,
+                        success : function(data) {
+                            if (data.status == 1) {
+                                location.href = apiRoot + "/list.html"
+                            }
+                        }
+                    });
+                }
+            });
+
+            //设置接口列表
+            var table = $("#table");
+            $.ajax({
+                cache : true,
+                type : "GET",
+                url : "/admin/roleInterface/all",
+                success : function(data) {
+                    if (data.status == 1) {
+                        var array = data.data;
+                        var group = "";
+                        var tr = "";
+                        for (var i = 0;i < array.length; i ++) {
+                            if (group === array[i].group) {
+                                tr += "<input type='checkbox' name='roleInterfaceId' value='" + array[i].id + " '>" + array[i].name;
+                            } else {
+                                group = array[i].group;
+                                tr += "</td></tr>";
+                                table.append($(tr));
+                                tr = "<tr>" +
+                                    "<th>" + array[i].group + "</th>" +
+                                    "<td>" +
+                                    "<input type='checkbox' name='roleInterfaceId' value='" + array[i].id + " '>" + array[i].name;
+                            }
+                        }
+                        tr = tr == "" ? "" : (tr + "</td></tr>");
+                        table.append($(tr));
+                    }
+                }
+            });
+        });
+    </script>
+</head>
+
+<body>
+<div class="psd">
+    <div class="container">
+        <div id="header">
+        </div>
+        <script>
+            $("#header").load("/admin/common/header.html");
+            setTimeout(function () {
+                $("#nav").children().eq(2).addClass("cap");
+            },100);
+        </script>
+        <div class="contact">
+            <h3>添加角色</h3>
+            <div class="blog" style="height: 650px;">
+                <div class="blog-left">
+                    <form id="inputForm" method="post">
+                        <table class="input tab-content" style="display: table" id="table">
+                            <tr>
+                                <th>
+                                    <span class="glyphicon-class">角色名</span>
+                                </th>
+                                <td>
+                                    <input type="text" class="text" id="name" value="" name="name"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <span class="glyphicon-class">角色值</span>
+                                </th>
+                                <td>
+                                    <input type="text" class="text" id="value" value="" name="value"/>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <table class="input">
+                            <tr>
+                                <th>
+                                    &nbsp;
+                                </th>
+                                <td>
+                                    <input type="button" class="button" value="提交" id="submit"/>
+                                    <input type="button" class="button" value="返回" onclick="history.back(); return false;" />
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+
+                <div class="clearfix"> </div>
+            </div>
+        </div>
+        <iframe src="/admin/common/footer.html" width='100%' height='100%' frameborder='0' name="_blank" id="_blank" />
+    </div>
+</div>
+</body>
+
+</html>

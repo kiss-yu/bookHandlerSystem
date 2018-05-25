@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="/css/style.css" rel="stylesheet" type="text/css" media="all" />
+    <script>
+        function loginOut() {
+            console.log("out")
+            localStorage.removeItem("member");
+            $.ajax({
+                cache: true,
+                type: "GET",
+                url: "/logout"
+            });
+        }
+        let temp = () => {
+            return ` <li><a href="/admin/index.html" class="act">HOME<span>START HERE</span></a></li>
+            <li><a href="/admin/member/list.html" class="act4">用户管理<span>详情</span></a></li>
+            <li><a href="/admin/role/list.html" class="act4">角色管理<span>详情</span></a></li>
+            <li><a href="/admin/roleInterface/list.html" class="act4">接口管理<span>详情</span></a></li>
+            <li><a href="/admin/cinema/list.html" class="act4">电影院中心<span>详情</span></a></li>
+            <li><a href="/admin/movie/list.html" class="act4">电影中心<span>测试</span></a></li>
+            <li><a href="/admin/ticket/list.html" class="act3">电影票中心<span>详情</span></a></li>
+            <li><a href="/admin/login/login.html" onclick="loginOut()" class="act1">退出账号<span>退出</span></a></li>`;
+        };
+        let temp1 = () => {
+            return ` <li><a href="/admin/index.html" class="act">HOME<span>START HERE</span></a></li>
+            <li><a href="/admin/cinema/list.html" class="act4">电影院中心<span>详情</span></a></li>
+            <li><a href="/admin/ticket/list.html" class="act3">电影票中心<span>详情</span></a></li>
+            <li><a href="/admin/login/login.html" onclick="loginOut()" class="act1">退出账号<span>退出</span></a></li>`;
+        };
+        let temp2 = () => {
+            return ` <li><a href="/admin/index.html" class="act">HOME<span>START HERE</span></a></li>
+            <li><a href="/admin/movie/list.html" class="act4">电影中心<span>详情</span></a></li>
+            <li><a href="/admin/login/login.html" onclick="loginOut()" class="act1">退出账号<span>退出</span></a></li>`;
+        };
+        function setNav(member) {
+            console.log(member);
+            if (member.role.value === "admin") {
+                $("#nav").html(temp());
+            } else if (member.role.value === "cinema") {
+                $("#nav").html(temp1());
+            } else if (member.role.value === "movie") {
+                $("#nav").html(temp2());
+            }
+        }
+        jQuery(document).ready(function($) {
+            var member = JSON.parse(localStorage.getItem("member"));
+            if (member == null) {
+                $.ajax({
+                    cache: true,
+                    type: "GET",
+                    url: "/currentUser",
+                    success: function (data) {
+                        if (data.status == 1) {
+                            if (data.data != null) {
+                                localStorage.setItem("member",JSON.stringify(data.data));
+                                setNav(data.data);
+                            } else {
+                                alert("请登录");
+                                location.href = "/admin/login/login.html";
+                            }
+                        } else {
+                            location.href = "/admin/login/login.html";
+                        }
+                    }
+                });
+            } else {
+                setNav(member)
+            }
+        });
+    </script>
+</head>
+<body>
+<div class="header">
+    <!--<div class="logo">-->
+        <!--<a href="/admin/index.html"><img src="/images/logo.png" alt=" " /></a>-->
+    <!--</div>-->
+    <div class="logo-right">
+        <span class="menu"><img src="/images/menu.png" alt=" "/></span>
+        <ul class="nav1" id="nav">
+
+        </ul>
+    </div>
+    <div class="clearfix"> </div>
+    <script>
+        $( "span.menu" ).click(function() {
+            $( "ul.nav1" ).slideToggle( 300, function() {
+            });
+        });
+    </script>
+</div>
+</body>
+</html>
