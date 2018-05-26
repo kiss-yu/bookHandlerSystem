@@ -1,3 +1,8 @@
+var roleId = {
+    student:3,
+    admin:1
+};
+
 function getQueryString() {
     var qs = location.search.substr(1), // 获取url中"?"符后的字串
         args = {}, // 保存参数数据的对象
@@ -16,7 +21,7 @@ function getQueryString() {
     return args;
 }
 let getOption = function(value,text) {
-    return `<option value='${value}'>${text}</option>`;
+    return `<option value='${value}' >${text}</option>`;
 };
 function getMemberRoleName() {
     return JSON.parse(localStorage.getItem("member")).role.value;

@@ -122,14 +122,14 @@
                     if (data.status == 1) {
                         for (var i = 0;i < data.data.length;i ++) {
                             var model = data.data[i];
-                            $("#roleSelect").append(getOption(model.value,model.name));
+                            $("#roleSelect").append(getOption(model.id,model.name,model));
                         }
                     }
                 }
             });
         });
         function selectRole(role) {
-            if (role.val() === "student") {
+            if (role.val() == roleId.student) {
                 $("#memberInfo").show();
                 //添加学院选着下拉框
                 $.ajax({
@@ -162,7 +162,7 @@
                         $("#professionalSelect").html("");
                         for (var i = 0;i < data.data.length;i ++) {
                             var model = data.data[i];
-                            $("#professionalSelect").append(getOption(model.id,model.name));
+                            $("#professionalSelect").append(getOption(model.id,model.name,model.value));
                         }
                     }
                 }
@@ -212,6 +212,8 @@
                                     <input type="text" class="text" id="username" value="" name="username"/>
                                 </td>
 
+                            </tr>
+                            <tr>
                                 <th>
                                     <span class="glyphicon-class">密码</span>
                                 </th>
@@ -279,9 +281,9 @@
                                     <span class="glyphicon-class">学院</span>
                                 </th>
                                 <td>
-                                    <select name="memberInfo.college.sn" id="collegeSelect" onclick="selectCollege($(this))">
+                                    <select name="memberInfo.college.id" id="collegeSelect" onclick="selectCollege($(this))">
                                     </select>
-                                    <select name="memberInfo.professional.sn" id="professionalSelect">
+                                    <select name="memberInfo.professional.id" id="professionalSelect">
                                     </select>
                                 </td>
                             </tr>
@@ -297,6 +299,15 @@
                                 </th>
                                 <td>
                                     <input type="text" class="text" id="timeLimit" value="" name="memberInfo.timeLimit"/>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th>
+                                    <span class="glyphicon-class">已经借阅数量</span>
+                                </th>
+                                <td>
+                                    <input type="text" class="text" id="borrowedNum" value="0" name="memberInfo.borrowedNum"/>
                                 </td>
                             </tr>
                         </table>

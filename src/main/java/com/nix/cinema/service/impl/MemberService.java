@@ -2,6 +2,7 @@ package com.nix.cinema.service.impl;
 
 import com.nix.cinema.Exception.WebException;
 import com.nix.cinema.common.cache.UserCache;
+import com.nix.cinema.dao.MemberInfoMapper;
 import com.nix.cinema.dao.MemberMapper;
 import com.nix.cinema.model.MemberModel;
 import com.nix.cinema.service.BaseService;
@@ -25,6 +26,8 @@ public class MemberService extends BaseService<MemberModel> {
 
     @Autowired
     private MemberMapper memberMapper;
+    @Autowired
+    private MemberInfoService memberInfoService;
 
     public MemberModel login(String username, String password, HttpServletRequest request) {
         MemberModel user = UserCache.currentUser();
@@ -52,6 +55,9 @@ public class MemberService extends BaseService<MemberModel> {
     public MemberModel add(MemberModel model) throws Exception {
         if (ADMIN_USERNAME.equals(model.getUsername())) {
             throw new WebException(401,"不能使用admin做完用户名");
+        }
+        if (model.getMemberInfo() != null) {
+            memberInfoService.add(model.getMemberInfo());
         }
         return super.add(model);
     }

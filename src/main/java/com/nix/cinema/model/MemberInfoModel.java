@@ -8,9 +8,6 @@ import com.nix.cinema.model.base.BaseModel;
  */
 public class MemberInfoModel extends BaseModel<MemberInfoModel> {
 
-    //用户
-    private MemberModel member;
-
     //学号
     private String studentId;
     //院系
@@ -23,14 +20,6 @@ public class MemberInfoModel extends BaseModel<MemberInfoModel> {
     private Integer timeLimit;
     //已经借阅数量
     private Integer borrowedNum;
-
-    public MemberModel getMember() {
-        return member;
-    }
-
-    public void setMember(MemberModel member) {
-        this.member = member;
-    }
 
     public String getStudentId() {
         return studentId;

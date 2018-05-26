@@ -3,8 +3,6 @@ package com.nix.cinema.controller.admin;
 import com.nix.cinema.common.Pageable;
 import com.nix.cinema.common.ReturnObject;
 import com.nix.cinema.common.annotation.AdminController;
-import com.nix.cinema.model.BookInfoModel;
-import com.nix.cinema.model.CollegeModel;
 import com.nix.cinema.model.ProfessionalModel;
 import com.nix.cinema.service.impl.ProfessionalService;
 import com.nix.cinema.util.ReturnUtil;

@@ -80,4 +80,8 @@
             limit ${r"#{offset,jdbcType=INTEGER}"},${r"#{limit,jdbcType=INTEGER}"}
         </if>
     </select>
+
+    <select id="selectLazy" resultMap="BaseResultMap">
+        select * from `${model_name}` where id = ${r"#{"}${model_name},jdbcType=INTEGER${r"}"}
+    </select>
 </mapper>

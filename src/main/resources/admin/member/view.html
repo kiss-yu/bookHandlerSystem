@@ -20,29 +20,137 @@
     <script type="text/javascript" src="/js/jquery.validate.js"></script>
     <script type="text/javascript" src="/js/jquery.tools.js"></script>
     <script type="text/javascript" src="/js/jquery.lSelect.js"></script>
+    <script type="text/javascript" src="/js/common.js"></script>
+    <script src="/resource/js/md5.js"></script>
     <script type="text/javascript">
         var apiRoot = "/admin/member";
         jQuery(document).ready(function($) {
-            //获取用户信息设置
+            //添加角色选着下拉框
             $.ajax({
                 cache : true,
-                type : "GET",
-                url : apiRoot + "/view?id=" + id,
+                type : "POST",
+                url : "/admin/role/list",
                 success : function(data) {
                     if (data.status == 1) {
-                        var model = data.data;
-                        console.log(model)
-                        $("#id").val(model.id);
-                        $("#username").html(model.username);
-                        $("#name").html(model.name);
-                        $("#phone").html(model.phone);
-                        $("#age").html(model.age);
-                        $("#portrait").attr("src",model.img)
-                        $("#sex").html(model.sex ? "男" : "女");
-                        $("#role").html(model.role.name);
-                    } else {
-                        alert("错误");
+                        //获取用户信息设置
+                        $.ajax({
+                            cache : true,
+                            type : "GET",
+                            url : apiRoot + "/view?id=" + id,
+                            success : function(data) {
+                                if (data.status == 1) {
+                                    var model = data.data;
+                                    $("#id").val(model.id);
+                                    $("#username").html(model.username);
+                                    $("#name").html(model.name);
+                                    $("#phone").html(model.phone);
+                                    $("#age").html(model.age);
+                                    $("#balance").html(model.balance);
+                                    $("#portrait").attr("src",model.img);
+                                    $("#sex").html(model.sex ? "男" : "女");
+                                    $("#roleSelect").html(model.role.name);
+                                    if (model.role.id == roleId.student) {
+                                        $("#memberInfo").show();
+                                        $("#studentId").html(model.memberInfo.studentId);
+                                        $("#max").html(model.memberInfo.max);
+                                        $("#timeLimit").html(model.memberInfo.timeLimit);
+                                        $("#collegeSelect").html(model.memberInfo.college.name);
+                                        $("#professionalSelect").html(model.memberInfo.professional.name);
+                                        $("#borrowedNum").html(model.memberInfo.borrowedNum);
+                                    }
+                                } else {
+                                    alert("错误");
+                                }
+                            }
+                        });
                     }
+                }
+            });
+            jQuery.validator.addMethod("passwordIsEq", function(value, element) {
+                return this.optional(element) || value === $("#_password").val();
+            }, "两次密码不一致");
+            function validateForm(){
+                return $("#inputForm").validate({
+                    rules: {
+                        "age": {
+                            required: true,
+                            min: 0,
+                            max : 200
+                        },
+                        "_password" : {
+                            minlength : 6,
+                            maxlength : 20
+                        },
+                        "t_password" : {
+                            passwordIsEq : true
+                        },
+                        "username": {
+                            required: true,
+                            minlength : 6,
+                            maxlength : 20,
+                            remote: {
+                                url: "checkUsername",
+                                cache: false
+                            }
+                        },
+                        "phone": {
+                            required: true,
+                            pattern:/^(((13[0-9]{1})|(15[0-9]{1})|(17[0-9]{1})|(18[0-9]{1}))+\d{8})$/,
+                            minlength: 11,
+                            maxlength:11,
+                            digits:true,
+                            number:true
+                        }
+                    },
+                    messages: {
+                        "username" : {
+                            required: "不能为空",
+                            minlength: "不能低于6位",
+                            maxlength:"不能高于20位",
+                            remote : "用户名已存在"
+                        },
+                        "_password" : {
+                            minlength: "不能低于6位",
+                            maxlength:"不能高于20位"
+                        },
+                        "t_password" : {
+                            passwordIsEq : "两次密码不一致"
+                        },
+                        "age" : {
+                            required: "不能为空",
+                            min:"不合格",
+                            max : "不合法"
+                        },
+                        "phone" : {
+                            required: "不能为空",
+                            minlength: "必须11位数字",
+                            maxlength:"必须11位数字",
+                            digits:"必须是数字"    ,
+                            number:"请输入有效数字",
+                            pattern : "手机号格式错误"
+                        }
+                    }
+                });
+            }
+            $(validateForm());
+            // 表单验证
+            $("#submit").click(function () {
+                $("#password").val(hex_md5($("#_password").val()))
+                if(validateForm().form()) {
+                    $.ajax({
+                        cache : true,
+                        type : "POST",
+                        url : apiRoot + "/update",
+                        data: new FormData($('#inputForm')[0]),
+                        processData: false,
+                        contentType: false,
+                        async : false,
+                        success : function(data) {
+                            if (data.status == 1) {
+                                location.href = apiRoot + "/list.html"
+                            }
+                        }
+                    });
                 }
             });
         });
@@ -67,7 +175,7 @@
             },100);
         </script>
         <div class="contact">
-            <h3>用户详情</h3>
+            <h3>修改用户</h3>
             <div class="blog" style="height: 650px;">
                 <div class="blog-left">
                     <form id="inputForm" method="post" enctype="multipart/form-data">
@@ -86,14 +194,14 @@
                                     <span class="glyphicon-class">用户名</span>
                                 </th>
                                 <td>
-                                    <span id="username"></span>
+                                    <span type="text" class="text" id="username" value="" name="username"></span>
                                 </td>
 
                                 <th>
                                     <span class="glyphicon-class">姓名</span>
                                 </th>
                                 <td>
-                                    <span id="name"></span>
+                                    <span type="text" class="text" id="name" value="" name="name"></span>
                                 </td>
                             </tr>
                             <tr>
@@ -101,13 +209,13 @@
                                     <span class="glyphicon-class">电话</span>
                                 </th>
                                 <td>
-                                    <span id="phone"></span>
+                                    <span type="text" class="text" id="phone" value="" name="phone"></span>
                                 </td>
                                 <th>
                                     <span class="glyphicon-class">年龄</span>
                                 </th>
                                 <td>
-                                    <span id="age"></span>
+                                    <span type="text" class="text" id="age" value="" name="age" ></span>
                                 </td>
                             </tr>
                             <tr>
@@ -115,13 +223,69 @@
                                     <span class="glyphicon-class">性别</span>
                                 </th>
                                 <td>
-                                    <span id="sex" ></span>
+                                    <span id="sex" type="radio" checked="checked" name="sex" value="1"></span>
                                 </td>
                                 <th>
                                     <span class="glyphicon-class">角色</span>
                                 </th>
                                 <td>
-                                    <span id="role"></span>
+                                    <span name="roleId" id="roleSelect" >
+                                    </span>
+                                </td>
+                            </tr>
+                            <div >
+                            </div>
+                        </table>
+
+                        <table id="memberInfo" hidden class="input tab-content">
+                            <tr>
+                                <th>
+                                    <span class="glyphicon-class">学号</span>
+                                </th>
+                                <td>
+                                    <span type="text" class="text" id="studentId" value="" name="memberInfo.studentId"></span>
+                                </td>
+                            </tr>
+                            <tr>
+
+                                <th>
+                                    <span class="glyphicon-class">学院</span>
+                                </th>
+                                <td>
+                                    <span name="memberInfo.college.id" id="collegeSelect" >
+                                    </span>
+                                    <span name="memberInfo.professional.id" >
+                                    </span>
+                                </td>
+
+                                <th>
+                                    <span class="glyphicon-class">专业</span>
+                                </th>
+                                <td>
+                                    <span name="memberInfo.professional.id" id="professionalSelect">
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <span class="glyphicon-class">可借最大数量</span>
+                                </th>
+                                <td>
+                                    <span type="text" class="text" id="max" value="" name="memberInfo.max"></span>
+                                </td>
+                                <th>
+                                    <span class="glyphicon-class">可借最大期限（小时）</span>
+                                </th>
+                                <td>
+                                    <span type="text" class="text" id="timeLimit" value="" name="memberInfo.timeLimit"></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <span class="glyphicon-class">已经借阅数量</span>
+                                </th>
+                                <td>
+                                    <span type="text" class="text" id="borrowedNum" value="" name="memberInfo.borrowedNum"></span>
                                 </td>
                             </tr>
                         </table>
@@ -131,6 +295,7 @@
                                     &nbsp;
                                 </th>
                                 <td>
+                                    <input type="button" class="button" value="提交" id="submit"/>
                                     <input type="button" class="button" value="返回" onclick="history.back(); return false;" />
                                 </td>
                             </tr>

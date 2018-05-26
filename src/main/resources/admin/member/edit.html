@@ -20,6 +20,7 @@
 	<script type="text/javascript" src="/js/jquery.validate.js"></script>
 	<script type="text/javascript" src="/js/jquery.tools.js"></script>
 	<script type="text/javascript" src="/js/jquery.lSelect.js"></script>
+	<script type="text/javascript" src="/js/common.js"></script>
 	<script src="/resource/js/md5.js"></script>
 	<script type="text/javascript">
         var apiRoot = "/admin/member";
@@ -53,6 +54,13 @@
                                     $("#portrait").attr("src",model.img)
                                     $("#sex") ? $("#boy").prop("checked",true) : $("#girl").prop("checked",true);
                                     $("#roleSelect").val(model.role.id);
+                                    selectRole($("#roleSelect"));
+                                    $("#studentId").val(model.memberInfo.studentId);
+                                    $("#max").val(model.memberInfo.max);
+                                    $("#timeLimit").val(model.memberInfo.timeLimit);
+                                    $("#collegeSelect").val(model.memberInfo.college.id);
+                                    $("#professionalSelect").val(model.memberInfo.professional.id);
+                                    $("#borrowedNum").val(model.memberInfo.borrowedNum);
                                 } else {
                                     alert("错误");
                                 }
@@ -148,10 +156,48 @@
                     });
                 }
             });
-            let getOption = function(value,text) {
-                return `<option value='${value}'>${text}</option>`;
-            };
         });
+
+        function selectRole(role) {
+            if (role.val() == roleId.student) {
+                $("#memberInfo").show();
+                //添加学院选着下拉框
+                $.ajax({
+                    cache : true,
+                    type : "POST",
+                    url : "/admin/college/list",
+                    success : function(data) {
+                        if (data.status == 1) {
+                            $("#collegeSelect").html("");
+                            for (var i = 0;i < data.data.length;i ++) {
+                                var model = data.data[i];
+                                $("#collegeSelect").append(getOption(model.id,model.name));
+                            }
+                            selectCollege($("#collegeSelect"));
+                        }
+                    }
+                });
+            } else {
+                $("#memberInfo").hide();
+            }
+        }
+        function selectCollege(college) {
+            //添加专业选着下拉框
+            $.ajax({
+                cache : true,
+                type : "GET",
+                url : "/admin/professional/collegeAll?id=" + college.val(),
+                success : function(data) {
+                    if (data.status == 1) {
+                        $("#professionalSelect").html("");
+                        for (var i = 0;i < data.data.length;i ++) {
+                            var model = data.data[i];
+                            $("#professionalSelect").append(getOption(model.id,model.name));
+                        }
+                    }
+                }
+            });
+        }
 	</script>
 
 	<style>
@@ -178,24 +224,24 @@
 				<div class="blog-left">
 					<form id="inputForm" method="post" enctype="multipart/form-data">
 						<table class="input tab-content" style="display: table">
-							<tr>
-								<th>
-									<span class="glyphicon-class">用户名</span>
-								</th>
-								<td>
-									<input type="text" class="text" id="username" value="" disabled/>
-									<input type="text" class="text" id="_username" value="" name="username" hidden/>
-									<input type="text" class="text" id="id" value="" name="id" hidden/>
-								</td>
-							</tr>
+
 							<tr>
 								<th>
 									<span class="glyphicon-class">头像</span>
 								</th>
 								<td>
 									<input class="hidden" id="file" type="file" name="portraitImg" onchange="clickImage(this)">
-									<img id="portrait" src="" onclick="{document.getElementById('file').click();}">
+									<img id="portrait" src="/images/member/default.jpg" onclick="{document.getElementById('file').click();}">
 								</td>
+							</tr>
+							<tr>
+								<th>
+									<span class="glyphicon-class">用户名</span>
+								</th>
+								<td>
+									<input type="text" class="text" id="username" value="" name="username"/>
+								</td>
+
 							</tr>
 							<tr>
 								<th>
@@ -206,7 +252,6 @@
 									<input type="text" class="text" id="password" value="" name="password" hidden/>
 								</td>
 							</tr>
-
 							<tr>
 								<th>
 									<span class="glyphicon-class">再次输入密码</span>
@@ -214,8 +259,6 @@
 								<td>
 									<input type="text" class="text" id="t_password" value="" name="t_password"/>
 								</td>
-							</tr>
-							<tr>
 								<th>
 									<span class="glyphicon-class">姓名</span>
 								</th>
@@ -230,16 +273,6 @@
 								<td>
 									<input type="text" class="text" id="phone" value="" name="phone"/>
 								</td>
-							</tr>
-							<tr>
-								<th>
-									<span class="glyphicon-class">余额</span>
-								</th>
-								<td>
-									<input type="text" class="text" id="balance" value="" name="balance"/>
-								</td>
-							</tr>
-							<tr>
 								<th>
 									<span class="glyphicon-class">年龄</span>
 								</th>
@@ -252,17 +285,59 @@
 									<span class="glyphicon-class">性别</span>
 								</th>
 								<td>
-									<input id="boy" type="radio" checked="checked" name="1" />男
-									<input id="girl" type="radio"  name="1"/>女
+									<input id="boy" type="radio" checked="checked" name="sex" value="1"/>男
+									<input id="girl" type="radio"  name="sex" value="0"/>女
 								</td>
-							</tr>
-							<tr>
 								<th>
 									<span class="glyphicon-class">角色</span>
 								</th>
 								<td>
-									<select name="roleId" id="roleSelect">
+									<select name="roleId" id="roleSelect" onclick="selectRole($(this))">
 									</select>
+								</td>
+							</tr>
+							<div >
+							</div>
+						</table>
+
+						<table id="memberInfo" hidden class="input tab-content">
+							<tr>
+								<th>
+									<span class="glyphicon-class">学号</span>
+								</th>
+								<td>
+									<input type="text" class="text" id="studentId" value="" name="memberInfo.studentId"/>
+								</td>
+								<th>
+									<span class="glyphicon-class">学院</span>
+								</th>
+								<td>
+									<select name="memberInfo.college.id" id="collegeSelect" onclick="selectCollege($(this))">
+									</select>
+									<select name="memberInfo.professional.id" id="professionalSelect">
+									</select>
+								</td>
+							</tr>
+							<tr>
+								<th>
+									<span class="glyphicon-class">可借最大数量</span>
+								</th>
+								<td>
+									<input type="text" class="text" id="max" value="" name="memberInfo.max"/>
+								</td>
+								<th>
+									<span class="glyphicon-class">可借最大期限（小时）</span>
+								</th>
+								<td>
+									<input type="text" class="text" id="timeLimit" value="" name="memberInfo.timeLimit"/>
+								</td>
+							</tr>
+							<tr>
+								<th>
+									<span class="glyphicon-class">已经借阅数量</span>
+								</th>
+								<td>
+									<input type="text" class="text" id="borrowedNum" value="" name="memberInfo.borrowedNum"/>
 								</td>
 							</tr>
 						</table>
