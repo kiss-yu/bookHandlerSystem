@@ -55,6 +55,7 @@
                                     $("#sex") ? $("#boy").prop("checked",true) : $("#girl").prop("checked",true);
                                     $("#roleSelect").val(model.role.id);
                                     selectRole($("#roleSelect"));
+                                    $("#memberInfoId").val(model.memberInfo.id)
                                     $("#studentId").val(model.memberInfo.studentId);
                                     $("#max").val(model.memberInfo.max);
                                     $("#timeLimit").val(model.memberInfo.timeLimit);
@@ -87,15 +88,6 @@
                         "t_password" : {
                             passwordIsEq : true
                         },
-                        "username": {
-                            required: true,
-                            minlength : 6,
-                            maxlength : 20,
-                            remote: {
-                                url: "checkUsername",
-                                cache: false
-                            }
-                        },
                         "phone": {
                             required: true,
                             pattern:/^(((13[0-9]{1})|(15[0-9]{1})|(17[0-9]{1})|(18[0-9]{1}))+\d{8})$/,
@@ -106,12 +98,6 @@
                         }
                     },
                     messages: {
-                        "username" : {
-                            required: "不能为空",
-                            minlength: "不能低于6位",
-                            maxlength:"不能高于20位",
-                            remote : "用户名已存在"
-                        },
                         "_password" : {
                             minlength: "不能低于6位",
                             maxlength:"不能高于20位"
@@ -239,7 +225,8 @@
 									<span class="glyphicon-class">用户名</span>
 								</th>
 								<td>
-									<input type="text" class="text" id="username" value="" name="username"/>
+									<input type="text" class="text" id="username" value="" name="username" disabled/>
+									<input type="text" class="text" id="id" value="" name="id" hidden/>
 								</td>
 
 							</tr>
@@ -307,6 +294,7 @@
 								</th>
 								<td>
 									<input type="text" class="text" id="studentId" value="" name="memberInfo.studentId"/>
+									<input type="text" class="text" id="memberInfoId" value="" name="memberInfo.id" hidden/>
 								</td>
 								<th>
 									<span class="glyphicon-class">学院</span>

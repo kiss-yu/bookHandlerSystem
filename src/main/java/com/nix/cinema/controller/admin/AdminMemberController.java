@@ -52,7 +52,7 @@ public class AdminMemberController {
         return ReturnUtil.success();
     }
     @PostMapping("/update")
-    public ReturnObject update(@ModelAttribute("/") MemberModel user,
+    public ReturnObject update(@ModelAttribute MemberModel user,
                                @RequestParam("roleId") Integer roleId,
                                @RequestParam(value = "portraitImg",required = false) MultipartFile portraitImg) throws Exception {
         Assert.notNull(user.getId(),"id不能为空");

@@ -8,10 +8,7 @@ import com.nix.cinema.model.CollegeModel;
 import com.nix.cinema.service.impl.BookInfoService;
 import com.nix.cinema.util.ReturnUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -38,6 +35,10 @@ public class AdminBookInfoController {
     @PostMapping("/update")
     public ReturnObject update(@ModelAttribute BookInfoModel model) throws Exception {
         return ReturnUtil.success(bookInfoService.update(model));
+    }
+    @GetMapping("/view")
+    public ReturnObject select(@RequestParam("id") Integer id) {
+        return ReturnUtil.success(bookInfoService.findById(id));
     }
 
     @PostMapping("/list")

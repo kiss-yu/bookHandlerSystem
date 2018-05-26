@@ -40,13 +40,27 @@ public class AdminCollegeController {
     public ReturnObject update(@ModelAttribute CollegeModel model) throws Exception {
         return ReturnUtil.success(collegeService.update(model));
     }
+    @GetMapping("/view")
+    public ReturnObject select(@RequestParam("id") Integer id) {
+        return ReturnUtil.success(collegeService.findById(id));
+    }
 
     @GetMapping("/checkSn")
-    public Boolean checkSn(String sn) {
+    public Boolean checkSn(String sn,@RequestParam(value = "id",required = false) Integer id) {
+        if (id != null) {
+            if (collegeService.findById(id).getSn().equals(sn)) {
+                return true;
+            }
+        }
         return collegeService.findByOneField("sn",sn).size() == 0;
     }
     @GetMapping("/checkName")
-    public Boolean checkName(String name) {
+    public Boolean checkName(String name,@RequestParam(value = "id",required = false) Integer id) {
+        if (id != null) {
+            if (collegeService.findById(id).getName().equals(name)) {
+                return true;
+            }
+        }
         return collegeService.findByOneField("name",name).size() == 0;
     }
 

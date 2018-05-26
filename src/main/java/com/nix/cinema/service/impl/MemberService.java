@@ -89,6 +89,9 @@ public class MemberService extends BaseService<MemberModel> {
                 model.setImg(MEMBER_IMG_PATH + log.getOriginalFilename());
             }
         }
+        if (model.getMemberInfo() != null) {
+            memberInfoService.update(model.getMemberInfo());
+        }
         return super.update(model);
     }
 }

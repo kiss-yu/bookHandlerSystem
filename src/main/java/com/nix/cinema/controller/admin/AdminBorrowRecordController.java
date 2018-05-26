@@ -10,10 +10,7 @@ import com.nix.cinema.service.impl.BookInfoService;
 import com.nix.cinema.service.impl.BorrowRecordService;
 import com.nix.cinema.util.ReturnUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +37,10 @@ public class AdminBorrowRecordController {
     @PostMapping("/update")
     public ReturnObject update(@ModelAttribute BorrowRecordModel model) throws Exception {
         return ReturnUtil.success(borrowRecordService.update(model));
+    }
+    @GetMapping("/view")
+    public ReturnObject select(@RequestParam("id") Integer id) {
+        return ReturnUtil.success(borrowRecordService.findById(id));
     }
 
     @PostMapping("/list")

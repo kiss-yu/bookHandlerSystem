@@ -36,6 +36,11 @@ public class AdminProfessionalController {
     public ReturnObject update(@ModelAttribute ProfessionalModel model) throws Exception {
         return ReturnUtil.success(professionalService.update(model));
     }
+    @GetMapping("/view")
+    public ReturnObject select(@RequestParam("id") Integer id) {
+        return ReturnUtil.success(professionalService.findById(id));
+    }
+
     @PostMapping("/list")
     public ReturnObject list(@ModelAttribute Pageable<ProfessionalModel> pageable) throws Exception {
         Map additionalData = new HashMap();
