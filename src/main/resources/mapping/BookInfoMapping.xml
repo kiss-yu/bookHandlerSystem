@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nix.cinema.dao.BookInfoMapper">
+    <resultMap id="BaseResultMap" type="com.nix.cinema.model.BookInfoModel">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="createDate" property="createDate" jdbcType="TIMESTAMP"/>
+        <result column="updateDate" property="updateDate" jdbcType="TIMESTAMP"/>
+        <result column="sn" property="sn" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="author" property="author" jdbcType="VARCHAR"/>
+        <result column="translator" property="translator" jdbcType="VARCHAR"/>
+        <result column="price" property="price" jdbcType="DECIMAL"/>
+        <result column="ISBNCodel" property="ISBNCodel" jdbcType="VARCHAR"/>
+        <result column="comeUpTime" property="comeUpTime" jdbcType="TIMESTAMP"/>
+        <result column="status" property="status" jdbcType="BIT"/>
+        <result column="enteringDate" property="enteringDate" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <insert id="insert" parameterType="com.nix.cinema.model.BookInfoModel">
+        insert into `bookinfo`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                `id`,
+            </if>
+            <if test="createDate != null">
+                `createDate`,
+            </if>
+            <if test="updateDate != null">
+                `updateDate`,
+            </if>
+            <if test="sn != null">
+                `sn`,
+            </if>
+            <if test="name != null">
+                `name`,
+            </if>
+            <if test="author != null">
+                `author`,
+            </if>
+            <if test="translator != null">
+                `translator`,
+            </if>
+            <if test="price != null">
+                `price`,
+            </if>
+            <if test="ISBNCodel != null">
+                `ISBNCodel`,
+            </if>
+            <if test="comeUpTime != null">
+                `comeUpTime`,
+            </if>
+            <if test="status != null">
+                `status`,
+            </if>
+            <if test="enteringDate != null">
+                `enteringDate`,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+             <if test="id != null">
+                #{id,jdbcType=INTEGER},
+             </if>
+             <if test="createDate != null">
+                #{createDate,jdbcType=TIMESTAMP},
+             </if>
+             <if test="updateDate != null">
+                #{updateDate,jdbcType=TIMESTAMP},
+             </if>
+             <if test="sn != null">
+                #{sn,jdbcType=VARCHAR},
+             </if>
+             <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+             </if>
+             <if test="author != null">
+                #{author,jdbcType=VARCHAR},
+             </if>
+             <if test="translator != null">
+                #{translator,jdbcType=VARCHAR},
+             </if>
+             <if test="price != null">
+                #{price,jdbcType=DECIMAL},
+             </if>
+             <if test="ISBNCodel != null">
+                #{ISBNCodel,jdbcType=VARCHAR},
+             </if>
+             <if test="comeUpTime != null">
+                #{comeUpTime,jdbcType=TIMESTAMP},
+             </if>
+             <if test="status != null">
+                #{status,jdbcType=BIT},
+             </if>
+             <if test="enteringDate != null">
+                #{enteringDate,jdbcType=TIMESTAMP},
+             </if>
+        </trim>
+    </insert>
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete  from `bookinfo` where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <update id="update" parameterType="com.nix.cinema.model.BookInfoModel">
+        update `bookinfo`
+        set
+        <trim prefix="" suffix="" suffixOverrides=",">
+            <if test="id != null">
+                `id` = #{id,jdbcType=INTEGER},
+            </if>
+            <if test="createDate != null">
+                `createDate` = #{createDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateDate != null">
+                `updateDate` = #{updateDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="sn != null">
+                `sn` = #{sn,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                `name` = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="author != null">
+                `author` = #{author,jdbcType=VARCHAR},
+            </if>
+            <if test="translator != null">
+                `translator` = #{translator,jdbcType=VARCHAR},
+            </if>
+            <if test="price != null">
+                `price` = #{price,jdbcType=DECIMAL},
+            </if>
+            <if test="ISBNCodel != null">
+                `ISBNCodel` = #{ISBNCodel,jdbcType=VARCHAR},
+            </if>
+            <if test="comeUpTime != null">
+                `comeUpTime` = #{comeUpTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                `status` = #{status,jdbcType=BIT},
+            </if>
+            <if test="enteringDate != null">
+                `enteringDate` = #{enteringDate,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <select id="select" parameterType="int" resultMap="BaseResultMap">
+        select * from `bookinfo` where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <select id="maxId" resultType="Integer">
+        select max(`id`) from `bookinfo`;
+    </select>
+
+    <select id="count" resultType="Long">
+        select count(`id`) from `bookinfo`;
+    </select>
+
+    <select id="findByOneField" resultMap="BaseResultMap">
+        select * from `bookinfo` where `${field}` = #{value,jdbcType=INTEGER}
+    </select>
+
+    <select id="list" resultMap="BaseResultMap">
+        select * from `bookinfo`
+        <if test="conditions != null">
+            where ${conditions}
+        </if>
+        <if test="order != null and sort != null">
+            order by ${order} ${sort}
+        </if>
+        <if test="offset != null">
+            limit #{offset,jdbcType=INTEGER},#{limit,jdbcType=INTEGER}
+        </if>
+    </select>
+
+    <select id="selectLazy" resultMap="BaseResultMap">
+        select * from `bookinfo` where id = #{bookinfo,jdbcType=INTEGER}
+    </select>
+</mapper>

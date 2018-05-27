@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nix.cinema.dao.ProfessionalMapper">
+    <resultMap id="BaseResultMap" type="com.nix.cinema.model.ProfessionalModel">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="createDate" property="createDate" jdbcType="TIMESTAMP"/>
+        <result column="updateDate" property="updateDate" jdbcType="TIMESTAMP"/>
+        <result column="sn" property="sn" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <association property="college" column="college" select="com.nix.cinema.dao.CollegeMapper.selectLazy"/>
+    </resultMap>
+    <insert id="insert" parameterType="com.nix.cinema.model.ProfessionalModel">
+        insert into `professional`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                `id`,
+            </if>
+            <if test="createDate != null">
+                `createDate`,
+            </if>
+            <if test="updateDate != null">
+                `updateDate`,
+            </if>
+            <if test="sn != null">
+                `sn`,
+            </if>
+            <if test="name != null">
+                `name`,
+            </if>
+            <if test="college != null">
+                `college`,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+             <if test="id != null">
+                #{id,jdbcType=INTEGER},
+             </if>
+             <if test="createDate != null">
+                #{createDate,jdbcType=TIMESTAMP},
+             </if>
+             <if test="updateDate != null">
+                #{updateDate,jdbcType=TIMESTAMP},
+             </if>
+             <if test="sn != null">
+                #{sn,jdbcType=VARCHAR},
+             </if>
+             <if test="college != null">
+                #{college.id,jdbcType=INTEGER},
+             </if>
+        </trim>
+    </insert>
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete  from `professional` where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <update id="update" parameterType="com.nix.cinema.model.ProfessionalModel">
+        update `professional`
+        set
+        <trim prefix="" suffix="" suffixOverrides=",">
+            <if test="id != null">
+                `id` = #{id,jdbcType=INTEGER},
+            </if>
+            <if test="createDate != null">
+                `createDate` = #{createDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateDate != null">
+                `updateDate` = #{updateDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="sn != null">
+                `sn` = #{sn,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                `name` = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="college != null">
+                `college` = #{college.id,jdbcType=INTEGER},
+            </if>
+        </trim>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <select id="select" parameterType="int" resultMap="BaseResultMap">
+        select * from `professional` where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <select id="maxId" resultType="Integer">
+        select max(`id`) from `professional`;
+    </select>
+
+    <select id="count" resultType="Long">
+        select count(`id`) from `professional`;
+    </select>
+
+    <select id="findByOneField" resultMap="BaseResultMap">
+        select * from `professional` where `${field}` = #{value,jdbcType=INTEGER}
+    </select>
+
+    <select id="list" resultMap="BaseResultMap">
+        select * from `professional`
+        <if test="conditions != null">
+            where ${conditions}
+        </if>
+        <if test="order != null and sort != null">
+            order by ${order} ${sort}
+        </if>
+        <if test="offset != null">
+            limit #{offset,jdbcType=INTEGER},#{limit,jdbcType=INTEGER}
+        </if>
+    </select>
+
+    <select id="selectLazy" resultMap="BaseResultMap">
+        select * from `professional` where id = #{professional,jdbcType=INTEGER}
+    </select>
+</mapper>

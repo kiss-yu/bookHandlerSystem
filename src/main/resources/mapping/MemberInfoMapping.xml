@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nix.cinema.dao.MemberInfoMapper">
+    <resultMap id="BaseResultMap" type="com.nix.cinema.model.MemberInfoModel">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="createDate" property="createDate" jdbcType="TIMESTAMP"/>
+        <result column="updateDate" property="updateDate" jdbcType="TIMESTAMP"/>
+        <result column="studentId" property="studentId" jdbcType="VARCHAR"/>
+        <result column="max" property="max" jdbcType="INTEGER"/>
+        <result column="timeLimit" property="timeLimit" jdbcType="INTEGER"/>
+        <result column="borrowedNum" property="borrowedNum" jdbcType="INTEGER"/>
+        <association property="college" column="college" select="com.nix.cinema.dao.CollegeMapper.selectLazy"/>
+        <association property="professional" column="professional" select="com.nix.cinema.dao.ProfessionalMapper.selectLazy"/>
+    </resultMap>
+    <insert id="insert" parameterType="com.nix.cinema.model.MemberInfoModel">
+        insert into `memberinfo`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                `id`,
+            </if>
+            <if test="createDate != null">
+                `createDate`,
+            </if>
+            <if test="updateDate != null">
+                `updateDate`,
+            </if>
+            <if test="studentId != null">
+                `studentId`,
+            </if>
+            <if test="max != null">
+                `max`,
+            </if>
+            <if test="timeLimit != null">
+                `timeLimit`,
+            </if>
+            <if test="borrowedNum != null">
+                `borrowedNum`,
+            </if>
+            <if test="college != null">
+                `college`,
+            </if>
+            <if test="professional != null">
+                `professional`,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+             <if test="id != null">
+                #{id,jdbcType=INTEGER},
+             </if>
+             <if test="createDate != null">
+                #{createDate,jdbcType=TIMESTAMP},
+             </if>
+             <if test="updateDate != null">
+                #{updateDate,jdbcType=TIMESTAMP},
+             </if>
+             <if test="studentId != null">
+                #{studentId,jdbcType=VARCHAR},
+             </if>
+             <if test="max != null">
+                #{max,jdbcType=INTEGER},
+             </if>
+             <if test="timeLimit != null">
+                #{timeLimit,jdbcType=INTEGER},
+             </if>
+             <if test="borrowedNum != null">
+                #{borrowedNum,jdbcType=INTEGER},
+             </if>
+             <if test="college != null">
+                #{college.id,jdbcType=INTEGER},
+             </if>
+             <if test="professional != null">
+                #{professional.id,jdbcType=INTEGER},
+             </if>
+        </trim>
+    </insert>
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete  from `memberinfo` where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <update id="update" parameterType="com.nix.cinema.model.MemberInfoModel">
+        update `memberinfo`
+        set
+        <trim prefix="" suffix="" suffixOverrides=",">
+            <if test="id != null">
+                `id` = #{id,jdbcType=INTEGER},
+            </if>
+            <if test="createDate != null">
+                `createDate` = #{createDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateDate != null">
+                `updateDate` = #{updateDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="studentId != null">
+                `studentId` = #{studentId,jdbcType=VARCHAR},
+            </if>
+            <if test="max != null">
+                `max` = #{max,jdbcType=INTEGER},
+            </if>
+            <if test="timeLimit != null">
+                `timeLimit` = #{timeLimit,jdbcType=INTEGER},
+            </if>
+            <if test="borrowedNum != null">
+                `borrowedNum` = #{borrowedNum,jdbcType=INTEGER},
+            </if>
+            <if test="college != null">
+                `college` = #{college.id,jdbcType=INTEGER},
+            </if>
+            <if test="professional != null">
+                `professional` = #{professional.id,jdbcType=INTEGER},
+            </if>
+        </trim>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <select id="select" parameterType="int" resultMap="BaseResultMap">
+        select * from `memberinfo` where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <select id="maxId" resultType="Integer">
+        select max(`id`) from `memberinfo`;
+    </select>
+
+    <select id="count" resultType="Long">
+        select count(`id`) from `memberinfo`;
+    </select>
+
+    <select id="findByOneField" resultMap="BaseResultMap">
+        select * from `memberinfo` where `${field}` = #{value,jdbcType=INTEGER}
+    </select>
+
+    <select id="list" resultMap="BaseResultMap">
+        select * from `memberinfo`
+        <if test="conditions != null">
+            where ${conditions}
+        </if>
+        <if test="order != null and sort != null">
+            order by ${order} ${sort}
+        </if>
+        <if test="offset != null">
+            limit #{offset,jdbcType=INTEGER},#{limit,jdbcType=INTEGER}
+        </if>
+    </select>
+
+    <select id="selectLazy" resultMap="BaseResultMap">
+        select * from `memberinfo` where id = #{memberinfo,jdbcType=INTEGER}
+    </select>
+</mapper>

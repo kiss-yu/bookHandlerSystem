@@ -40,7 +40,24 @@ public class AdminProfessionalController {
     public ReturnObject select(@RequestParam("id") Integer id) {
         return ReturnUtil.success(professionalService.findById(id));
     }
-
+    @GetMapping("/checkSn")
+    public Boolean checkSn(String sn,@RequestParam(value = "id",required = false) Integer id) {
+        if (id != null) {
+            if (professionalService.findById(id).getSn().equals(sn)) {
+                return true;
+            }
+        }
+        return professionalService.findByOneField("sn",sn).size() == 0;
+    }
+    @GetMapping("/checkName")
+    public Boolean checkName(String name,@RequestParam(value = "id",required = false) Integer id) {
+        if (id != null) {
+            if (professionalService.findById(id).getName().equals(name)) {
+                return true;
+            }
+        }
+        return professionalService.findByOneField("name",name).size() == 0;
+    }
     @PostMapping("/list")
     public ReturnObject list(@ModelAttribute Pageable<ProfessionalModel> pageable) throws Exception {
         Map additionalData = new HashMap();

@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nix.cinema.dao.BorrowRecordMapper">
+    <resultMap id="BaseResultMap" type="com.nix.cinema.model.BorrowRecordModel">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="createDate" property="createDate" jdbcType="TIMESTAMP"/>
+        <result column="updateDate" property="updateDate" jdbcType="TIMESTAMP"/>
+        <result column="borrowTime" property="borrowTime" jdbcType="TIMESTAMP"/>
+        <result column="shouldTime" property="shouldTime" jdbcType="TIMESTAMP"/>
+        <result column="returnTime" property="returnTime" jdbcType="TIMESTAMP"/>
+        <result column="status" property="status" jdbcType="BIT"/>
+    </resultMap>
+    <insert id="insert" parameterType="com.nix.cinema.model.BorrowRecordModel">
+        insert into `borrowrecord`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                `id`,
+            </if>
+            <if test="createDate != null">
+                `createDate`,
+            </if>
+            <if test="updateDate != null">
+                `updateDate`,
+            </if>
+            <if test="borrowTime != null">
+                `borrowTime`,
+            </if>
+            <if test="shouldTime != null">
+                `shouldTime`,
+            </if>
+            <if test="returnTime != null">
+                `returnTime`,
+            </if>
+            <if test="status != null">
+                `status`,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+             <if test="id != null">
+                #{id,jdbcType=INTEGER},
+             </if>
+             <if test="createDate != null">
+                #{createDate,jdbcType=TIMESTAMP},
+             </if>
+             <if test="updateDate != null">
+                #{updateDate,jdbcType=TIMESTAMP},
+             </if>
+             <if test="borrowTime != null">
+                #{borrowTime,jdbcType=TIMESTAMP},
+             </if>
+             <if test="shouldTime != null">
+                #{shouldTime,jdbcType=TIMESTAMP},
+             </if>
+             <if test="returnTime != null">
+                #{returnTime,jdbcType=TIMESTAMP},
+             </if>
+             <if test="status != null">
+                #{status,jdbcType=BIT},
+             </if>
+        </trim>
+    </insert>
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete  from `borrowrecord` where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <update id="update" parameterType="com.nix.cinema.model.BorrowRecordModel">
+        update `borrowrecord`
+        set
+        <trim prefix="" suffix="" suffixOverrides=",">
+            <if test="id != null">
+                `id` = #{id,jdbcType=INTEGER},
+            </if>
+            <if test="createDate != null">
+                `createDate` = #{createDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateDate != null">
+                `updateDate` = #{updateDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="borrowTime != null">
+                `borrowTime` = #{borrowTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="shouldTime != null">
+                `shouldTime` = #{shouldTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="returnTime != null">
+                `returnTime` = #{returnTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                `status` = #{status,jdbcType=BIT},
+            </if>
+        </trim>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <select id="select" parameterType="int" resultMap="BaseResultMap">
+        select * from `borrowrecord` where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <select id="maxId" resultType="Integer">
+        select max(`id`) from `borrowrecord`;
+    </select>
+
+    <select id="count" resultType="Long">
+        select count(`id`) from `borrowrecord`;
+    </select>
+
+    <select id="findByOneField" resultMap="BaseResultMap">
+        select * from `borrowrecord` where `${field}` = #{value,jdbcType=INTEGER}
+    </select>
+
+    <select id="list" resultMap="BaseResultMap">
+        select * from `borrowrecord`
+        <if test="conditions != null">
+            where ${conditions}
+        </if>
+        <if test="order != null and sort != null">
+            order by ${order} ${sort}
+        </if>
+        <if test="offset != null">
+            limit #{offset,jdbcType=INTEGER},#{limit,jdbcType=INTEGER}
+        </if>
+    </select>
+
+    <select id="selectLazy" resultMap="BaseResultMap">
+        select * from `borrowrecord` where id = #{borrowrecord,jdbcType=INTEGER}
+    </select>
+</mapper>
