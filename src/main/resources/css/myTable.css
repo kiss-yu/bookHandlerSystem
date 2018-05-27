@@ -162,3 +162,43 @@ table.input table th, table.input table td {
 table.input table tr:last-child th, table.input table tr:last-child td {
     border-bottom: 0px;
 }
+
+#portrait{
+    width: 200px;
+    height: 200px;
+}
+
+.ac_results {
+    overflow: hidden;
+    z-index: 10;
+    -webkit-box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    -ms-filter: "progid:DXImageTransform.Microsoft.Shadow(color=#e8e8e8, direction=135, strength=3) progid:DXImageTransform.Microsoft.Shadow(color=#e8e8e8, direction=135, strength=3)";
+    filter: progid:DXImageTransform.Microsoft.Shadow(color=#e8e8e8, direction=135, strength=3) progid:DXImageTransform.Microsoft.Shadow(color=#e8e8e8, direction=135, strength=3);
+    border: 1px solid #a3c4d7;
+    background-color: #ffffff;
+}
+
+.ac_results ul {
+    width: 100%;
+    overflow: hidden;
+}
+
+.ac_results li {
+    line-height: 28px;
+    display: block;
+    padding: 0px 4px;
+    overflow: hidden;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.ac_results .ac_odd {
+    background-color: #f1f8ff;
+}
+
+.ac_results .ac_over {
+    padding: 0px 4px;
+    background-color: #e4f2fa;
+}

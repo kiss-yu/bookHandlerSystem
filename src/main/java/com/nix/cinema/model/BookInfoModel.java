@@ -1,5 +1,7 @@
 package com.nix.cinema.model;
 
+import com.fasterxml.jackson.annotation.JacksonInject;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.nix.cinema.model.base.BaseModel;
 
 import java.math.BigDecimal;
@@ -22,15 +24,27 @@ public class BookInfoModel extends BaseModel<BookInfoModel> {
     //价格
     private BigDecimal price;
     //ISBN编码
-    private String ISBNCodel;
+    private String ISBNCode;
     //出版日期
+    @JsonFormat(pattern="yyyy-MM-dd")
     private Date comeUpTime;
     //图书状态(true 在库，false 借出)
     private Boolean status;
     //入库用户
     private MemberModel member;
     //入库日期
+    @JsonFormat(pattern="yyyy-MM-dd")
     private Date enteringDate;
+    //封面
+    private String image;
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
 
     public String getSn() {
         return sn;
@@ -72,12 +86,12 @@ public class BookInfoModel extends BaseModel<BookInfoModel> {
         this.price = price;
     }
 
-    public String getISBNCodel() {
-        return ISBNCodel;
+    public String getISBNCode() {
+        return ISBNCode;
     }
 
-    public void setISBNCodel(String ISBNCodel) {
-        this.ISBNCodel = ISBNCodel;
+    public void setISBNCode(String ISBNCode) {
+        this.ISBNCode = ISBNCode;
     }
 
     public Date getComeUpTime() {

@@ -1,6 +1,7 @@
 var roleId = {
     student:3,
-    admin:1
+    admin:1,
+    bookAdmin:2
 };
 
 function getQueryString() {

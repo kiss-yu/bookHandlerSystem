@@ -5,11 +5,18 @@ import com.nix.cinema.common.ReturnObject;
 import com.nix.cinema.common.annotation.AdminController;
 import com.nix.cinema.model.BookInfoModel;
 import com.nix.cinema.model.CollegeModel;
+import com.nix.cinema.model.MemberModel;
 import com.nix.cinema.service.impl.BookInfoService;
+import com.nix.cinema.service.impl.MemberService;
 import com.nix.cinema.util.ReturnUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,11 +28,27 @@ import java.util.Map;
 @AdminController
 @RequestMapping("/admin/bookInfo")
 public class AdminBookInfoController {
+
     @Autowired
     private BookInfoService bookInfoService;
+    @Autowired
+    private MemberService memberService;
+
+    @InitBinder
+    protected void initBinder(WebDataBinder binder) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
+    }
+
     @PostMapping("/add")
-    public ReturnObject add(@ModelAttribute BookInfoModel model) throws Exception {
-        return ReturnUtil.success(bookInfoService.add(model));
+    public ReturnObject add(@ModelAttribute BookInfoModel model,
+            @RequestParam(value = "portraitImg",required = false) MultipartFile portraitImg) throws Exception {
+        MemberModel member = memberService.findByUsername(model.getMember().getUsername());
+        if (member == null) {
+            return ReturnUtil.fail(100,"入库用户不存在",null);
+        }
+        model.setMember(member);
+        return ReturnUtil.success(bookInfoService.add(model,portraitImg));
     }
     @PostMapping("/delete")
     public ReturnObject delete(@RequestParam("ids") Integer[] ids) throws Exception {
@@ -33,12 +56,27 @@ public class AdminBookInfoController {
         return ReturnUtil.success();
     }
     @PostMapping("/update")
-    public ReturnObject update(@ModelAttribute BookInfoModel model) throws Exception {
-        return ReturnUtil.success(bookInfoService.update(model));
+    public ReturnObject update(@ModelAttribute BookInfoModel model,
+                               @RequestParam(value = "portraitImg",required = false) MultipartFile portraitImg) throws Exception {
+        MemberModel member = memberService.findByUsername(model.getMember().getUsername());
+        if (member == null) {
+            return ReturnUtil.fail(100,"入库用户不存在",null);
+        }
+        model.setMember(member);
+        return ReturnUtil.success(bookInfoService.update(model,portraitImg));
     }
     @GetMapping("/view")
     public ReturnObject select(@RequestParam("id") Integer id) {
         return ReturnUtil.success(bookInfoService.findById(id));
+    }
+    @GetMapping("/checkSn")
+    public Boolean checkSn(String sn,@RequestParam(value = "id",required = false) Integer id) {
+        if (id != null) {
+            if (bookInfoService.findById(id).getSn().equals(sn)) {
+                return true;
+            }
+        }
+        return bookInfoService.findByOneField("sn",sn).size() == 0;
     }
 
     @PostMapping("/list")

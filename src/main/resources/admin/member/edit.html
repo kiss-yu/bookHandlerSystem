@@ -52,7 +52,7 @@
                                     $("#age").val(model.age);
                                     $("#balance").val(model.balance);
                                     $("#portrait").attr("src",model.img)
-                                    $("#sex") ? $("#boy").prop("checked",true) : $("#girl").prop("checked",true);
+                                    model.sex ? $("#boy").prop("checked",true) : $("#girl").prop("checked",true);
                                     $("#roleSelect").val(model.role.id);
                                     selectRole($("#roleSelect"));
                                     $("#memberInfoId").val(model.memberInfo.id)

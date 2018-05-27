@@ -4,55 +4,6 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <link href="/css/style.css" rel="stylesheet" type="text/css" media="all" />
-    <!--<script>
-        function loginOut() {
-            console.log("out")
-            localStorage.removeItem("member");
-            $.ajax({
-                cache: true,
-                type: "GET",
-                url: "/logout"
-            });
-        }
-        let temp = () => {
-            return ` <li><a href="/admin/index.html" class="act">HOME<span>START HERE</span></a></li>
-            <li><a href="/admin/member/list.html" class="act4">用户管理<span>详情</span></a></li>
-            <li><a href="/admin/role/list.html" class="act4">角色管理<span>详情</span></a></li>
-            <li><a href="/admin/roleInterface/list.html" class="act4">接口管理<span>详情</span></a></li>
-            <li><a href="/admin/cinema/list.html" class="act4">图书管理<span>详情</span></a></li>
-            <li><a href="/admin/movie/list.html" class="act4">学院管理<span>详情</span></a>
-            <li><a href="/admin/movie/list.html" class="act4">借阅记录<span>详情</span></a></li>
-            <li><a href="/admin/login/login.html" onclick="loginOut()" class="act1">退出账号<span>退出</span></a></li>`;
-        };
-        function setNav(member) {
-            $("#nav").html(temp());
-        }
-        jQuery(document).ready(function($) {
-            var member = JSON.parse(localStorage.getItem("member"));
-            if (member == null) {
-                $.ajax({
-                    cache: true,
-                    type: "GET",
-                    url: "/currentUser",
-                    success: function (data) {
-                        if (data.status == 1) {
-                            if (data.data != null) {
-                                localStorage.setItem("member",JSON.stringify(data.data));
-                                setNav(data.data);
-                            } else {
-                                alert("请登录");
-                                location.href = "/admin/login/login.html";
-                            }
-                        } else {
-                            location.href = "/admin/login/login.html";
-                        }
-                    }
-                });
-            } else {
-                setNav(member)
-            }
-        });
-    </script>-->
     <style>
         .my_act{
             display: block;
@@ -126,6 +77,16 @@
                 }
             });
         });
+
+        function loginOut() {
+            console.log("out")
+            localStorage.removeItem("member");
+            $.ajax({
+                cache: true,
+                type: "GET",
+                url: "/logout"
+            });
+        }
     </script>
 </head>
 <body>
@@ -140,7 +101,7 @@
                 <a href="/admin/index.html" class="my_act my_act1">主页<span>START HERE</span></a>
             </div>
             <div style="display: inline-block" class="nav-block">
-                <a href="/admin/member/list.html" class="my_act my_act1">用户管理<span>详情</span></a>
+                <a href="/admin/member/list.html" class="my_act my_act2">用户管理<span>详情</span></a>
             </div>
             <div style="display: inline-block" class="nav-block">
                 <a class="my_act2 my_act">权限管理<span>详情</span></a>
@@ -157,13 +118,17 @@
                 </div>
             </div>
             <div style="display: inline-block" class="nav-block">
-                <a href="#" class="my_act my_act1">借阅记录<span>详情</span></a>
+                <a href="#" class="my_act2 my_act">图书<span>详情</span></a>
+                <div class="pro" style="display: none">
+                    <a href="/admin/bookInfo/list.html" class="my_act my_act3">图书管理</a>
+                    <a href="/admin/professional/list.html" class="my_act my_act3">借阅记录</a>
+                </div>
             </div>
             <div style="display: inline-block" class="nav-block">
-                <a href="#" class="my_act my_act1">个人信息<span>详情</span></a>
+                <a href="#" class="my_act my_act2">个人信息<span>详情</span></a>
             </div>
             <div style="display: inline-block" class="nav-block">
-                <a href="/admin/login/login.html" onclick="loginOut()" class="my_act my_act1">退出账号</a>
+                <a href="/admin/login/login.html" onclick="loginOut()" class="my_act my_act2">退出账号</a>
             </div>
         </ul>
     </div>

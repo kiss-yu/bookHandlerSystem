@@ -6,6 +6,7 @@ import com.nix.cinema.dao.MemberInfoMapper;
 import com.nix.cinema.dao.MemberMapper;
 import com.nix.cinema.model.MemberModel;
 import com.nix.cinema.service.BaseService;
+import com.nix.cinema.util.ServiceUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -79,15 +80,8 @@ public class MemberService extends BaseService<MemberModel> {
     public MemberModel update(MemberModel model,MultipartFile log) throws Exception {
         if (log != null && !log.isEmpty()) {
             MemberModel before = findById(model.getId());
-            if (!(MEMBER_IMG_PATH + log.getOriginalFilename()).equals(before.getImg())) {
-                if (!(MEMBER_IMG_PATH + MEMBER_DEFAULT_IMG).equals(before.getImg())) {
-                    File ago = new File(this.getClass().getResource("/").getFile() + before.getImg());
-                    ago.delete();
-                }
-                File img = new File(this.getClass().getResource("/").getFile() + MEMBER_IMG_PATH + log.getOriginalFilename());
-                log.transferTo(img);
-                model.setImg(MEMBER_IMG_PATH + log.getOriginalFilename());
-            }
+            model.setImg(MEMBER_IMG_PATH + log.getOriginalFilename());
+            ServiceUtil.updateImage(before.getImg(),model.getImg(),MEMBER_IMG_PATH + MEMBER_DEFAULT_IMG,log);
         }
         if (model.getMemberInfo() != null) {
             memberInfoService.update(model.getMemberInfo());

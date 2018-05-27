@@ -10,10 +10,12 @@
         <result column="author" property="author" jdbcType="VARCHAR"/>
         <result column="translator" property="translator" jdbcType="VARCHAR"/>
         <result column="price" property="price" jdbcType="DECIMAL"/>
-        <result column="ISBNCodel" property="ISBNCodel" jdbcType="VARCHAR"/>
+        <result column="ISBNCode" property="ISBNCode" jdbcType="VARCHAR"/>
         <result column="comeUpTime" property="comeUpTime" jdbcType="TIMESTAMP"/>
         <result column="status" property="status" jdbcType="BIT"/>
         <result column="enteringDate" property="enteringDate" jdbcType="TIMESTAMP"/>
+        <result column="image" property="image" jdbcType="VARCHAR"/>
+        <association property="member" column="member" select="com.nix.cinema.dao.MemberMapper.selectLazy"/>
     </resultMap>
     <insert id="insert" parameterType="com.nix.cinema.model.BookInfoModel">
         insert into `bookinfo`
@@ -42,8 +44,8 @@
             <if test="price != null">
                 `price`,
             </if>
-            <if test="ISBNCodel != null">
-                `ISBNCodel`,
+            <if test="ISBNCode != null">
+                `ISBNCode`,
             </if>
             <if test="comeUpTime != null">
                 `comeUpTime`,
@@ -53,6 +55,12 @@
             </if>
             <if test="enteringDate != null">
                 `enteringDate`,
+            </if>
+            <if test="image != null">
+                `image`,
+            </if>
+            <if test="member != null">
+                `member`,
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -80,8 +88,8 @@
              <if test="price != null">
                 #{price,jdbcType=DECIMAL},
              </if>
-             <if test="ISBNCodel != null">
-                #{ISBNCodel,jdbcType=VARCHAR},
+             <if test="ISBNCode != null">
+                #{ISBNCode,jdbcType=VARCHAR},
              </if>
              <if test="comeUpTime != null">
                 #{comeUpTime,jdbcType=TIMESTAMP},
@@ -91,6 +99,12 @@
              </if>
              <if test="enteringDate != null">
                 #{enteringDate,jdbcType=TIMESTAMP},
+             </if>
+             <if test="image != null">
+                #{image,jdbcType=VARCHAR},
+             </if>
+             <if test="member != null">
+                #{member.id,jdbcType=INTEGER},
              </if>
         </trim>
     </insert>
@@ -125,8 +139,8 @@
             <if test="price != null">
                 `price` = #{price,jdbcType=DECIMAL},
             </if>
-            <if test="ISBNCodel != null">
-                `ISBNCodel` = #{ISBNCodel,jdbcType=VARCHAR},
+            <if test="ISBNCode != null">
+                `ISBNCode` = #{ISBNCode,jdbcType=VARCHAR},
             </if>
             <if test="comeUpTime != null">
                 `comeUpTime` = #{comeUpTime,jdbcType=TIMESTAMP},
@@ -136,6 +150,12 @@
             </if>
             <if test="enteringDate != null">
                 `enteringDate` = #{enteringDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="image != null">
+                `image` = #{image,jdbcType=VARCHAR},
+            </if>
+            <if test="member != null">
+                `member` = #{member.id,jdbcType=INTEGER},
             </if>
         </trim>
         where id = #{id,jdbcType=INTEGER}
