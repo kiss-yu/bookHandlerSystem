@@ -2,8 +2,8 @@
 <html>
 <head>
     <title>personalInfo</title>
-    <link href="/css/style.css" rel="stylesheet" type="text/css"/>
     <link href="/css/myTable.css" rel="stylesheet" type="text/css"/>
+    <link href="/css/style.css" rel="stylesheet" type="text/css" media="all" />
     <link href="/resource/bootstrap-3.3.7-dist/css/bootstrap.css" rel="stylesheet" type="text/css" media="all" />
     <link href="/resource/skin/jedate.css" rel="stylesheet" type="text/css" media="all" />
     <!-- js -->
@@ -27,84 +27,31 @@
 
         var apiRoot = "/admin/bookInfo";
         jQuery(document).ready(function($) {
-            function validateForm(){
-                return $("#inputForm").validate({
-                    rules: {
-                        "name": {
-                            required: true
-                        },
-                        "sn" : {
-                            remote: {
-                                url: "checkSn",
-                                cache: false
-                            }
-                        },
-                        "member.username" : {
-                            required: true
-                        }
-                    },
-                    messages: {
-                        "name": {
-                            required: "不能为空"
-                        },
-                        "sn" : {
-                            remote : "编号已存在"
-                        },
-                        "member.username" : {
-                            required: "入库用户不能为空"
-                        }
+            //获取学院信息设置
+            $.ajax({
+                cache : true,
+                type : "GET",
+                url : apiRoot + "/view?id=" + id,
+                success : function(data) {
+                    if (data.status == 1) {
+                        var model = data.data;
+                        $("#sn").html(model.sn);
+                        $("#name").html(model.name);
+                        $("#author").html(model.author);
+                        $("#translator").html(model.translator);
+                        $("#price").html(model.price);
+                        $("#ISBNCode").html(model.isbncode);
+                        $("#comeUpTime").html(model.comeUpTime);
+                        $("#enteringDate").html(model.enteringDate);
+                        $("#member").html(model.member.username);
+                        $("#exist").html(model.status ? "在库" : "已借出") ;
+                        $("#portrait").attr("src",model.image);
+                        $("#introduce").html(model.introduce);
+                    } else {
+                        alert("错误");
                     }
-                });
-            }
-            $(validateForm());
-            // 表单验证
-            $("#submit").click(function () {
-                if(validateForm().form()) {
-                    $.ajax({
-                        cache : true,
-                        type : "POST",
-                        url : apiRoot + "/add",
-                        data : $('#inputForm').serialize(),
-                        async : false,
-                        success : function(data) {
-                            if (data.status == 1) {
-                                location.href = apiRoot + "/list.html"
-                            }else {
-                                alert(data.msg);
-                            }
-                        }
-                    });
                 }
             });
-            $('#member').autocomplete("/admin/member/autoMember?sql=(role=" + roleId.bookAdmin + " or role=" + roleId.admin + ")", {
-                dataType: "json",
-                max: 20,
-                width: 218,
-                scrollHeight: 300,
-                parse: function(data) {
-                    return $.map(data, function(item) {
-                        return {
-                            data: item,
-                            value: item.name
-                        }
-                    });
-                },
-                formatItem: function(item) {
-                    return '<span title="' + escapeHtml(item.name) + '">' + escapeHtml(abbreviate(item.name, 50, "...")) + '<\/span>' + (true ? ' <span class="silver">[' + escapeHtml(item.username) + ']<\/span>' : '');
-                }
-            }).result(function(event, item) {
-                $("#member").val(item.username);
-            });
-            jeDate("#comeUpTime",{
-                theme:{bgcolor:"#00A1CB",pnColor:"#00CCFF"},
-                format: "YYYY-MM-DD"
-            });
-
-            jeDate("#enteringDate",{
-                theme:{bgcolor:"#00A1CB",pnColor:"#00CCFF"},
-                format: "YYYY-MM-DD"
-            });
-            $("#introduce").editor();
         });
     </script>
 
@@ -128,33 +75,17 @@
             },100);
         </script>
         <div class="contact">
-            <h3>图书添加</h3>
+            <h3>图书详情</h3>
             <div class="blog" >
                 <div class="blog-left">
                     <form id="inputForm" method="post">
-                        <ul id="tab" class="tab">
-                            <li>
-                                <input type="button" value="基本信息" onclick="{
-                                    $('#introduceTable').css('display','none');
-                                    $('#baseMessage').css('display','table');
-                                    $(this).css('color','green')
-                                }"/>
-                            </li>
-                            <li>
-                                <input type="button" value="图书简介" onclick="{
-                                    $('#introduceTable').css('display','table');
-                                    $('#baseMessage').css('display','none');
-                                }"/>
-                            </li>
-                        </ul>
-                        <table class="input tab-content" style="display: table" id="baseMessage">
+                        <table class="input tab-content" style="display: table">
                             <tr>
                                 <th>
                                     <span class="glyphicon-class">封面</span>
                                 </th>
                                 <td>
-                                    <input class="hidden" id="file" type="file" name="portraitImg" onchange="clickImage(this)">
-                                    <img id="portrait" src="/images/bookInfo/default.jpg" onclick="{document.getElementById('file').click();}">
+                                    <img id="portrait" src="/images/bookInfo/default.jpg" ">
                                 </td>
                             </tr>
                             <tr>
@@ -162,13 +93,13 @@
                                     <span class="glyphicon-class">图书编号</span>
                                 </th>
                                 <td>
-                                    <input type="text" class="text" id="sn" value="" name="sn"/>
+                                    <span type="text" class="text" id="sn" value="" name="sn" disabled></span>
                                 </td>
                                 <th>
                                     <span class="glyphicon-class">图书名称</span>
                                 </th>
                                 <td>
-                                    <input type="text" class="text" id="name" value="" name="name"/>
+                                    <span type="text" class="text" id="name" value="" name="name"></span>
                                 </td>
                             </tr>
                             <tr>
@@ -176,14 +107,14 @@
                                     <span class="glyphicon-class">作者</span>
                                 </th>
                                 <td>
-                                    <input type="text" class="text" id="author" value="" name="author"/>
+                                    <span type="text" class="text" id="author" value="" name="author"></span>
                                 </td>
 
                                 <th>
                                     <span class="glyphicon-class">译者</span>
                                 </th>
                                 <td>
-                                    <input type="text" class="text" id="translator" value="" name="translator"/>
+                                    <span type="text" class="text" id="translator" value="" name="translator"></span>
                                 </td>
                             </tr>
 
@@ -192,14 +123,14 @@
                                     <span class="glyphicon-class">价格</span>
                                 </th>
                                 <td>
-                                    <input type="text" class="text" id="price" value="" name="price"/>
+                                    <span type="text" class="text" id="price" value="" name="price"></span>
                                 </td>
 
                                 <th>
                                     <span class="glyphicon-class">ISBN</span>
                                 </th>
                                 <td>
-                                    <input type="text" class="text" id="ISBNCode" value="" name="ISBNCode"/>
+                                    <span type="text" class="text" id="ISBNCode" value="" name="ISBNCode"></span>
                                 </td>
                             </tr>
                             <tr>
@@ -207,14 +138,14 @@
                                     <span class="glyphicon-class">出版日期</span>
                                 </th>
                                 <td>
-                                    <input type="text" class="jeinput text" id="comeUpTime"  name="comeUpTime"/>
+                                    <span type="text" class="jeinput text" id="comeUpTime"  name="comeUpTime"></span>
                                 </td>
 
                                 <th>
                                     <span class="glyphicon-class">入库日期</span>
                                 </th>
                                 <td>
-                                    <input type="text" class="jeinput text" id="enteringDate"  name="enteringDate"/>
+                                    <span type="text" class="jeinput text" id="enteringDate"  name="enteringDate"></span>
                                 </td>
                             </tr>
 
@@ -223,25 +154,25 @@
                                     <span class="glyphicon-class">状态</span>
                                 </th>
                                 <td>
-                                    <input id="boy" type="radio" checked="checked" name="status" value="true"/>在库
-                                    <input id="girl" type="radio"  name="status" value="false"/>已借出
+                                    <span id="exist" type="radio" checked="checked" name="status" value="true"></span>
                                 </td>
 
                                 <th>
                                     <span class="glyphicon-class">入库用户</span>
                                 </th>
                                 <td>
-                                    <input type="text" class="text  ac_results" id="member"  name="member.username"/>
+                                    <span type="text" class="text" id="member"  name="member.username"></span>
                                 </td>
                             </tr>
                         </table>
-                        <table  class="input tab-content" style="display: none" id="introduceTable">
+
+                        <table  class="input tab-content" style="display: table" id="introduceTable">
                             <tr>
                                 <th>
-                                    &nbsp;
+                                    介绍
                                 </th>
                                 <td>
-                                    <textarea id="introduce" name="introduce" class="editor" style="width: 100%;"></textarea>
+                                    <span id="introduce" name="introduce" class="editor" style="width: 100%;"></span>
                                 </td>
                             </tr>
                         </table>
@@ -251,7 +182,6 @@
                                     &nbsp;
                                 </th>
                                 <td>
-                                    <input type="button" class="button" value="提交" id="submit"/>
                                     <input type="button" class="button" value="返回" onclick="history.back(); return false;" />
                                 </td>
                             </tr>

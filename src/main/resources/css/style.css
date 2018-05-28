@@ -1427,7 +1427,7 @@ ul.social-slide li i.mac{
 .blog-left img{
 	width:100%;
 	}
-.blog-left ul{
+/*.blog-left ul{
 	margin:1em 0 0;
 	padding:1em 0;
 	border-top:1px solid #DDDADA;
@@ -1468,7 +1468,7 @@ ul.social-slide li i.mac{
 	display:block;
 	height:16px;
 	padding-left:2em;
-	}
+	}*/
 .blog-left p{
 	color:#6C6C6C;
 	font-size:13px;

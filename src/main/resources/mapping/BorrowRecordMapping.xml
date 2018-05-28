@@ -9,6 +9,8 @@
         <result column="shouldTime" property="shouldTime" jdbcType="TIMESTAMP"/>
         <result column="returnTime" property="returnTime" jdbcType="TIMESTAMP"/>
         <result column="status" property="status" jdbcType="BIT"/>
+        <association property="member" column="member" select="com.nix.cinema.dao.MemberMapper.selectLazy"/>
+        <association property="bookInfo" column="bookInfo" select="com.nix.cinema.dao.BookInfoMapper.selectLazy"/>
     </resultMap>
     <insert id="insert" parameterType="com.nix.cinema.model.BorrowRecordModel">
         insert into `borrowrecord`
@@ -34,6 +36,12 @@
             <if test="status != null">
                 `status`,
             </if>
+            <if test="member != null">
+                `member`,
+            </if>
+            <if test="bookInfo != null">
+                `bookInfo`,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
              <if test="id != null">
@@ -56,6 +64,12 @@
              </if>
              <if test="status != null">
                 #{status,jdbcType=BIT},
+             </if>
+             <if test="member != null">
+                #{member.id,jdbcType=INTEGER},
+             </if>
+             <if test="bookInfo != null">
+                #{bookInfo.id,jdbcType=INTEGER},
              </if>
         </trim>
     </insert>
@@ -86,6 +100,12 @@
             </if>
             <if test="status != null">
                 `status` = #{status,jdbcType=BIT},
+            </if>
+            <if test="member != null">
+                `member` = #{member.id,jdbcType=INTEGER},
+            </if>
+            <if test="bookInfo != null">
+                `bookInfo` = #{bookInfo.id,jdbcType=INTEGER},
             </if>
         </trim>
         where id = #{id,jdbcType=INTEGER}

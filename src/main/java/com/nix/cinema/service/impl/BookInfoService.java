@@ -4,6 +4,7 @@ import com.nix.cinema.model.BookInfoModel;
 import com.nix.cinema.service.BaseService;
 import com.nix.cinema.util.ServiceUtil;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -17,6 +18,7 @@ import java.io.IOException;
 public class BookInfoService extends BaseService<BookInfoModel> {
     private final static String DEFAULT_IMAGE = "default.jpg";
     private final static String IMAGE_PATH = "/images/bookInfo/";
+    public final static Object BORROW_CLOCK = new Object();
     public BookInfoModel add(BookInfoModel model,MultipartFile portraitImg) throws Exception {
         model.setSn(model.getSn() == null || model.getSn().isEmpty() ? model.generateSn() : model.getSn());
 
@@ -38,6 +40,17 @@ public class BookInfoService extends BaseService<BookInfoModel> {
             model.setImage(IMAGE_PATH + portraitImg.getOriginalFilename());
             ServiceUtil.updateImage(before.getImage(),model.getImage(),IMAGE_PATH + DEFAULT_IMAGE,portraitImg);
         }
+        return super.update(model);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public BookInfoModel borrow(BookInfoModel model) throws Exception {
+        model.setStatus(false);
+        return super.update(model);
+    }
+
+    public BookInfoModel returnBack(BookInfoModel model) throws Exception {
+        model.setStatus(true);
         return super.update(model);
     }
 }

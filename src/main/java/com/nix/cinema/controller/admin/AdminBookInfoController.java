@@ -4,13 +4,14 @@ import com.nix.cinema.common.Pageable;
 import com.nix.cinema.common.ReturnObject;
 import com.nix.cinema.common.annotation.AdminController;
 import com.nix.cinema.model.BookInfoModel;
-import com.nix.cinema.model.CollegeModel;
 import com.nix.cinema.model.MemberModel;
 import com.nix.cinema.service.impl.BookInfoService;
+import com.nix.cinema.service.impl.BorrowRecordService;
 import com.nix.cinema.service.impl.MemberService;
 import com.nix.cinema.util.ReturnUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,6 +34,8 @@ public class AdminBookInfoController {
     private BookInfoService bookInfoService;
     @Autowired
     private MemberService memberService;
+    @Autowired
+    private BorrowRecordService borrowRecordService;
 
     @InitBinder
     protected void initBinder(WebDataBinder binder) {
@@ -77,6 +80,24 @@ public class AdminBookInfoController {
             }
         }
         return bookInfoService.findByOneField("sn",sn).size() == 0;
+    }
+    @PostMapping("/borrow")
+    public ReturnObject borrow(@RequestParam("bookInfoId") Integer bookInfoId,
+                               @RequestParam("username") String username) throws Exception {
+        BookInfoModel bookInfo = bookInfoService.findById(bookInfoId);
+        Assert.notNull(bookInfo,"图书不存在");
+        if (!bookInfo.getStatus()) {
+            Assert.notNull(bookInfo,"图书已借出");
+        }
+        MemberModel member = memberService.findByUsername(username);
+        Assert.notNull(member,"用户不存在");
+        return ReturnUtil.success(borrowRecordService.create(bookInfo,member));
+    }
+    @PostMapping("/returnBack")
+    public ReturnObject returnBack(@RequestParam("bookInfoId") Integer bookInfoId) throws Exception {
+        BookInfoModel bookInfo = bookInfoService.findById(bookInfoId);
+        Assert.notNull(bookInfo,"图书不存在");
+        return ReturnUtil.success(borrowRecordService.returnBack(bookInfo));
     }
 
     @PostMapping("/list")

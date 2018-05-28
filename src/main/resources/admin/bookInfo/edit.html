@@ -45,8 +45,11 @@
                         $("#comeUpTime").val(model.comeUpTime);
                         $("#enteringDate").val(model.enteringDate);
                         $("#member").val(model.member.username);
-                        model.status ? $("#boy").prop("checked",true) : $("#girl").prop("checked",true);
+                        model.status ? $("#exist").prop("checked",true) : $("#noExist").prop("checked",true);
                         $("#portrait").attr("src",model.image);
+
+                        $("#introduce").val(model.introduce);
+                        $("#introduce").editor();
                     } else {
                         alert("错误");
                     }
@@ -101,6 +104,25 @@
                     });
                 }
             });
+            $("#borrow").click(function () {
+                if(validateForm().form()) {
+                    $.ajax({
+                        cache : true,
+                        type : "POST",
+                        url : apiRoot + "/borrow?bookInfoId=" + id,
+                        data : $('#borrowForm').serialize(),
+                        async : false,
+                        success : function(data) {
+                            if (data.status == 1) {
+                                alert("借阅完成");
+                                location.reload();
+                            }else {
+                                alert(data.msg);
+                            }
+                        }
+                    });
+                }
+            });
             $('#member').autocomplete("/admin/member/autoMember?sql=(role=" + roleId.bookAdmin + " or role=" + roleId.admin + ")", {
                 dataType: "json",
                 max: 20,
@@ -120,6 +142,27 @@
             }).result(function(event, item) {
                 $("#member").val(item.username);
             });
+            $('#username').autocomplete("/admin/member/autoMember?sql=(role=" + roleId.student + ")", {
+                dataType: "json",
+                max: 20,
+                width: 218,
+                scrollHeight: 300,
+                parse: function(data) {
+                    return $.map(data, function(item) {
+                        return {
+                            data: item,
+                            value: item.name
+                        }
+                    });
+                },
+                formatItem: function(item) {
+                    return '<span title="' + escapeHtml(item.name) + '">' + escapeHtml(abbreviate(item.name, 50, "...")) + '<\/span>' + (true ? ' <span class="silver">[' + escapeHtml(item.username) + ']<\/span>' : '');
+                }
+            }).result(function(event, item) {
+                $("#username").val(item.username);
+                $("#memberName").val(item.name);
+            });
+
             jeDate("#comeUpTime",{
                 theme:{bgcolor:"#00A1CB",pnColor:"#00CCFF"},
                 format: "YYYY-MM-DD"
@@ -130,6 +173,23 @@
                 format: "YYYY-MM-DD"
             });
         });
+        function returnBook() {
+            $.ajax({
+                cache : true,
+                type : "POST",
+                url : apiRoot + "/returnBack?bookInfoId=" + id,
+                data : $('#borrowForm').serialize(),
+                async : false,
+                success : function(data) {
+                    if (data.status == 1) {
+                        alert("归还成功");
+                        location.reload();
+                    }else {
+                        alert(data.msg);
+                    }
+                }
+            });
+        }
     </script>
 
     <style>
@@ -152,11 +212,38 @@
             },100);
         </script>
         <div class="contact">
-            <h3>学院添加</h3>
-            <div class="blog" style="height: 650px;">
+            <h3>图书修改</h3>
+            <div class="blog" >
                 <div class="blog-left">
+                    <ul id="tab" class="tab">
+                        <li>
+                            <input type="button" value="基本信息" onclick="{
+                                    $('#inputForm').css('display','block');
+                                    $('#borrowForm').css('display','none');
+                                    $('#introduceTable').css('display','none');
+                                    $('#baseMessage').css('display','table');
+                                }"/>
+                        </li>
+                        <li>
+                            <input type="button" value="图书简介" onclick="{
+                                    $('#inputForm').css('display','block');
+                                    $('#borrowForm').css('display','none');
+                                    $('#introduceTable').css('display','table');
+                                    $('#baseMessage').css('display','none');
+                                }"/>
+                        </li>
+                        <li>
+                            <input type="button" value="还书" onclick="returnBook()">
+                        </li>
+                        <li>
+                            <input type="button" value="借阅" onclick="{
+                                    $('#inputForm').css('display','none');
+                                    $('#borrowForm').css('display','block');
+                                }">
+                        </li>
+                    </ul>
                     <form id="inputForm" method="post">
-                        <table class="input tab-content" style="display: table">
+                        <table class="input tab-content" style="display: table" id="baseMessage">
                             <tr>
                                 <th>
                                     <span class="glyphicon-class">封面</span>
@@ -245,6 +332,16 @@
                                 </td>
                             </tr>
                         </table>
+                        <table  class="input tab-content" style="display: none" id="introduceTable">
+                            <tr>
+                                <th>
+                                    &nbsp;
+                                </th>
+                                <td>
+                                    <textarea id="introduce" name="introduce" class="editor" style="width: 100%;"></textarea>
+                                </td>
+                            </tr>
+                        </table>
                         <table class="input">
                             <tr>
                                 <th>
@@ -252,6 +349,37 @@
                                 </th>
                                 <td>
                                     <input type="button" class="button" value="提交" id="submit"/>
+                                    <input type="button" class="button" value="返回" onclick="history.back(); return false;" />
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                    <form id="borrowForm" style="display: none">
+                        <table  class="input tab-content" style="display: table" >
+                            <tr>
+                                <th>
+                                    借阅用户名
+                                </th>
+                                <td>
+                                    <input type="text" class="text" value="" id="username" name="username"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    借阅用户姓名
+                                </th>
+                                <td>
+                                    <input type="text" class="text" value="" id="memberName" disabled/>
+                                </td>
+                            </tr>
+                        </table>
+                        <table class="input">
+                            <tr>
+                                <th>
+                                    &nbsp;
+                                </th>
+                                <td>
+                                    <input type="button" class="button" value="借阅" id="borrow"/>
                                     <input type="button" class="button" value="返回" onclick="history.back(); return false;" />
                                 </td>
                             </tr>

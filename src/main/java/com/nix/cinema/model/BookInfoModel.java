@@ -37,6 +37,16 @@ public class BookInfoModel extends BaseModel<BookInfoModel> {
     private Date enteringDate;
     //封面
     private String image;
+    //介绍
+    private String introduce;
+
+    public String getIntroduce() {
+        return introduce;
+    }
+
+    public void setIntroduce(String introduce) {
+        this.introduce = introduce;
+    }
 
     public String getImage() {
         return image;

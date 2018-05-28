@@ -15,6 +15,7 @@
         <result column="status" property="status" jdbcType="BIT"/>
         <result column="enteringDate" property="enteringDate" jdbcType="TIMESTAMP"/>
         <result column="image" property="image" jdbcType="VARCHAR"/>
+        <result column="introduce" property="introduce" jdbcType="VARCHAR"/>
         <association property="member" column="member" select="com.nix.cinema.dao.MemberMapper.selectLazy"/>
     </resultMap>
     <insert id="insert" parameterType="com.nix.cinema.model.BookInfoModel">
@@ -59,8 +60,8 @@
             <if test="image != null">
                 `image`,
             </if>
-            <if test="member != null">
-                `member`,
+            <if test="introduce != null">
+                `introduce`,
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -103,8 +104,8 @@
              <if test="image != null">
                 #{image,jdbcType=VARCHAR},
              </if>
-             <if test="member != null">
-                #{member.id,jdbcType=INTEGER},
+             <if test="introduce != null">
+                #{introduce,jdbcType=VARCHAR},
              </if>
         </trim>
     </insert>
@@ -154,8 +155,8 @@
             <if test="image != null">
                 `image` = #{image,jdbcType=VARCHAR},
             </if>
-            <if test="member != null">
-                `member` = #{member.id,jdbcType=INTEGER},
+            <if test="introduce != null">
+                `introduce` = #{introduce,jdbcType=VARCHAR},
             </if>
         </trim>
         where id = #{id,jdbcType=INTEGER}
