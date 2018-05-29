@@ -42,6 +42,12 @@ public class AdminBorrowRecordController {
     public ReturnObject select(@RequestParam("id") Integer id) {
         return ReturnUtil.success(borrowRecordService.findById(id));
     }
+    @GetMapping("/infoByBookId")
+    public ReturnObject infoByBookId(@RequestParam("bookInfoId") Integer bookInfoId) {
+        Pageable pageable = new Pageable();
+        pageable.setConditionsSql("`status` = 0 and bookInfo = " + bookInfoId);
+        return ReturnUtil.success(pageable.getList(borrowRecordService).get(0));
+    }
 
     @PostMapping("/list")
     public ReturnObject list(@ModelAttribute Pageable<BorrowRecordModel> pageable) throws Exception {

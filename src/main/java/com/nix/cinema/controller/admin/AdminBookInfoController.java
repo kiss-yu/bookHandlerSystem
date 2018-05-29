@@ -99,6 +99,18 @@ public class AdminBookInfoController {
         Assert.notNull(bookInfo,"图书不存在");
         return ReturnUtil.success(borrowRecordService.returnBack(bookInfo));
     }
+    @GetMapping("/borrowInfo")
+    public ReturnObject getBorrowMember(@RequestParam("bookInfoId") Integer bookInfoId) {
+        return ReturnUtil.success(borrowRecordService.list(null,null,null,null,
+                "status = 0 and bookInfo = " + bookInfoId).get(0));
+    }
+    @GetMapping("/autoBookInfo")
+    public List autoBookInfo(@ModelAttribute Pageable pageable,
+                                     @RequestParam("q") String value,
+                                     @RequestParam(value = "sql",required = false)String sql) {
+        pageable.setConditionsSql("(sn like '%" + value + "%' or name like '%" + value + "%' or introduce like '%" + value + "%' or ISBNCode like '%" + value + "%') and " +  (sql == null ? " 1 = 1" : sql));
+        return pageable.getList(bookInfoService);
+    }
 
     @PostMapping("/list")
     public ReturnObject list(@ModelAttribute Pageable<BookInfoModel> pageable) throws Exception {

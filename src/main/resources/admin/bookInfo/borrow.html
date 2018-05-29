@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>personalInfo</title>
+    <link href="/css/myTable.css" rel="stylesheet" type="text/css"/>
+    <link href="/css/style.css" rel="stylesheet" type="text/css" media="all" />
+    <link href="/resource/bootstrap-3.3.7-dist/css/bootstrap.css" rel="stylesheet" type="text/css" media="all" />
+    <link href="/resource/skin/jedate.css" rel="stylesheet" type="text/css" media="all" />
+    <!-- js -->
+    <!--<script src="/resource/js/jquery.min.js"></script>-->
+    <script src="/resource/ueditor/ueditor.js"></script>
+    <!-- //js -->
+    <!-- for-mobile-apps -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <!-- //for-mobile-apps -->
+    <!-- start-smoth-scrolling -->
+    <script type="text/javascript" src="/js/jquery.js"></script>
+    <script type="text/javascript" src="/js/move-top.js"></script>
+    <script type="text/javascript" src="/js/easing.js"></script>
+    <script type="text/javascript" src="/js/jquery.validate.js"></script>
+    <script type="text/javascript" src="/js/jquery.tools.js"></script>
+    <script type="text/javascript" src="/js/jquery.autocomplete.js"></script>
+    <script type="text/javascript" src="/js/common.js"></script>
+    <script type="text/javascript" src="/resource/skin/jedate.min.js"></script>
+    <script type="text/javascript">
+
+        var apiRoot = "/admin/bookInfo";
+        jQuery(document).ready(function($) {
+            function validateForm(){
+                return $("#inputForm").validate({
+                    rules: {
+                        "sn": {
+                            required: true
+                        },
+                        "username" : {
+                            required: true
+                        }
+                    },
+                    messages: {
+                        "username": {
+                            required: "不能为空"
+                        },
+                        "sn" : {
+                            required: "不能为空"
+                        }
+                    }
+                });
+            }
+            $(validateForm());
+            $("#borrow").click(function () {
+                if(validateForm().form()) {
+                    $.ajax({
+                        cache : true,
+                        type : "POST",
+                        url : apiRoot + "/borrow",
+                        data : $('#inputForm').serialize(),
+                        async : false,
+                        success : function(data) {
+                            if (data.status == 1) {
+                                alert("借阅完成");
+                                location.href = apiRoot + "/list.html"
+                            }else {
+                                alert(data.msg);
+                            }
+                        }
+                    });
+                }
+            });
+            $('#sn').autocomplete(apiRoot + "/autoBookInfo?sql=(status = 1)", {
+                dataType: "json",
+                max: 20,
+                width: 218,
+                scrollHeight: 300,
+                parse: function(data) {
+                    // if (data.length == 0) {
+                    //     $("#bookInfoId").val("-1");
+                    // }
+                    return $.map(data, function(item) {
+                        return {
+                            data: item,
+                            value: item.name
+                        }
+                    });
+                },
+                formatItem: function(item) {
+                    return '<span title="' + escapeHtml(item.name) + '">' + escapeHtml(abbreviate(item.sn, 50, "...")) + '<\/span>' + (true ? ' <span class="silver">[' + escapeHtml(item.name) + ']<\/span>' : '');
+                }
+            }).result(function(event, item) {
+                $("#sn").val(item.sn);
+                $("#bookInfoId").val(item.id);
+                $("#bookName").val(item.name);
+            });
+            $('#username').autocomplete("/admin/member/autoMember?sql=(role=" + roleId.student + ")", {
+                dataType: "json",
+                max: 20,
+                width: 218,
+                scrollHeight: 300,
+                parse: function(data) {
+                    return $.map(data, function(item) {
+                        return {
+                            data: item,
+                            value: item.name
+                        }
+                    });
+                },
+                formatItem: function(item) {
+                    return '<span title="' + escapeHtml(item.name) + '">' + escapeHtml(abbreviate(item.name, 50, "...")) + '<\/span>' + (true ? ' <span class="silver">[' + escapeHtml(item.username) + ']<\/span>' : '');
+                }
+            }).result(function(event, item) {
+                $("#username").val(item.username);
+                $("#memberName").val(item.name);
+            });
+        });
+    </script>
+</head>
+
+<body>
+<div class="psd">
+    <div class="container">
+        <div id="header">
+        </div>
+        <script>
+            $("#header").load("/admin/common/header.html");
+            setTimeout(function () {
+                $("#nav").children().eq(4).addClass("cap");
+            },100);
+        </script>
+        <div class="contact">
+            <h3>图书借阅</h3>
+            <div class="blog" >
+                <div class="blog-left">
+                    <form id="inputForm" method="post">
+                        <table class="input tab-content" style="display: table" id="baseMessage">
+                            <tr>
+                                <th>
+                                    <span class="glyphicon-class">图书编号</span>
+                                </th>
+                                <td>
+                                    <input type="text" class="text" id="sn" value="" name="sn" placeholder="输入图书信息"/>
+                                    <input type="text" class="text" id="bookInfoId" value="" name="bookInfoId" hidden/>
+                                </td>
+                                <th>
+                                    <span class="glyphicon-class">图书名称</span>
+                                </th>
+                                <td>
+                                    <input type="text" class="text" id="bookName" disabled/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    借阅用户名
+                                </th>
+                                <td>
+                                    <input type="text" class="text" value="" id="username" name="username"/>
+                                </td>
+                                <th>
+                                    借阅用户姓名
+                                </th>
+                                <td>
+                                    <input type="text" class="text" value="" id="memberName" disabled/>
+                                </td>
+                            </tr>
+                        </table>
+                        <table class="input">
+                            <tr>
+                                <th>
+                                    &nbsp;
+                                </th>
+                                <td>
+                                    <input type="button" class="button" value="借阅" id="borrow"/>
+                                    <input type="button" class="button" value="返回" onclick="history.back(); return false;" />
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+
+                <div class="clearfix"> </div>
+            </div>
+        </div>
+        <iframe src="/admin/common/footer.html" width='100%' height='100%' frameborder='0' name="_blank" id="_blank" />
+    </div>
+</div>
+</body>
+
+</html>

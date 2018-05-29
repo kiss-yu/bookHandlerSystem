@@ -107,7 +107,14 @@
             };
             return oTableInit;
         };
-
+        $(function () {
+            $("#btn_borrow").click(function () {
+                location.href = "./borrow.html";
+            });
+            $("#btn_return").click(function () {
+                location.href = "./returnBack.html";
+            });
+        });
     </script>
     <!-- start-smoth-scrolling -->
     <!-- for-portfolio -->

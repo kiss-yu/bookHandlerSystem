@@ -52,6 +52,7 @@ public class BorrowRecordService extends BaseService<BorrowRecordModel> {
         }
         BorrowRecordModel borrowRecordModel = list.get(0);
         borrowRecordModel.setStatus(true);
+        borrowRecordModel.setReturnTime(new Date());
         super.update(borrowRecordModel);
         model.setStatus(true);
         bookInfoService.update(model);

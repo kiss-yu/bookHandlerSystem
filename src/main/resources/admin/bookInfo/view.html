@@ -45,6 +45,20 @@
                         $("#enteringDate").html(model.enteringDate);
                         $("#member").html(model.member.username);
                         $("#exist").html(model.status ? "在库" : "已借出") ;
+                        if (!model.status) {
+                            $.ajax({
+                                cache : true,
+                                type : "GET",
+                                url : apiRoot + "/borrowInfo?bookInfoId=" + id,
+                                success : function(data) {
+                                    if (data.status == 1) {
+                                        $("#borrowMember").html(data.data.member.name);
+                                        $("#borrowTime").html(data.data.borrowTime);
+                                        $("#borrowInfo").show();
+                                    }
+                                }
+                            })
+                        }
                         $("#portrait").attr("src",model.image);
                         $("#introduce").html(model.introduce);
                     } else {
@@ -162,6 +176,21 @@
                                 </th>
                                 <td>
                                     <span type="text" class="text" id="member"  name="member.username"></span>
+                                </td>
+                            </tr>
+                            <tr id="borrowInfo" style="display: none;">
+                                <th>
+                                    <span class="glyphicon-class">借阅用户</span>
+                                </th>
+                                <td>
+                                    <span id="borrowMember"></span>
+                                </td>
+
+                                <th>
+                                    <span class="glyphicon-class">借阅时间</span>
+                                </th>
+                                <td>
+                                    <span type="text" class="text" id="borrowTime"  name="member.username"></span>
                                 </td>
                             </tr>
                         </table>
