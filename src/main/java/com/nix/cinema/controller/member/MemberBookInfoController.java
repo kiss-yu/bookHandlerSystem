@@ -70,7 +70,7 @@ public class MemberBookInfoController {
         Assert.notNull(bookInfo,"图书不存在");
         try {
             MemberModel borrowMember = borrowRecordService.list(null,null,null,null,
-                    SQLUtil.sqlFormat("status = 0 and bookInfo = ?",bookInfoId)).get(0).getMember();
+                    SQLUtil.sqlFormat("`status` = 0 and bookInfo = ?",bookInfoId)).get(0).getMember();
             if (!currentMember.getId().equals(borrowMember.getId())) {
                 return ReturnUtil.fail(401,"非法归还",null);
             }

@@ -7,6 +7,7 @@ import com.nix.cinema.common.cache.UserCache;
 import com.nix.cinema.model.BookInfoModel;
 import com.nix.cinema.model.MemberInfoModel;
 import com.nix.cinema.model.MemberModel;
+import com.nix.cinema.model.RoleModel;
 import com.nix.cinema.service.impl.BookInfoService;
 import com.nix.cinema.service.impl.BorrowRecordService;
 import com.nix.cinema.service.impl.MemberService;
@@ -49,7 +50,7 @@ public class AdminBookInfoController {
     @PostMapping("/add")
     public ReturnObject add(@ModelAttribute BookInfoModel model,
             @RequestParam(value = "portraitImg",required = false) MultipartFile portraitImg) throws Exception {
-        if (model.getMember() != null && model.getMember().getUsername() != null) {
+        if (UserCache.currentUser().getRole().getValue().equals(RoleModel.ADMIN_VALUE)) {
             MemberModel member = memberService.findByUsername(model.getMember().getUsername());
             if (member == null) {
                 return ReturnUtil.fail(100, "入库用户不存在", null);
@@ -107,7 +108,7 @@ public class AdminBookInfoController {
     public ReturnObject returnBack(@RequestParam("bookInfoId") Integer bookInfoId) throws Exception {
         BookInfoModel bookInfo = bookInfoService.findById(bookInfoId);
         Assert.notNull(bookInfo,"图书不存在");
-        MemberModel member = borrowRecordService.list(null,null,null,null,"`status = 0` and bookInfo = " + bookInfoId).get(0).getMember();
+        MemberModel member = borrowRecordService.list(null,null,null,null,"`status` = 0 and bookInfo = " + bookInfoId).get(0).getMember();
         MemberInfoModel memberInfo = member.getMemberInfo();
         memberInfo.setBorrowedNum(memberInfo.getBorrowedNum() + 1);
         memberService.update(member,null);

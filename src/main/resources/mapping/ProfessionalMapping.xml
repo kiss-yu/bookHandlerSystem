@@ -44,6 +44,9 @@
              <if test="sn != null">
                 #{sn,jdbcType=VARCHAR},
              </if>
+             <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+             </if>
              <if test="college != null">
                 #{college.id,jdbcType=INTEGER},
              </if>

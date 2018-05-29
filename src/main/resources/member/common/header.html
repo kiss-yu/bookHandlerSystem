@@ -62,6 +62,10 @@
     </style>
     <script>
         $(function () {
+            console.log(getMember() == null)
+            if (getMember() == null) {
+                location.href = "/member/login/login.html";
+            }
             $(".nav-block").mouseover(function () {
                 var nav = $(this);
                 if (nav.children(".pro").length != 0) {
@@ -76,10 +80,6 @@
                     nav.children(".pro").hide();
                 }
             });
-
-            if (getMember() == null) {
-                location.href = "/member/login/login.html";
-            }
         });
 
         function loginOut() {

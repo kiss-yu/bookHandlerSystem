@@ -64,9 +64,6 @@ public class Pageable<M extends BaseModel<M>> {
     public void setConditionsSql(String conditionsSql,Object ... values) {
         this.conditionsSql = SQLUtil.sqlFormat(conditionsSql,values);
     }
-    public Integer getCount() {
-        return list.size();
-    }
 
     public String getField() {
         return field;
@@ -98,5 +95,8 @@ public class Pageable<M extends BaseModel<M>> {
         return list;
     }
 
+    public Integer getCount() {
+        return baseService.list(tables,null,null,null,null,conditionsSql).size();
+    }
 
 }

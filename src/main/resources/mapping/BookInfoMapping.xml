@@ -63,6 +63,9 @@
             <if test="introduce != null">
                 `introduce`,
             </if>
+            <if test="member != null">
+                `member`,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
              <if test="id != null">
@@ -106,6 +109,9 @@
              </if>
              <if test="introduce != null">
                 #{introduce,jdbcType=VARCHAR},
+             </if>
+             <if test="member != null">
+                #{member.id,jdbcType=INTEGER},
              </if>
         </trim>
     </insert>
@@ -157,6 +163,9 @@
             </if>
             <if test="introduce != null">
                 `introduce` = #{introduce,jdbcType=VARCHAR},
+            </if>
+            <if test="member != null">
+                `member` = #{member.id,jdbcType=INTEGER},
             </if>
         </trim>
         where id = #{id,jdbcType=INTEGER}

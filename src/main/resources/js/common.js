@@ -29,7 +29,11 @@ let getOption = function(value,text) {
     return `<option value='${value}' >${text}</option>`;
 };
 function getMemberRoleValue() {
-    return JSON.parse(sessionStorage.getItem("member")).role.value;
+    try {
+        return JSON.parse(sessionStorage.getItem("member")).role.value;
+    }catch (e) {
+        return null;
+    }
 }
 function getMember() {
     return JSON.parse(sessionStorage.getItem("member"));
