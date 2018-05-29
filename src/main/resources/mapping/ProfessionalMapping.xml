@@ -94,7 +94,7 @@
     </select>
 
     <select id="list" resultMap="BaseResultMap">
-        select * from `professional`
+        select `professional`.* from ${tables}
         <if test="conditions != null">
             where ${conditions}
         </if>

@@ -3,7 +3,11 @@ var roleId = {
     admin:1,
     bookAdmin:2
 };
-
+var roleValue = {
+    student:'student',
+    admin:'admin',
+    bookAdmin:'bookAdmin'
+};
 function getQueryString() {
     var qs = location.search.substr(1), // 获取url中"?"符后的字串
         args = {}, // 保存参数数据的对象
@@ -24,7 +28,7 @@ function getQueryString() {
 let getOption = function(value,text) {
     return `<option value='${value}' >${text}</option>`;
 };
-function getMemberRoleName() {
+function getMemberRoleValue() {
     return JSON.parse(localStorage.getItem("member")).role.value;
 }
 var id = getQueryString()["id"];
@@ -32,8 +36,18 @@ var id = getQueryString()["id"];
 var listTable;
 var apiRoot;
 $(function () {
-    listTable = $("#listTable");
 
+
+    if (getMemberRoleValue() == roleValue.bookAdmin) {
+        $(".bookAdmin").css("visibility","visible");
+        $(".bookAdmin").css("position","static");
+    } else if (getMemberRoleValue() == roleValue.admin){
+        $(".admin").css("visibility","visible");
+        $(".admin").css("position","static");
+
+    }
+
+    listTable = $("#listTable");
     //1.初始化Table
     var oTable;
     try {
@@ -72,9 +86,23 @@ $(function () {
     })
 });
 
+//查询
+function search(field) {
+    $("#searchContent").attr("field",field);
+    $.ajax({
+        method:'POST',
+        url: apiRoot + '/search',
+        data:{field:field,value:$("#searchContent").val()},
+        traditional:true,
+        success : function(data) {
+            listTable.bootstrapTable('removeAll');
+            listTable.bootstrapTable('append', data.data);
+        }
+    });
+}
+
 //得到查询的参数
 var queryParams = function (params) {
-    console.log(params);
     var temp = {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
         limit: params.limit,   //页面大小
         page: params.offset / params.limit + 1,  //页码

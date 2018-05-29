@@ -12,8 +12,8 @@ import java.util.List;
  */
 public class RoleModel extends BaseModel<RoleModel> {
     public final static String ADMIN_VALUE = "admin";
-    public final static String CINEMA_VALUE = "cinema";
-    public final static String MOVIE_VALUE = "movie";
+    public final static String BOOKADMIN_VALUE = "bookAdmin";
+    public final static String STUDENT_VALUE = "student";
     private String name;
     private String value;
 

@@ -9,6 +9,7 @@ import com.nix.cinema.model.RoleModel;
 import com.nix.cinema.service.impl.MemberService;
 import com.nix.cinema.service.impl.RoleService;
 import com.nix.cinema.util.ReturnUtil;
+import com.nix.cinema.util.SQLUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
@@ -83,10 +84,15 @@ public class AdminMemberController {
     }
     @PostMapping("/list")
     public ReturnObject list(@ModelAttribute Pageable<MemberModel> pageable) throws Exception {
-        Map additionalData = new HashMap();
-        List list = pageable.getList(memberService);
-        additionalData.put("total",pageable.getCount());
-        return ReturnUtil.success(null,list,additionalData);
+        MemberModel current = UserCache.currentUser();
+        if (RoleModel.ADMIN_VALUE.equals(current.getRole().getValue())) {
+        } else if (RoleModel.BOOKADMIN_VALUE.equals(current.getRole().getValue())) {
+            pageable.setTables("`member`,`role`");
+            pageable.setConditionsSql("role.value = '?' and role.id = member.role",RoleModel.STUDENT_VALUE);
+        } else {
+            return null;
+        }
+        return ReturnUtil.list(pageable,memberService);
     }
 
     @GetMapping("/autoMember")
@@ -98,4 +104,21 @@ public class AdminMemberController {
     public ReturnObject current() {
         return ReturnUtil.success(UserCache.currentUser());
     }
+
+    @PostMapping("/search")
+    public ReturnObject search(@ModelAttribute Pageable pageable) throws Exception {
+        MemberModel current = UserCache.currentUser();
+        if (RoleModel.ADMIN_VALUE.equals(current.getRole().getValue())) {
+            pageable.setTables("`member`,`memberInfo`");
+            pageable.setConditionsSql(SQLUtil.sqlFormat("? like '%?%' and memberInfo.id = member.memberInfo",pageable.getField(),pageable.getValue()));
+        } else if (RoleModel.BOOKADMIN_VALUE.equals(current.getRole().getValue())) {
+            pageable.setTables("`member`,`role`,`memberInfo`");
+            pageable.setConditionsSql("? like '%?%' and role.value = '?' and role.id = member.role and memberInfo.id = member.memberInfo",
+                    pageable.getField(),pageable.getValue(),RoleModel.STUDENT_VALUE);
+        } else {
+            return null;
+        }
+        return ReturnUtil.list(pageable,memberService);
+    }
+
 }

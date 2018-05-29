@@ -51,10 +51,6 @@ public class AdminRoleInterfaceController {
 
     @PostMapping("/list")
     public ReturnObject list(@ModelAttribute Pageable<RoleInterfaceModel> pageable) throws Exception {
-        Map additionalData = new HashMap();
-
-        List list = pageable.getList(roleInterfaceService);
-        additionalData.put("total",pageable.getCount());
-        return ReturnUtil.success(null,list,additionalData);
+        return ReturnUtil.list(pageable,roleInterfaceService);
     }
 }

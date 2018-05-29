@@ -23,8 +23,7 @@
 
 <script type="text/javascript">
     //清除
-    var storage=window.localStorage;
-    storage.clear();
+    localStorage.clear();
 
     var loginUrl = "/login";
     $(document).ready(function () {
@@ -41,9 +40,8 @@
                     },
                     dataType: "json",
                     success: function (data) {
-                        console.log(data);
                         if(data.status == "1"){
-                            storage["id"]=data.id;
+                            localStorage.setItem("member",JSON.stringify(data.data));
                             window.location.href="/admin/index.html";
                         }
                         else{

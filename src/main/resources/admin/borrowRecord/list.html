@@ -175,6 +175,22 @@
                 <button id="btn_delete" type="button" class="btn btn-default">
                     <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
                 </button>
+
+                <div class="input-group"  style="width: 300px">
+                    <input type="text" class="form-control" field="name" aria-label="..." id="searchContent">
+                    <div class="input-group-btn ">
+                        <button type="button" class="btn btn-success" onclick="search()">查询</button>
+                        <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="caret"></span>
+                            <span class="sr-only">Toggle Dropdown</span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a href="javascript:search('bookInfo.sn')" >图书编号</a></li>
+                            <li><a href="javascript:search('bookInfo.name')" >图书名</a></li>
+                            <li><a href="javascript:search('member.name')">借阅用户姓名</a></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
 
             <table id="listTable">

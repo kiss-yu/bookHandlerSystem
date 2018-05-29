@@ -9,6 +9,7 @@ import com.nix.cinema.model.CollegeModel;
 import com.nix.cinema.service.impl.BookInfoService;
 import com.nix.cinema.service.impl.BorrowRecordService;
 import com.nix.cinema.util.ReturnUtil;
+import com.nix.cinema.util.SQLUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,9 +52,13 @@ public class AdminBorrowRecordController {
 
     @PostMapping("/list")
     public ReturnObject list(@ModelAttribute Pageable<BorrowRecordModel> pageable) throws Exception {
-        Map additionalData = new HashMap();
-        List list = pageable.getList(borrowRecordService);
-        additionalData.put("total",pageable.getCount());
-        return ReturnUtil.success(null,list,additionalData);
+        return ReturnUtil.list(pageable,borrowRecordService);
+    }
+
+    @PostMapping("/search")
+    public ReturnObject search(@ModelAttribute Pageable pageable) throws Exception {
+        pageable.setTables("`bookInfo`,`borrowRecord`,`member`");
+        pageable.setConditionsSql(SQLUtil.sqlFormat("? like '%?%' and bookInfo.id = borrowRecord.bookInfo and member.id = borrowRecord.member",pageable.getField(),pageable.getValue()));
+        return ReturnUtil.list(pageable,borrowRecordService);
     }
 }

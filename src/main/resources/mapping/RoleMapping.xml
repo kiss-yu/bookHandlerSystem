@@ -86,7 +86,7 @@
         select * from `role` where `${field}` = #{value,jdbcType=VARCHAR}
     </select>
     <select id="list" resultMap="BaseResultMap">
-        select * from `role`
+        select `role`.* from ${tables}
         <if test="conditions != null">
             where ${conditions}
         </if>

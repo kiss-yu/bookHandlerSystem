@@ -115,7 +115,7 @@
         select * from `roleinterface` where `${field}` = #{value,jdbcType=VARCHAR}
     </select>
     <select id="list" resultMap="BaseResultMap">
-        select * from `roleinterface`
+        select `roleinterface`.* from ${tables}
         <if test="conditions != null">
             where ${conditions}
         </if>

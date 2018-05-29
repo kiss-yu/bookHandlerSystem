@@ -3,6 +3,7 @@ package com.nix.cinema.controller.admin;
 import com.nix.cinema.common.Pageable;
 import com.nix.cinema.common.ReturnObject;
 import com.nix.cinema.common.annotation.AdminController;
+import com.nix.cinema.common.cache.UserCache;
 import com.nix.cinema.model.BookInfoModel;
 import com.nix.cinema.model.MemberInfoModel;
 import com.nix.cinema.model.MemberModel;
@@ -10,6 +11,7 @@ import com.nix.cinema.service.impl.BookInfoService;
 import com.nix.cinema.service.impl.BorrowRecordService;
 import com.nix.cinema.service.impl.MemberService;
 import com.nix.cinema.util.ReturnUtil;
+import com.nix.cinema.util.SQLUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.util.Assert;
@@ -47,11 +49,15 @@ public class AdminBookInfoController {
     @PostMapping("/add")
     public ReturnObject add(@ModelAttribute BookInfoModel model,
             @RequestParam(value = "portraitImg",required = false) MultipartFile portraitImg) throws Exception {
-        MemberModel member = memberService.findByUsername(model.getMember().getUsername());
-        if (member == null) {
-            return ReturnUtil.fail(100,"入库用户不存在",null);
+        if (model.getMember() != null && model.getMember().getUsername() != null) {
+            MemberModel member = memberService.findByUsername(model.getMember().getUsername());
+            if (member == null) {
+                return ReturnUtil.fail(100, "入库用户不存在", null);
+            }
+            model.setMember(member);
+        } else {
+            model.setMember(UserCache.currentUser());
         }
-        model.setMember(member);
         return ReturnUtil.success(bookInfoService.add(model,portraitImg));
     }
     @PostMapping("/delete")
@@ -122,9 +128,12 @@ public class AdminBookInfoController {
 
     @PostMapping("/list")
     public ReturnObject list(@ModelAttribute Pageable<BookInfoModel> pageable) throws Exception {
-        Map additionalData = new HashMap();
-        List list = pageable.getList(bookInfoService);
-        additionalData.put("total",pageable.getCount());
-        return ReturnUtil.success(null,list,additionalData);
+        return ReturnUtil.list(pageable,bookInfoService);
+    }
+
+    @PostMapping("/search")
+    public ReturnObject search(@ModelAttribute Pageable pageable) throws Exception {
+        pageable.setConditionsSql(SQLUtil.sqlFormat("? like '%?%'",pageable.getField(),pageable.getValue()));
+        return ReturnUtil.list(pageable,bookInfoService);
     }
 }

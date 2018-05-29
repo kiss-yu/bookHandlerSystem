@@ -137,14 +137,31 @@
         <div class="contact">
             <h3>用户管理</h3>
             <div id="toolbar" class="btn-group">
-                <button id="btn_add" type="button" class="btn btn-default">
+                <button id="btn_add" type="button" class="btn btn-default admin">
                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>添加
                 </button>
-                <button id="btn_delete" type="button" class="btn btn-default">
+                <button id="btn_delete" type="button" class="btn btn-default admin">
                     <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
                 </button>
+                <div class="input-group"  style="width: 300px">
+                    <input type="text" class="form-control" field="name" aria-label="..." id="searchContent">
+                    <div class="input-group-btn ">
+                        <button type="button" class="btn btn-success" onclick="search()">查询</button>
+                        <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="caret"></span>
+                            <span class="sr-only">Toggle Dropdown</span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a href="javascript:search('username')" >用户名</a></li>
+                            <li><a href="javascript:search('name')" >姓名</a></li>
+                            <li><a href="javascript:search('age')">年龄</a></li>
+                            <li><a href="javascript:search('memberInfo.studentId')">学号</a></li>
+                            <li><a href="javascript:search('memberInfo.professional')">专业</a></li>
+                            <li><a href="javascript:search('memberInfo.college')">学院</a></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-
             <table id="listTable">
 
             </table>

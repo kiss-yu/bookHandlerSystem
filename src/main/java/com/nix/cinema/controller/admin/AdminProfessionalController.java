@@ -6,6 +6,7 @@ import com.nix.cinema.common.annotation.AdminController;
 import com.nix.cinema.model.ProfessionalModel;
 import com.nix.cinema.service.impl.ProfessionalService;
 import com.nix.cinema.util.ReturnUtil;
+import com.nix.cinema.util.SQLUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -60,10 +61,7 @@ public class AdminProfessionalController {
     }
     @PostMapping("/list")
     public ReturnObject list(@ModelAttribute Pageable<ProfessionalModel> pageable) throws Exception {
-        Map additionalData = new HashMap();
-        List list = pageable.getList(professionalService);
-        additionalData.put("total",pageable.getCount());
-        return ReturnUtil.success(null,list,additionalData);
+        return ReturnUtil.list(pageable,professionalService);
     }
     @GetMapping("/collegeAll")
     public ReturnObject collegeAll(Integer id) throws Exception {
@@ -73,5 +71,13 @@ public class AdminProfessionalController {
         List list = pageable.getList(professionalService);
         additionalData.put("total",pageable.getCount());
         return ReturnUtil.success(null,list,additionalData);
+    }
+
+
+    @PostMapping("/search")
+    public ReturnObject search(@ModelAttribute Pageable pageable) throws Exception {
+        pageable.setTables("`college`,`professional`");
+        pageable.setConditionsSql(SQLUtil.sqlFormat("? like '%?%' and professional.college = college.id",pageable.getField(),pageable.getValue()));
+        return ReturnUtil.list(pageable,professionalService);
     }
 }

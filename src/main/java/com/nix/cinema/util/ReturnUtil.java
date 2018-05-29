@@ -1,8 +1,12 @@
 package com.nix.cinema.util;
 
 
+import com.nix.cinema.common.Pageable;
 import com.nix.cinema.common.ReturnObject;
+import com.nix.cinema.service.BaseService;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -69,5 +73,13 @@ public final class ReturnUtil {
         object.setData(o);
         object.setAdditionalData(map);
         return object;
+    }
+
+
+    public static ReturnObject list(Pageable pageable, BaseService service) {
+        Map additionalData = new HashMap();
+        List list = pageable.getList(service);
+        additionalData.put("total",pageable.getCount());
+        return success(null,list,additionalData);
     }
 }

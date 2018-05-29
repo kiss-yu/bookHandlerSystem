@@ -9,6 +9,7 @@ import com.nix.cinema.model.MemberModel;
 import com.nix.cinema.model.RoleModel;
 import com.nix.cinema.service.impl.CollegeService;
 import com.nix.cinema.util.ReturnUtil;
+import com.nix.cinema.util.SQLUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -67,9 +68,11 @@ public class AdminCollegeController {
 
     @PostMapping("/list")
     public ReturnObject list(@ModelAttribute Pageable<CollegeModel> pageable) throws Exception {
-        Map additionalData = new HashMap();
-        List list = pageable.getList(collegeService);
-        additionalData.put("total",pageable.getCount());
-        return ReturnUtil.success(null,list,additionalData);
+        return ReturnUtil.list(pageable,collegeService);
+    }
+    @PostMapping("/search")
+    public ReturnObject search(@ModelAttribute Pageable pageable) throws Exception {
+        pageable.setConditionsSql(SQLUtil.sqlFormat("? like '%?%'",pageable.getField(),pageable.getValue()));
+        return ReturnUtil.list(pageable,collegeService);
     }
 }

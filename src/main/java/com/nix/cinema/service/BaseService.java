@@ -110,15 +110,23 @@ public class BaseService <M extends BaseModel<M>>{
      * @param conditionsSql 查找列表时的sql条件  sql语=语句里where后面的部分都写在改字符串里
      * @return 返回符合条件的对象列表 但查找失败时返回null
      * */
-    public List<M> list(Integer page,Integer size,String order,String sort,String conditionsSql){
+    public List<M> list(String tables,Integer page,Integer size,String order,String sort,String conditionsSql){
+        if (tables == null || tables.isEmpty()) {
+            tables = this.getClass().getSimpleName().replaceFirst("Service","");
+        }
         try {
-            Object find = invokeMapperMethod("list", new Class[]{Integer.class,Integer.class,String.class,String.class,String.class},
-                    SQLUtil.getOffset(page,size), size,order,sort,conditionsSql);
+            Object find = invokeMapperMethod("list", new Class[]{String.class,Integer.class,Integer.class,String.class,String.class,String.class},
+                    tables,SQLUtil.getOffset(page,size), size,order,sort,conditionsSql);
             return (List<M>) find;
         }catch (Exception e){
             e.printStackTrace();
             return null;
         }
+    }
+
+    public List<M> list(Integer page,Integer size,String order,String sort,String conditionsSql){
+        String tables = this.getClass().getSimpleName().replaceFirst("Service","");
+        return list(tables,page,size,order,sort,conditionsSql);
     }
 
     /**

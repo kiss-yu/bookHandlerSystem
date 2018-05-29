@@ -76,6 +76,14 @@
                     nav.children(".pro").hide();
                 }
             });
+            if (getMemberRoleValue() == roleValue.bookAdmin) {
+                $(".bookAdmin").css("visibility","visible");
+                $(".bookAdmin").css("position","static");
+            } else if (getMemberRoleValue() == roleValue.admin){
+                $(".admin").css("visibility","visible");
+                $(".admin").css("position","static");
+
+            }
         });
 
         function loginOut() {
@@ -88,6 +96,12 @@
             });
         }
     </script>
+    <style>
+        .admin,.bookAdmin {
+            visibility: hidden;
+            position: absolute;
+        }
+    </style>
 </head>
 <body>
 <div class="header">
@@ -97,34 +111,34 @@
     <div class="logo-right">
         <span class="menu"><img src="/images/menu.png" alt=" "/></span>
         <ul class="nav1" id="nav">
-            <div style="display: inline-block" class="nav-block">
+            <div style="display: inline-block" class="nav-block admin bookAdmin">
                 <a href="/admin/index.html" class="my_act my_act1">主页<span>START HERE</span></a>
             </div>
-            <div style="display: inline-block" class="nav-block">
+            <div style="display: inline-block" class="nav-block  admin bookAdmin">
                 <a href="/admin/member/list.html" class="my_act my_act2">用户管理<span>详情</span></a>
             </div>
-            <div style="display: inline-block" class="nav-block">
+            <div style="display: inline-block" class="nav-block admin">
                 <a class="my_act2 my_act">权限管理<span>详情</span></a>
                 <div class="pro" style="display: none">
                     <a href="/admin/role/list.html" class="my_act my_act3">角色管理</a>
                     <a href="/admin/roleInterface/list.html" class="my_act my_act3">接口管理</a>
                 </div>
             </div>
-            <div style="display: inline-block" class="nav-block">
+            <div style="display: inline-block" class="nav-block admin">
                 <a href="#" class="my_act2 my_act">学院管理<span>详情</span></a>
                 <div class="pro" style="display: none">
                     <a href="/admin/college/list.html" class="my_act my_act3">学院管理</a>
                     <a href="/admin/professional/list.html" class="my_act my_act3">专业管理</a>
                 </div>
             </div>
-            <div style="display: inline-block" class="nav-block">
+            <div style="display: inline-block" class="nav-block admin bookAdmin">
                 <a href="#" class="my_act2 my_act">图书<span>详情</span></a>
                 <div class="pro" style="display: none">
                     <a href="/admin/bookInfo/list.html" class="my_act my_act3">图书管理</a>
                     <a href="/admin/borrowRecord/list.html" class="my_act my_act3">借阅记录</a>
                 </div>
             </div>
-            <div style="display: inline-block" class="nav-block">
+            <div style="display: inline-block" class="nav-block admin bookAdmin">
                 <a href="#" class="my_act my_act2">个人信息<span>详情</span></a>
             </div>
             <div style="display: inline-block" class="nav-block">

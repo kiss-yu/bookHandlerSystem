@@ -69,7 +69,7 @@
     </select>
 
     <select id="list" resultMap="BaseResultMap">
-        select * from `${model_name}`
+        select `${model_name}`.* from @{tables}
         <if test="conditions != null">
             where @{conditions}
         </if>

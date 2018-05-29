@@ -27,6 +27,9 @@
 
         var apiRoot = "/admin/bookInfo";
         jQuery(document).ready(function($) {
+            if (getMemberRoleValue() == roleValue.bookAdmin) {
+                $(".bookAdmin").hide();
+            }
             function validateForm(){
                 return $("#inputForm").validate({
                     rules: {
@@ -210,15 +213,15 @@
                                     <input type="text" class="jeinput text" id="comeUpTime"  name="comeUpTime"/>
                                 </td>
 
-                                <th>
+                                <th class="bookAdmin">
                                     <span class="glyphicon-class">入库日期</span>
-                                </th>
-                                <td>
+                                </th >
+                                <td class="bookAdmin">
                                     <input type="text" class="jeinput text" id="enteringDate"  name="enteringDate"/>
                                 </td>
                             </tr>
 
-                            <tr>
+                            <tr class="bookAdmin">
                                 <th>
                                     <span class="glyphicon-class">状态</span>
                                 </th>
@@ -226,7 +229,6 @@
                                     <input id="boy" type="radio" checked="checked" name="status" value="true"/>在库
                                     <input id="girl" type="radio"  name="status" value="false"/>已借出
                                 </td>
-
                                 <th>
                                     <span class="glyphicon-class">入库用户</span>
                                 </th>

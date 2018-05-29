@@ -2,6 +2,7 @@ package com.nix.cinema.common;
 
 import com.nix.cinema.model.base.BaseModel;
 import com.nix.cinema.service.BaseService;
+import com.nix.cinema.util.SQLUtil;
 
 import java.util.List;
 
@@ -15,9 +16,12 @@ public class Pageable<M extends BaseModel<M>> {
     private Integer limit;
     private String order;
     private String sort;
+    private String field;
+    private String value;
+    private String tables;
     private String conditionsSql;
     private BaseService<M> baseService;
-
+    private List list;
     public Integer getPage() {
         return page;
     }
@@ -57,12 +61,42 @@ public class Pageable<M extends BaseModel<M>> {
     public void setConditionsSql(String conditionsSql) {
         this.conditionsSql = conditionsSql;
     }
+    public void setConditionsSql(String conditionsSql,Object ... values) {
+        this.conditionsSql = SQLUtil.sqlFormat(conditionsSql,values);
+    }
     public Integer getCount() {
-        return baseService.list(null,null,null,null,conditionsSql).size();
+        return list.size();
+    }
+
+    public String getField() {
+        return field;
+    }
+
+    public void setField(String field) {
+        this.field = field;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public String getTables() {
+        return tables;
+    }
+
+    public void setTables(String tables) {
+        this.tables = tables;
     }
 
     public List<M> getList(BaseService<M> service) {
         baseService = service;
-        return service.list(page,limit,order,sort,conditionsSql);
+        list = service.list(tables,page,limit,order,sort,conditionsSql);
+        return list;
     }
+
+
 }
