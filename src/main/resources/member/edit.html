@@ -23,52 +23,33 @@
 	<script type="text/javascript" src="/js/common.js"></script>
 	<script src="/resource/js/md5.js"></script>
 	<script type="text/javascript">
-        var apiRoot = "/admin/member";
+        var apiRoot = "/member/member";
         jQuery(document).ready(function($) {
             //添加角色选着下拉框
+
+            //获取用户信息设置
             $.ajax({
                 cache : true,
-                type : "POST",
-                url : "/admin/role/list",
+                type : "GET",
+                url : apiRoot + "/view?id=" + getMember().id,
                 success : function(data) {
                     if (data.status == 1) {
-                        for (var i = 0;i < data.data.length;i ++) {
-                            var model = data.data[i];
-                            $("#roleSelect").append(getOption(model.id,model.name));
-                        }
-                        //获取用户信息设置
-                        $.ajax({
-                            cache : true,
-                            type : "GET",
-                            url : apiRoot + "/view?id=" + id,
-                            success : function(data) {
-                                if (data.status == 1) {
-                                    var model = data.data;
-                                    $("#id").val(model.id);
-                                    $("#username").val(model.username);
-                                    $("#_username").val(model.username);
-                                    $("#name").val(model.name);
-                                    $("#phone").val(model.phone);
-                                    $("#age").val(model.age);
-                                    $("#balance").val(model.balance);
-                                    $("#portrait").attr("src",model.img)
-                                    model.sex ? $("#boy").prop("checked",true) : $("#girl").prop("checked",true);
-                                    $("#roleSelect").val(model.role.id);
-                                    $("#collegeSelect").val(model.memberInfo.college.id);
-                                    $("#professionalSelect").val(model.memberInfo.professional.id);
-                                    selectRole($("#roleSelect"));
-                                    $("#memberInfoId").val(model.memberInfo.id)
-                                    $("#studentId").val(model.memberInfo.studentId);
-                                    $("#max").val(model.memberInfo.max);
-                                    $("#timeLimit").val(model.memberInfo.timeLimit);
-                                    $("#collegeSelect").val(model.memberInfo.college.id);
-                                    $("#professionalSelect").val(model.memberInfo.professional.id);
-                                    $("#borrowedNum").val(model.memberInfo.borrowedNum);
-                                } else {
-                                    alert("错误");
-                                }
-                            }
-                        });
+                        var model = data.data;
+                        $("#id").val(model.id);
+                        $("#username").val(model.username);
+                        $("#_username").val(model.username);
+                        $("#name").val(model.name);
+                        $("#phone").val(model.phone);
+                        $("#age").val(model.age);
+                        $("#balance").val(model.balance);
+                        $("#portrait").attr("src",model.img)
+                        model.sex ? $("#boy").prop("checked",true) : $("#girl").prop("checked",true);
+                        selectRole(model);
+                        $("#memberInfoId").val(model.memberInfo.id)
+                        $("#studentId").val(model.memberInfo.studentId);
+                        $("#professionalSelect").val(model.memberInfo.professional.id);
+                    } else {
+                        alert("错误");
                     }
                 }
             });
@@ -138,7 +119,7 @@
                         async : false,
                         success : function(data) {
                             if (data.status == 1) {
-                                location.href = apiRoot + "/list.html"
+                                location.href = "./view.html"
                             }
                         }
                     });
@@ -146,29 +127,27 @@
             });
         });
 
-        function selectRole(role) {
-            if (role.val() == roleId.student) {
-                $("#memberInfo").show();
-                //添加学院选着下拉框
-                $.ajax({
-                    cache : true,
-                    type : "POST",
-                    url : "/admin/college/list",
-                    success : function(data) {
-                        if (data.status == 1) {
-                            $("#collegeSelect").html("");
-                            for (var i = 0;i < data.data.length;i ++) {
-                                var model = data.data[i];
-                                $("#collegeSelect").append(getOption(model.id,model.name));
-                            }
-                            selectCollege($("#collegeSelect"));
+
+        function selectRole(member) {
+            //添加学院选着下拉框
+            $.ajax({
+                cache : true,
+                type : "POST",
+                url : "/admin/college/list",
+                success : function(data) {
+                    if (data.status == 1) {
+                        $("#collegeSelect").html("");
+                        for (var i = 0;i < data.data.length;i ++) {
+                            var model = data.data[i];
+                            $("#collegeSelect").append(getOption(model.id,model.name));
                         }
+                        $("#collegeSelect").val(member.memberInfo.college.id);
+                        selectCollege($("#collegeSelect"));
                     }
-                });
-            } else {
-                $("#memberInfo").hide();
-            }
+                }
+            });
         }
+
         function selectCollege(college) {
             //添加专业选着下拉框
             $.ajax({
@@ -201,13 +180,13 @@
 		<div id="header">
 		</div>
 		<script>
-            $("#header").load("/admin/common/header.html");
+            $("#header").load("/member/common/header.html");
             setTimeout(function () {
-                $("#nav").children().eq(1).addClass("cap");
+                $("#nav").children().eq(2).addClass("cap");
             },100);
 		</script>
 		<div class="contact">
-			<h3>修改用户</h3>
+			<h3>修改个人信息</h3>
 			<div class="blog" style="height: 650px;">
 				<div class="blog-left">
 					<form id="inputForm" method="post" enctype="multipart/form-data">
@@ -277,60 +256,27 @@
 									<input id="boy" type="radio" checked="checked" name="sex" value="1"/>男
 									<input id="girl" type="radio"  name="sex" value="0"/>女
 								</td>
-								<th>
-									<span class="glyphicon-class">角色</span>
-								</th>
-								<td>
-									<select name="roleId" id="roleSelect" onclick="selectRole($(this))">
-									</select>
-								</td>
 							</tr>
-							<div >
-							</div>
+							<tr>
+							<th>
+								<span class="glyphicon-class">学号</span>
+							</th>
+							<td>
+								<input type="text" class="text" id="studentId" value="" name="memberInfo.studentId"/>
+								<input type="text" class="text" id="memberInfoId" value="" name="memberInfo.id" hidden/>
+							</td>
+							<th>
+								<span class="glyphicon-class">学院</span>
+							</th>
+							<td>
+								<select name="memberInfo.college.id" id="collegeSelect" onclick="selectCollege($(this))">
+								</select>
+								<select name="memberInfo.professional.id" id="professionalSelect">
+								</select>
+							</td>
+						</tr>
 						</table>
 
-						<table id="memberInfo" hidden class="input tab-content">
-							<tr>
-								<th>
-									<span class="glyphicon-class">学号</span>
-								</th>
-								<td>
-									<input type="text" class="text" id="studentId" value="" name="memberInfo.studentId"/>
-									<input type="text" class="text" id="memberInfoId" value="" name="memberInfo.id" hidden/>
-								</td>
-								<th>
-									<span class="glyphicon-class">学院</span>
-								</th>
-								<td>
-									<select name="memberInfo.college.id" id="collegeSelect" onclick="selectCollege($(this))">
-									</select>
-									<select name="memberInfo.professional.id" id="professionalSelect">
-									</select>
-								</td>
-							</tr>
-							<tr>
-								<th>
-									<span class="glyphicon-class">可借最大数量</span>
-								</th>
-								<td>
-									<input type="text" class="text" id="max" value="" name="memberInfo.max"/>
-								</td>
-								<th>
-									<span class="glyphicon-class">可借最大期限（小时）</span>
-								</th>
-								<td>
-									<input type="text" class="text" id="timeLimit" value="" name="memberInfo.timeLimit"/>
-								</td>
-							</tr>
-							<tr>
-								<th>
-									<span class="glyphicon-class">已经借阅数量</span>
-								</th>
-								<td>
-									<input type="text" class="text" id="borrowedNum" value="" name="memberInfo.borrowedNum"/>
-								</td>
-							</tr>
-						</table>
 						<table class="input">
 							<tr>
 								<th>

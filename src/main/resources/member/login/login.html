@@ -42,7 +42,7 @@
                     success: function (data) {
                         if(data.status == "1" && data.data != null){
                             sessionStorage.setItem("member",JSON.stringify(data.data));
-                            window.location.href="/admin/index.html";
+                            window.location.href="/member/index.html";
                         }
                         else{
                             alert("登录失败");

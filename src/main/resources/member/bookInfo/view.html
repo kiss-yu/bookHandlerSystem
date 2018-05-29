@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>personalInfo</title>
+    <link href="/css/myTable.css" rel="stylesheet" type="text/css"/>
+    <link href="/css/style.css" rel="stylesheet" type="text/css" media="all" />
+    <link href="/resource/bootstrap-3.3.7-dist/css/bootstrap.css" rel="stylesheet" type="text/css" media="all" />
+    <link href="/resource/skin/jedate.css" rel="stylesheet" type="text/css" media="all" />
+    <!-- js -->
+    <!--<script src="/resource/js/jquery.min.js"></script>-->
+    <script src="/resource/ueditor/ueditor.js"></script>
+    <!-- //js -->
+    <!-- for-mobile-apps -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <!-- //for-mobile-apps -->
+    <!-- start-smoth-scrolling -->
+    <script type="text/javascript" src="/js/jquery.js"></script>
+    <script type="text/javascript" src="/js/move-top.js"></script>
+    <script type="text/javascript" src="/js/easing.js"></script>
+    <script type="text/javascript" src="/js/jquery.validate.js"></script>
+    <script type="text/javascript" src="/js/jquery.tools.js"></script>
+    <script type="text/javascript" src="/js/jquery.autocomplete.js"></script>
+    <script type="text/javascript" src="/js/common.js"></script>
+    <script type="text/javascript" src="/resource/skin/jedate.min.js"></script>
+    <script type="text/javascript">
+
+        var apiRoot = "/member/bookInfo";
+        jQuery(document).ready(function($) {
+            //获取学院信息设置
+            $.ajax({
+                cache : true,
+                type : "GET",
+                url : apiRoot + "/view?id=" + id,
+                success : function(data) {
+                    if (data.status == 1) {
+                        var model = data.data;
+                        $("#sn").html(model.sn);
+                        $("#name").html(model.name);
+                        $("#author").html(model.author);
+                        $("#translator").html(model.translator);
+                        $("#price").html(model.price);
+                        $("#ISBNCode").html(model.isbncode);
+                        $("#comeUpTime").html(model.comeUpTime);
+                        $("#enteringDate").html(model.enteringDate);
+                        $("#member").html(model.member.username);
+                        $("#exist").html(model.status ? "在库" : "已借出") ;
+                        if (!model.status) {
+                            $.ajax({
+                                cache : true,
+                                type : "GET",
+                                url : apiRoot + "/borrowInfo?bookInfoId=" + id,
+                                success : function(data) {
+                                    if (data.status == 1) {
+                                        $("#borrowMember").html(data.data.member.name);
+                                        $("#borrowTime").html(data.data.borrowTime);
+                                        $("#borrowInfo").show();
+                                    }
+                                }
+                            })
+                        }
+                        $("#portrait").attr("src",model.image);
+                        $("#introduce").html(model.introduce);
+                    } else {
+                        alert("错误");
+                    }
+                }
+            });
+        });
+    </script>
+
+    <style>
+        #portrait{
+            width: 200px;
+            height: 300px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="psd">
+    <div class="container">
+        <div id="header">
+        </div>
+        <script>
+            $("#header").load("/member/common/header.html");
+            setTimeout(function () {
+                $("#nav").children().eq(1).addClass("cap");
+            },100);
+        </script>
+        <div class="contact">
+            <h3>图书详情</h3>
+            <div class="blog" >
+                <div class="blog-left">
+                    <form id="inputForm" method="post">
+                        <table class="input tab-content" style="display: table">
+                            <tr>
+                                <th>
+                                    <span class="glyphicon-class">封面</span>
+                                </th>
+                                <td>
+                                    <img id="portrait" src="/images/bookInfo/default.jpg" ">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <span class="glyphicon-class">图书编号</span>
+                                </th>
+                                <td>
+                                    <span type="text" class="text" id="sn" value="" name="sn" disabled></span>
+                                </td>
+                                <th>
+                                    <span class="glyphicon-class">图书名称</span>
+                                </th>
+                                <td>
+                                    <span type="text" class="text" id="name" value="" name="name"></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <span class="glyphicon-class">作者</span>
+                                </th>
+                                <td>
+                                    <span type="text" class="text" id="author" value="" name="author"></span>
+                                </td>
+
+                                <th>
+                                    <span class="glyphicon-class">译者</span>
+                                </th>
+                                <td>
+                                    <span type="text" class="text" id="translator" value="" name="translator"></span>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th>
+                                    <span class="glyphicon-class">价格</span>
+                                </th>
+                                <td>
+                                    <span type="text" class="text" id="price" value="" name="price"></span>
+                                </td>
+
+                                <th>
+                                    <span class="glyphicon-class">ISBN</span>
+                                </th>
+                                <td>
+                                    <span type="text" class="text" id="ISBNCode" value="" name="ISBNCode"></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <span class="glyphicon-class">出版日期</span>
+                                </th>
+                                <td>
+                                    <span type="text" class="jeinput text" id="comeUpTime"  name="comeUpTime"></span>
+                                </td>
+
+                                <th>
+                                    <span class="glyphicon-class">入库日期</span>
+                                </th>
+                                <td>
+                                    <span type="text" class="jeinput text" id="enteringDate"  name="enteringDate"></span>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th>
+                                    <span class="glyphicon-class">状态</span>
+                                </th>
+                                <td>
+                                    <span id="exist" type="radio" checked="checked" name="status" value="true"></span>
+                                </td>
+
+                                <th>
+                                    <span class="glyphicon-class">入库用户</span>
+                                </th>
+                                <td>
+                                    <span type="text" class="text" id="member"  name="member.username"></span>
+                                </td>
+                            </tr>
+                            <tr id="borrowInfo" style="display: none;">
+                                <th>
+                                    <span class="glyphicon-class">借阅用户</span>
+                                </th>
+                                <td>
+                                    <span id="borrowMember"></span>
+                                </td>
+
+                                <th>
+                                    <span class="glyphicon-class">借阅时间</span>
+                                </th>
+                                <td>
+                                    <span type="text" class="text" id="borrowTime"  name="member.username"></span>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <table  class="input tab-content" style="display: table" id="introduceTable">
+                            <tr>
+                                <th>
+                                    介绍
+                                </th>
+                                <td>
+                                    <span id="introduce" name="introduce" class="editor" style="width: 100%;"></span>
+                                </td>
+                            </tr>
+                        </table>
+                        <table class="input">
+                            <tr>
+                                <th>
+                                    &nbsp;
+                                </th>
+                                <td>
+                                    <input type="button" class="button" value="返回" onclick="history.back(); return false;" />
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+
+                <div class="clearfix"> </div>
+            </div>
+        </div>
+        <iframe src="/admin/common/footer.html" width='100%' height='100%' frameborder='0' name="_blank" id="_blank" />
+    </div>
+</div>
+</body>
+
+</html>

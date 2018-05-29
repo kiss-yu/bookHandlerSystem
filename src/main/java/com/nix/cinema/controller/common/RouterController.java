@@ -27,7 +27,7 @@ public class RouterController {
      * */
     @GetMapping("/member/login")
     public String userLogin() {
-        return "/member/login.html";
+        return "/member/login/login.html";
     }
 
     /**

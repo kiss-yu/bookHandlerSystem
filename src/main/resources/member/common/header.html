@@ -3,77 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link href="/css/style.css" rel="stylesheet" type="text/css" media="all" />
+    <style>
+        .my_act{
+            display: block;
+            color: #626262;
+            font-size: 15px;
+            padding: 0 0 0 20px;
+        }
+        .my_act1{
+            background: url("/images/1.png") no-repeat;
+        }
+        .my_act2{
+            background: url("/images/2.png") no-repeat;
+        }
+        .my_act span{
+            display:block;
+            color:#C4C4C4;
+            font-weight:400;
+            font-family: 'Titillium Web', sans-serif;
+            font-style:normal;
+            margin:0em;
+            letter-spacing:-1px;
+            font-size:13px;
+            display:block;
+        }
 
+        .my_act:hover{
+            text-decoration:none;
+        }
+        .nav-block{
+            padding: 55px 0 0 0;
+            float: left;
+            width: 116px;
+            height: 129px;
+            transition:0.5s all;
+            -webkit-transition:0.5s all;
+            -moz-transition:0.5s all;
+            -o-transition:0.5s all;
+            -ms-transition:0.5s all;
+        }
+        .nav-block:hover{
+            background:#F5F5F5;
+            border-top:10px solid #FFAE00;
+            padding: 45px 0 0 0;
+        }
+        .my_act3:first-child{
+            padding: 0 0 0 10px;
+        }
+        .my_act3:last-child{
+            padding: 10px 0 0 10px;
+        }
+        .cap{
+            background:#F5F5F5;
+            border-top:10px solid #FFAE00;
+            padding: 45px 0 0 0;
+        }
+    </style>
     <script>
-        let temp = (data) => {
-            return `
-					<div class="item">
-					<div class="zoom-container">
-						<div class="zoom-caption">
-							<span>热度:${data.hitCount}</span>
-							<a href="/member/movieView.html?id=${data.id}">
-								<i class="fa fa-play-circle-o fa-5x" style="color: #fff"></i>
-							</a>
-							<p>${data.name}</p>
-						</div>
-						<img src="${data.img}">
-					</div>
-					</div>
-				`;
-        };
-        let temp2 = (data) => {
-            return `
-            <li><a href="/member/cinemaView.html?id=${data.id}">${data.name}</a></li>
-            `;
-        };
-        jQuery(document).ready(function($) {
-            $.ajax({
-                cache: true,
-                type: "POST",
-                url: "/movie/list",
-                data: {page: 1, limit: 8, order: "hitCount", sort: "desc"},
-                success: function (data) {
-                    if (data.status == 1) {
-                        if (data.data != null) {
-                            var array = data.data;
-                            var div = $("#owl-demo");
-                            for (var i = 0; i < array.length; i++) {
-                                div.append($(temp(array[i])));
-                            }
-                            $("#owl-demo").owlCarousel({
-                                autoPlay: 3000,
-                                items : 5,
-                                itemsDesktop : [1199,4],
-                                itemsDesktopSmall : [979,4]
-                            });
-                        }
-                    } else {
-                        alert("错误");
-                    }
+        $(function () {
+            $(".nav-block").mouseover(function () {
+                var nav = $(this);
+                if (nav.children(".pro").length != 0) {
+                    nav.children(".my_act").hide();
+                    nav.children(".pro").show();
                 }
             });
-            $.ajax({
-                cache: true,
-                type: "POST",
-                url: "/cinema/list",
-                data: {page: 1, limit: 4, order: "createDate", sort: "desc"},
-                success: function (data) {
-                    if (data.status == 1) {
-                        if (data.data != null) {
-                            var array = data.data;
-                            for (var i = 0; i < array.length; i++) {
-                                $("#hotCinema").append($(temp2(array[i])));
-                            }
-                        }
-                    } else {
-                        alert("错误");
-                    }
+            $(".nav-block").mouseleave(function () {
+                var nav = $(this);
+                if (nav.children(".pro").length != 0) {
+                    nav.children(".my_act").show();
+                    nav.children(".pro").hide();
                 }
             });
+
+            if (getMember() == null) {
+                location.href = "/member/login/login.html";
+            }
         });
+
         function loginOut() {
             console.log("out")
-            localStorage.removeItem("member");
+            sessionStorage.removeItem("member");
             $.ajax({
                 cache: true,
                 type: "GET",
@@ -83,59 +94,38 @@
     </script>
 </head>
 <body>
-
-    <!--Top-->
-    <nav id="top">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6 col-sm-6" id="header1">
-                </div>
-                <script>
-                    var member = JSON.parse(localStorage.getItem("member"));
-                    if (member == null) {
-                        $("#header1").html(`<strong>Welcome <a href="/member/login.html"><i class="fa"></i> 登录</a></strong>`);
-                    } else {
-                        $("#header1").html(`<strong>Welcome <a href="/member/member.html"><i class="fa"></i> ${member.name}</a></strong>`)
-                    }
-                </script>
-                <div class="col-md-6 col-sm-6" >
-                    <ul class="list-inline top-link link" id="header2">
-                        <li><a href="/member/index.html"><i class="fa fa-home"></i> 主页</a></li>
-                    </ul>
-                    <script>
-                        var member = localStorage.getItem("member");
-                        if (member == null) {
-                            $("#header2").append($(`<li><a href="/member/register.html"><i class="fa"></i> 注册</a></li>`));
-                        } else {
-                            $("#header2").append($(`<li><a href="/member/index.html" onclick="loginOut()"><i class="fa fa-comments"></i> 退出</a href="/member/index.html"></li>`))
-                        }
-                    </script>
+<div class="header">
+    <!--<div class="logo">-->
+        <!--<a href="/admin/index.html"><img src="/images/logo.png" alt=" " /></a>-->
+    <!--</div>-->
+    <div class="logo-right">
+        <span class="menu"><img src="/images/menu.png" alt=" "/></span>
+        <ul class="nav1" id="nav">
+            <div style="display: inline-block" class="nav-block">
+                <a href="/member/index.html" class="my_act my_act1">主页<span>START HERE</span></a>
+            </div>
+            <div style="display: inline-block" class="nav-block">
+                <a href="#" class="my_act2 my_act">图书<span>详情</span></a>
+                <div class="pro" style="display: none">
+                    <a href="/member/bookInfo/list.html" class="my_act my_act3">图书管理</a>
+                    <a href="/member/borrowRecord/list.html" class="my_act my_act3">借阅记录</a>
                 </div>
             </div>
-        </div>
-    </nav>
-
-    <!--Navigation-->
-    <nav id="menu" class="navbar">
-        <div class="container">
-            <div class="navbar-header"><span id="heading" class="visible-xs">Categories</span>
-                <button type="button" class="btn btn-navbar navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse"><i class="fa fa-bars"></i></button>
+            <div style="display: inline-block" class="nav-block">
+                <a href="/member/view.html" class="my_act my_act2">个人信息<span>详情</span></a>
             </div>
-            <div class="collapse navbar-collapse navbar-ex1-collapse">
-                <ul class="nav navbar-nav">
-                    <li><a href="index.html"><i class="fa fa-home"></i> 主页</a></li>
-                    <li><a href="/member/movie.html" class="" ><i class="fa fa-play-circle-o"></i> 电影</a>
-                    <li><a href="/member/member.html" class=""><i class="fa fa-list"></i> 个人中心</a>
-                    </li>
-                </ul>
+            <div style="display: inline-block" class="nav-block">
+                <a href="/member/login/login.html" onclick="loginOut()" class="my_act my_act2">退出账号</a>
             </div>
-        </div>
-    </nav>
-
-    <div class="header-slide">
-        <div id="owl-demo" class="owl-carousel">
-
-        </div>
+        </ul>
     </div>
+    <div class="clearfix"> </div>
+    <script>
+        $( "span.menu" ).click(function() {
+            $( "ul.nav1" ).slideToggle( 300, function() {
+            });
+        });
+    </script>
+</div>
 </body>
 </html>

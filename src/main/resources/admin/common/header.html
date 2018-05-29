@@ -62,6 +62,9 @@
     </style>
     <script>
         $(function () {
+            if (getMember() == null) {
+                location.href = "/admin/login/login.html";
+            }
             $(".nav-block").mouseover(function () {
                 var nav = $(this);
                 if (nav.children(".pro").length != 0) {
@@ -139,7 +142,7 @@
                 </div>
             </div>
             <div style="display: inline-block" class="nav-block admin bookAdmin">
-                <a href="#" class="my_act my_act2">个人信息<span>详情</span></a>
+                <a href="/admin/view.html" class="my_act my_act2">个人信息<span>详情</span></a>
             </div>
             <div style="display: inline-block" class="nav-block">
                 <a href="/admin/login/login.html" onclick="loginOut()" class="my_act my_act2">退出账号</a>

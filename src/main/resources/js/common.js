@@ -29,14 +29,16 @@ let getOption = function(value,text) {
     return `<option value='${value}' >${text}</option>`;
 };
 function getMemberRoleValue() {
-    return JSON.parse(localStorage.getItem("member")).role.value;
+    return JSON.parse(sessionStorage.getItem("member")).role.value;
+}
+function getMember() {
+    return JSON.parse(sessionStorage.getItem("member"));
 }
 var id = getQueryString()["id"];
 
 var listTable;
 var apiRoot;
 $(function () {
-
 
     if (getMemberRoleValue() == roleValue.bookAdmin) {
         $(".bookAdmin").css("visibility","visible");
@@ -46,7 +48,6 @@ $(function () {
         $(".admin").css("position","static");
 
     }
-
     listTable = $("#listTable");
     //1.初始化Table
     var oTable;

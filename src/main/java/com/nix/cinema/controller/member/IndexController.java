@@ -18,7 +18,7 @@ import javax.servlet.http.HttpSession;
  * @author Kiss
  * @date 2018/04/25 11:30
  */
-@RequestMapping("/member")
+@RequestMapping("/memberBack")
 @MemberController
 public class IndexController {
     @Autowired
@@ -35,16 +35,6 @@ public class IndexController {
             return ReturnUtil.fail(user);
         }
         return ReturnUtil.success(insertUser);
-    }
-    /**
-     * 用户修改自己的资料
-     * */
-    @PostMapping("/update")
-    public ReturnObject updateUser(@ModelAttribute MemberModel member,HttpServletRequest request) throws Exception {
-        Assert.isTrue(UserCache.currentUser().getUsername().equals(member.getUsername()),"非法修改");
-        member = userService.update(member);
-        request.getSession().setAttribute(UserCache.USER_SESSION_KEY,member);
-        return ReturnUtil.success(member);
     }
 
 }
