@@ -21,7 +21,7 @@
     <script type="text/javascript" src="/js/easing.js"></script>
     <script type="text/javascript" src="/js/common.js"></script>
     <script type="text/javascript">
-        apiRoot = "/admin/bookInfo";
+        apiRoot = "/admin/borrowRecord";
 
         var TableInit = function () {
             var oTableInit = new Object();
@@ -73,23 +73,31 @@
                         title: 'id',
                         visible : false
                     },{
-                        field: 'sn',
-                        title: '编号'
+                        field: 'borrowTime',
+                        title: '借阅时间日期',
+                        align : 'center',// 水平居中显示
+                    },{
+                        field: 'returnTime',
+                        title: '归还日期',
+                        align : 'center',// 水平居中显示
+                    },{
+                        field: 'bookInfo.name',
+                        title: '图书名称',
+                        align : 'center',// 水平居中显示
+                    },{
+                        field: 'bookInfo.sn',
+                        title: '图书编号',
+                        align : 'center',// 水平居中显示
                     }, {
-                        field: 'name',
-                        title: '名称'
-                    }, {
-                        field: 'author',
-                        title: '作者'
-                    },  {
-                        field: 'price',
-                        title: '价格'
+                        field: 'member.name',
+                        title: '借阅用户',
+                        align : 'center',// 水平居中显示
                     }, {
                         field: 'status',
                         title: '状态',
                         align : 'center',// 水平居中显示
                         formatter:function (value) {
-                            return value ? "在库" : "已借出";
+                            return value ? "已归还" : "未归还";
                         }
                     }, {
                         field : '',// 返回值名称
@@ -97,8 +105,8 @@
                         formatter: function (value, row, index) {
                             return "<input class='btn btn-info' type='button' style='margin-right: 5px' " +
                                 "onclick='{ location.href = \"./view.html?id=" + row.id + "\"}' value='详情'>" +
-                                "<input class='btn btn-info' type='button' style='margin-right: 5px' onclick='" +
-                                "{ location.href = \"./edit.html?id=" + row.id + "\"}' value='编辑'>" +
+                                (row.status ? "" :("<input class='btn btn-info' type='button' style='margin-right: 5px' onclick='" +
+                                    "returnBack(" + row.bookInfo.id + ")' value='归还'>")) +
                                 "<input class='btn btn-danger' type='button' onclick='" +
                                 "deleteModel(" + row.id + ")' value='删除'>";
                         }
@@ -115,6 +123,23 @@
                 location.href = "./returnBack.html";
             });
         });
+        function returnBack(bookInfoId) {
+            $.ajax({
+                cache : true,
+                type : "POST",
+                url : "/admin/bookInfo/returnBack",
+                data : {bookInfoId:bookInfoId},
+                async : false,
+                success : function(data) {
+                    if (data.status == 1) {
+                        alert("归还成功");
+                        location.href = apiRoot + "/list.html"
+                    }else {
+                        alert(data.msg);
+                    }
+                }
+            });
+        }
     </script>
     <!-- start-smoth-scrolling -->
     <!-- for-portfolio -->
@@ -139,16 +164,10 @@
         <!-- //header -->
         <!-- portfolio -->
         <div class="contact">
-            <h3>图书管理</h3>
+            <h3>借阅记录</h3>
             <div id="toolbar" class="btn-group">
-                <button id="btn_add" type="button" class="btn btn-default">
-                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>添加
-                </button>
-                <button id="btn_import" type="button" class="btn btn-default">
-                    <span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>导入
-                </button>
                 <button id="btn_borrow" type="button" class="btn btn-default">
-                    <span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span>借书
+                    <span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span>添加
                 </button>
                 <button id="btn_return" type="button" class="btn btn-default">
                     <span class="glyphicon glyphicon-saved" aria-hidden="true"></span>还书

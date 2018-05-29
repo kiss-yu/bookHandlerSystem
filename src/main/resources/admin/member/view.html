@@ -66,93 +66,6 @@
                     }
                 }
             });
-            jQuery.validator.addMethod("passwordIsEq", function(value, element) {
-                return this.optional(element) || value === $("#_password").val();
-            }, "两次密码不一致");
-            function validateForm(){
-                return $("#inputForm").validate({
-                    rules: {
-                        "age": {
-                            required: true,
-                            min: 0,
-                            max : 200
-                        },
-                        "_password" : {
-                            minlength : 6,
-                            maxlength : 20
-                        },
-                        "t_password" : {
-                            passwordIsEq : true
-                        },
-                        "username": {
-                            required: true,
-                            minlength : 6,
-                            maxlength : 20,
-                            remote: {
-                                url: "checkUsername",
-                                cache: false
-                            }
-                        },
-                        "phone": {
-                            required: true,
-                            pattern:/^(((13[0-9]{1})|(15[0-9]{1})|(17[0-9]{1})|(18[0-9]{1}))+\d{8})$/,
-                            minlength: 11,
-                            maxlength:11,
-                            digits:true,
-                            number:true
-                        }
-                    },
-                    messages: {
-                        "username" : {
-                            required: "不能为空",
-                            minlength: "不能低于6位",
-                            maxlength:"不能高于20位",
-                            remote : "用户名已存在"
-                        },
-                        "_password" : {
-                            minlength: "不能低于6位",
-                            maxlength:"不能高于20位"
-                        },
-                        "t_password" : {
-                            passwordIsEq : "两次密码不一致"
-                        },
-                        "age" : {
-                            required: "不能为空",
-                            min:"不合格",
-                            max : "不合法"
-                        },
-                        "phone" : {
-                            required: "不能为空",
-                            minlength: "必须11位数字",
-                            maxlength:"必须11位数字",
-                            digits:"必须是数字"    ,
-                            number:"请输入有效数字",
-                            pattern : "手机号格式错误"
-                        }
-                    }
-                });
-            }
-            $(validateForm());
-            // 表单验证
-            $("#submit").click(function () {
-                $("#password").val(hex_md5($("#_password").val()))
-                if(validateForm().form()) {
-                    $.ajax({
-                        cache : true,
-                        type : "POST",
-                        url : apiRoot + "/update",
-                        data: new FormData($('#inputForm')[0]),
-                        processData: false,
-                        contentType: false,
-                        async : false,
-                        success : function(data) {
-                            if (data.status == 1) {
-                                location.href = apiRoot + "/list.html"
-                            }
-                        }
-                    });
-                }
-            });
         });
     </script>
 
@@ -295,7 +208,6 @@
                                     &nbsp;
                                 </th>
                                 <td>
-                                    <input type="button" class="button" value="提交" id="submit"/>
                                     <input type="button" class="button" value="返回" onclick="history.back(); return false;" />
                                 </td>
                             </tr>

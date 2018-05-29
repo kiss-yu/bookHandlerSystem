@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>personalInfo</title>
+    <link href="/css/myTable.css" rel="stylesheet" type="text/css"/>
+    <link href="/css/style.css" rel="stylesheet" type="text/css" media="all" />
+    <link href="/resource/bootstrap-3.3.7-dist/css/bootstrap.css" rel="stylesheet" type="text/css" media="all" />
+    <link href="/resource/skin/jedate.css" rel="stylesheet" type="text/css" media="all" />
+    <!-- js -->
+    <!--<script src="/resource/js/jquery.min.js"></script>-->
+    <script src="/resource/ueditor/ueditor.js"></script>
+    <!-- //js -->
+    <!-- for-mobile-apps -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <!-- //for-mobile-apps -->
+    <!-- start-smoth-scrolling -->
+    <script type="text/javascript" src="/js/jquery.js"></script>
+    <script type="text/javascript" src="/js/move-top.js"></script>
+    <script type="text/javascript" src="/js/easing.js"></script>
+    <script type="text/javascript" src="/js/jquery.validate.js"></script>
+    <script type="text/javascript" src="/js/jquery.tools.js"></script>
+    <script type="text/javascript" src="/js/jquery.autocomplete.js"></script>
+    <script type="text/javascript" src="/js/common.js"></script>
+    <script type="text/javascript" src="/resource/skin/jedate.min.js"></script>
+    <script type="text/javascript">
+
+        var apiRoot = "/admin/borrowRecord";
+        jQuery(document).ready(function($) {
+            //获取学院信息设置
+            $.ajax({
+                cache : true,
+                type : "GET",
+                url : apiRoot + "/view?id=" + id,
+                success : function(data) {
+                    if (data.status == 1) {
+                        var model = data.data;
+                        var bookInfo = model.bookInfo;
+                        if (bookInfo != undefined && bookInfo != null) {
+                            $("#bookInfoName").html(bookInfo.name);
+                            $("#sn").html(bookInfo.sn);
+                            $("#author").html(bookInfo.author);
+                            $("#translator").html(bookInfo.translator);
+                            $("#price").html(bookInfo.price);
+                            $("#ISBNCode").html(bookInfo.isbncode);
+                            $("#comeUpTime").html(bookInfo.comeUpTime);
+                            $("#enteringDate").html(bookInfo.enteringDate);
+                            $("#bookInfoMember").html(bookInfo.member.username);
+                            $("#exist").html(bookInfo.status ? "在库" : "已借出") ;
+                            $("#bookPortrait").attr("src",bookInfo.image);
+                            $("#introduce").html(bookInfo.introduce);
+                        }
+                        var member = model.member;
+                        if (member != undefined && member != null) {
+                            $("#username").html(member.username);
+                            $("#memberName").html(member.name);
+                            $("#phone").html(member.phone);
+                            $("#age").html(member.age);
+                            $("#balance").html(member.balance);
+                            $("#memberPortrait").attr("src",member.img);
+                            $("#sex").html(member.sex ? "男" : "女");
+                            $("#roleSelect").html(member.role.name);
+                            if (member.role.id == roleId.student) {
+                                $("#memberInfo").show();
+                                $("#studentId").html(member.memberInfo.studentId);
+                                $("#max").html(member.memberInfo.max);
+                                $("#timeLimit").html(member.memberInfo.timeLimit);
+                                $("#collegeSelect").html(member.memberInfo.college.name);
+                                $("#professionalSelect").html(member.memberInfo.professional.name);
+                                $("#borrowedNum").html(member.memberInfo.borrowedNum);
+                            }
+                        }
+
+                        $("#borrowBookSn").html(bookInfo.sn);
+                        $("#borrowBookName").html(bookInfo.name);
+                        $("#borrowMemberUsername").html(member.username);
+                        $("#borrowMemberName").html(member.name);
+                        $("#borrowTime").html(model.borrowTime);
+                        $("#shouldTime").html(model.shouldTime);
+                        $("#returnTime").html(model.returnTime);
+                        $("#borrowRecordStatus").html(model.status ? "已归还" : "未归还");
+
+                    } else {
+                        alert("错误");
+                    }
+                }
+            });
+        });
+    </script>
+
+    <style>
+        #bookPortrait{
+            width: 200px;
+            height: 300px;
+        }
+        #memberPortrait{
+            width: 50px;
+            height: 50px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="psd">
+    <div class="container">
+        <div id="header">
+        </div>
+        <script>
+            $("#header").load("/admin/common/header.html");
+            setTimeout(function () {
+                $("#nav").children().eq(4).addClass("cap");
+            },100);
+        </script>
+        <div class="contact">
+            <h3>借阅记录</h3>
+            <div class="blog" >
+                <div class="blog-left">
+                    <form id="inputForm" method="post">
+                        <ul id="tab" class="tab">
+                            <li>
+                                <input type="button" value="基本信息" onclick="{
+                                    $('#bookInfo').css('display','none');
+                                    $('#member').css('display','none');
+                                    $('#borrowRecord').css('display','block');
+                                }"/>
+                            </li>
+                            <li>
+                                <input type="button" value="图书信息" onclick="{
+                                    $('#member').css('display','none');
+                                    $('#bookInfo').css('display','block');
+                                    $('#borrowRecord').css('display','none');
+                                }"/>
+                            </li>
+                            <li>
+                                <input type="button" value="用户信息" onclick="{
+                                    $('#bookInfo').css('display','none');
+                                    $('#member').css('display','block');
+                                    $('#borrowRecord').css('display','none');
+                                }">
+                            </li>
+                        </ul>
+
+                        <div id="borrowRecord">
+
+                            <table class="input tab-content" style="display: table" id="baseMessage">
+                                <tr>
+                                    <th>
+                                        <span class="glyphicon-class">归还书籍编号</span>
+                                    </th>
+                                    <td>
+                                        <span type="text" class="text" id="borrowBookSn"  placeholder="输入图书信息"></span>
+                                    </td>
+                                    <th>
+                                        <span class="glyphicon-class">图书名称</span>
+                                    </th>
+                                    <td>
+                                        <span type="text" class="text" id="borrowBookName" disabled></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        借阅用户名
+                                    </th>
+                                    <td>
+                                        <span type="text" class="text" value="" id="borrowMemberUsername" name="username" disabled></span>
+                                    </td>
+                                    <th>
+                                        借阅用户姓名
+                                    </th>
+                                    <td>
+                                        <span type="text" class="text" value="" id="borrowMemberName" disabled></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        借阅时间
+                                    </th>
+                                    <td>
+                                        <span type="text" class="text" value="" id="borrowTime" disabled></span>
+                                    </td>
+                                    <th>
+                                        预计归还时间
+                                    </th>
+                                    <td>
+                                        <span type="text" class="text" value="" id="shouldTime" disabled></span>
+                                    </td>
+                                </tr>
+                                <tr>
+
+                                    <th>
+                                        状态
+                                    </th>
+                                    <td>
+                                        <span type="text" class="text" value="" id="borrowRecordStatus" disabled></span>
+                                    </td>
+                                    <th>
+                                        实际归还时间
+                                    </th>
+                                    <td>
+                                        <span type="text" class="text" value="" id="returnTime" disabled></span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div id="bookInfo" style="display: none">
+
+                            <table class="input tab-content" style="display: table" >
+                                <tr>
+                                    <th>
+                                        <span class="glyphicon-class">封面</span>
+                                    </th>
+                                    <td>
+                                        <img id="bookPortrait" src="/images/bookInfo/default.jpg">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        <span class="glyphicon-class">图书编号</span>
+                                    </th>
+                                    <td>
+                                        <span type="text" class="text" id="sn" value="" name="sn" disabled></span>
+                                    </td>
+                                    <th>
+                                        <span class="glyphicon-class">图书名称</span>
+                                    </th>
+                                    <td>
+                                        <span type="text" class="text" id="bookInfoName" value="" name="name"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        <span class="glyphicon-class">作者</span>
+                                    </th>
+                                    <td>
+                                        <span type="text" class="text" id="author" value="" name="author"></span>
+                                    </td>
+
+                                    <th>
+                                        <span class="glyphicon-class">译者</span>
+                                    </th>
+                                    <td>
+                                        <span type="text" class="text" id="translator" value="" name="translator"></span>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <th>
+                                        <span class="glyphicon-class">价格</span>
+                                    </th>
+                                    <td>
+                                        <span type="text" class="text" id="price" value="" name="price"></span>
+                                    </td>
+
+                                    <th>
+                                        <span class="glyphicon-class">ISBN</span>
+                                    </th>
+                                    <td>
+                                        <span type="text" class="text" id="ISBNCode" value="" name="ISBNCode"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        <span class="glyphicon-class">出版日期</span>
+                                    </th>
+                                    <td>
+                                        <span type="text" class="jeinput text" id="comeUpTime"  name="comeUpTime"></span>
+                                    </td>
+
+                                    <th>
+                                        <span class="glyphicon-class">入库日期</span>
+                                    </th>
+                                    <td>
+                                        <span type="text" class="jeinput text" id="enteringDate"  name="enteringDate"></span>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <th>
+                                        <span class="glyphicon-class">状态</span>
+                                    </th>
+                                    <td>
+                                        <span id="exist" type="radio" checked="checked" name="status" value="true"></span>
+                                    </td>
+
+                                    <th>
+                                        <span class="glyphicon-class">入库用户</span>
+                                    </th>
+                                    <td>
+                                        <span type="text" class="text" id="bookInfoMember"  name="member.username"></span>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <table  class="input tab-content" style="display: none" >
+                                <tr>
+                                    <th>
+                                        介绍
+                                    </th>
+                                    <td>
+                                        <span id="introduce" name="introduce" class="editor" style="width: 100%;"></span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div id="member" style="display: none">
+
+                            <table class="input tab-content" style="display: table">
+
+                                <tr>
+                                    <th>
+                                        <span class="glyphicon-class">头像</span>
+                                    </th>
+                                    <td>
+                                        <img id="memberPortrait" src="">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        <span class="glyphicon-class">用户名</span>
+                                    </th>
+                                    <td>
+                                        <span type="text" class="text" id="username" value="" name="username"></span>
+                                    </td>
+
+                                    <th>
+                                        <span class="glyphicon-class">姓名</span>
+                                    </th>
+                                    <td>
+                                        <span type="text" class="text" id="memberName" value="" name="name"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        <span class="glyphicon-class">电话</span>
+                                    </th>
+                                    <td>
+                                        <span type="text" class="text" id="phone" value="" name="phone"></span>
+                                    </td>
+                                    <th>
+                                        <span class="glyphicon-class">年龄</span>
+                                    </th>
+                                    <td>
+                                        <span type="text" class="text" id="age" value="" name="age" ></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        <span class="glyphicon-class">性别</span>
+                                    </th>
+                                    <td>
+                                        <span id="sex" type="radio" checked="checked" name="sex" value="1"></span>
+                                    </td>
+                                    <th>
+                                        <span class="glyphicon-class">角色</span>
+                                    </th>
+                                    <td>
+                                    <span name="roleId" id="roleSelect" >
+                                    </span>
+                                    </td>
+                                </tr>
+                                <div >
+                                </div>
+                            </table>
+
+                            <table id="memberInfo" hidden class="input tab-content">
+                                <tr>
+                                    <th>
+                                        <span class="glyphicon-class">学号</span>
+                                    </th>
+                                    <td>
+                                        <span type="text" class="text" id="studentId" value="" name="memberInfo.studentId"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+
+                                    <th>
+                                        <span class="glyphicon-class">学院</span>
+                                    </th>
+                                    <td>
+                                    <span name="memberInfo.college.id" id="collegeSelect" >
+                                    </span>
+                                        <span name="memberInfo.professional.id" >
+                                    </span>
+                                    </td>
+
+                                    <th>
+                                        <span class="glyphicon-class">专业</span>
+                                    </th>
+                                    <td>
+                                    <span name="memberInfo.professional.id" id="professionalSelect">
+                                    </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        <span class="glyphicon-class">可借最大数量</span>
+                                    </th>
+                                    <td>
+                                        <span type="text" class="text" id="max" value="" name="memberInfo.max"></span>
+                                    </td>
+                                    <th>
+                                        <span class="glyphicon-class">可借最大期限（小时）</span>
+                                    </th>
+                                    <td>
+                                        <span type="text" class="text" id="timeLimit" value="" name="memberInfo.timeLimit"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        <span class="glyphicon-class">已经借阅数量</span>
+                                    </th>
+                                    <td>
+                                        <span type="text" class="text" id="borrowedNum" value="" name="memberInfo.borrowedNum"></span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <table class="input">
+                            <tr>
+                                <th>
+                                    &nbsp;
+                                </th>
+                                <td>
+                                    <input type="button" class="button" value="返回" onclick="history.back(); return false;" />
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+
+                <div class="clearfix"> </div>
+            </div>
+        </div>
+        <iframe src="/admin/common/footer.html" width='100%' height='100%' frameborder='0' name="_blank" id="_blank" />
+    </div>
+</div>
+</body>
+
+</html>

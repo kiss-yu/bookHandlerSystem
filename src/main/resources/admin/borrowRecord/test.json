@@ -1,0 +1,103 @@
+{
+  "status": 1,
+  "msg": "SUCCESS",
+  "data": {
+    "id": 5,
+    "createDate": "2018-05-29 09:41:57",
+    "updateDate": "2018-05-29 09:45:56",
+    "member": {
+      "id": 2,
+      "createDate": "2018-05-26 22:57:56",
+      "updateDate": "2018-05-27 19:31:55",
+      "username": "student",
+      "age": 22,
+      "sex": true,
+      "name": "周东生",
+      "phone": "13228289108",
+      "balance": 0,
+      "img": "/images/member/default.jpg",
+      "role": {
+        "id": 3,
+        "createDate": "2018-05-25 21:24:57",
+        "updateDate": "2018-05-25 21:24:57",
+        "name": "学生",
+        "value": "student"
+      },
+      "memberInfo": {
+        "id": 1,
+        "createDate": "2018-05-27 19:31:54",
+        "updateDate": "2018-05-27 19:31:55",
+        "studentId": "11503090237",
+        "college": {
+          "id": 1,
+          "createDate": "2018-05-26 23:45:02",
+          "updateDate": "2018-05-26 23:45:03",
+          "sn": "03",
+          "name": "计算机学院",
+          "professionals": null
+        },
+        "professional": {
+          "id": 1,
+          "createDate": "2018-05-26 00:01:06",
+          "updateDate": "2018-05-26 00:01:06",
+          "sn": "0309",
+          "name": "网络工程",
+          "college": {
+            "id": 1,
+            "createDate": "2018-05-26 23:45:02",
+            "updateDate": "2018-05-26 23:45:03",
+            "sn": "03",
+            "name": "计算机学院",
+            "professionals": null
+          }
+        },
+        "max": 100,
+        "timeLimit": 100,
+        "borrowedNum": 0
+      },
+      "superAdmin": false
+    },
+    "bookInfo": {
+      "id": 1,
+      "createDate": "2018-05-29 09:41:48",
+      "updateDate": "2018-05-29 09:45:56",
+      "sn": "0001",
+      "name": "诛仙",
+      "author": "萧鼎",
+      "translator": "萧鼎",
+      "price": 99.99,
+      "comeUpTime": "2018-05-29",
+      "status": true,
+      "member": {
+        "id": 1,
+        "createDate": "2018-05-06 19:59:49",
+        "updateDate": "2018-05-16 17:58:26",
+        "username": "admin",
+        "age": 23,
+        "sex": true,
+        "name": "超级管理员",
+        "phone": "13228289108",
+        "balance": 98819,
+        "img": "/images/member/default.jpg",
+        "role": {
+          "id": 1,
+          "createDate": "2018-05-06 19:56:18",
+          "updateDate": "2018-05-14 21:32:33",
+          "name": "超级管理员",
+          "value": "admin"
+        },
+        "memberInfo": null,
+        "superAdmin": true
+      },
+      "enteringDate": "2018-05-29",
+      "image": "/images/bookInfo/default.jpg",
+      "introduce": "<p>254254</p><p>242543</p>",
+      "isbncode": "123456"
+    },
+    "borrowTime": "2018-05-29 09:41:57",
+    "shouldTime": "2018-06-02 13:41:57",
+    "returnTime": "2018-05-29 09:45:56",
+    "status": true
+  },
+  "additionalData": null
+}

@@ -4,6 +4,7 @@ import com.nix.cinema.common.Pageable;
 import com.nix.cinema.common.ReturnObject;
 import com.nix.cinema.common.annotation.AdminController;
 import com.nix.cinema.model.BookInfoModel;
+import com.nix.cinema.model.MemberInfoModel;
 import com.nix.cinema.model.MemberModel;
 import com.nix.cinema.service.impl.BookInfoService;
 import com.nix.cinema.service.impl.BorrowRecordService;
@@ -91,12 +92,19 @@ public class AdminBookInfoController {
         }
         MemberModel member = memberService.findByUsername(username);
         Assert.notNull(member,"用户不存在");
+        MemberInfoModel memberInfo = member.getMemberInfo();
+        memberInfo.setBorrowedNum(memberInfo.getBorrowedNum() + 1);
+        memberService.update(member,null);
         return ReturnUtil.success(borrowRecordService.create(bookInfo,member));
     }
     @PostMapping("/returnBack")
     public ReturnObject returnBack(@RequestParam("bookInfoId") Integer bookInfoId) throws Exception {
         BookInfoModel bookInfo = bookInfoService.findById(bookInfoId);
         Assert.notNull(bookInfo,"图书不存在");
+        MemberModel member = borrowRecordService.list(null,null,null,null,"`status = 0` and bookInfo = " + bookInfoId).get(0).getMember();
+        MemberInfoModel memberInfo = member.getMemberInfo();
+        memberInfo.setBorrowedNum(memberInfo.getBorrowedNum() + 1);
+        memberService.update(member,null);
         return ReturnUtil.success(borrowRecordService.returnBack(bookInfo));
     }
     @GetMapping("/borrowInfo")
