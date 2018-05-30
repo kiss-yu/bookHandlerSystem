@@ -28,7 +28,7 @@ import java.util.List;
  * 权限管理
  */
 @Component
-public class PermissionInterceptor implements HandlerInterceptor,PermissionHandler<RoleInterfaceModel,Method> {
+public class PermissionInterceptor implements HandlerInterceptor,PermissionHandler<RoleModel,String> {
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception exception) throws Exception {
     }
@@ -37,11 +37,16 @@ public class PermissionInterceptor implements HandlerInterceptor,PermissionHandl
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
 
     }
+    private final static String[] IGNORE_RESOURCES_PATH = {"**/login.html"};
+    private final static String[] HANDLER_RESOURCES_PATH = {"**.html"};
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         MemberModel user = (MemberModel) request.getSession().getAttribute(UserCache.USER_SESSION_KEY);
         UserCache.putUser(request.getSession());
+        String uri = request.getRequestURI();
+        System.out.println("uri==" + uri);
+        boolean ok = true;
         if (handler instanceof HandlerMethod) {
             HandlerMethod handlerMethod = (HandlerMethod) handler;
             Method method = handlerMethod.getMethod();
@@ -50,28 +55,30 @@ public class PermissionInterceptor implements HandlerInterceptor,PermissionHandl
                 Clear controllerClear = method.getDeclaringClass().getAnnotation(Clear.class);
                 //如果method没有标识为清除权限校验
                 if (methodClear == null && controllerClear == null) {
-                    boolean ok;
                     if (user != null) {
-                        ok = userPermission(user,method);
+                        ok = isHavePermission(user.getRole(),uri);
                     } else {
-                        //如果用户未登录
-                        AdminController adminController = method.getDeclaringClass().getAnnotation(AdminController.class);
-                        if (adminController != null) {
-                            response.sendRedirect("/admin");
-                        } else {
-                            response.sendRedirect("/member/login");
-                        }
-                        return false;
-                    }
-                    //如果用户权限不足
-                    if (!ok) {
-                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "权限不足");
-                        return ok;
+                        ok = false;
                     }
                 }
             }
+        } else {
+            if (!isIgnorePath(uri) && uri.matches(".*.html")) {
+                if (user != null) {
+                    ok = isHavePermission(user.getRole(),uri);
+                }else {
+                    ok = false;
+                }
+            }
         }
-        return true;
+        if (!ok) {
+            if (uri.matches("/admin.*")) {
+                response.sendRedirect("/admin");
+            } else {
+                response.sendRedirect("/member/login");
+            }
+        }
+        return ok;
     }
 
     /**
@@ -86,47 +93,36 @@ public class PermissionInterceptor implements HandlerInterceptor,PermissionHandl
         return false;
     }
 
-    private boolean userPermission(MemberModel user, Method method) {
-        if (MemberService.ADMIN_USERNAME.equals(user.getUsername())) {
-            return true;
-        }
-        RoleModel role = user.getRole();
-        List<RoleInterfaceModel> roleInterfaces = role.getRoleInterfaces();
-        for (RoleInterfaceModel roleInterface:roleInterfaces) {
-            if (isHavePermission(roleInterface,method)) {
-                return true;
+    /**
+     * 判断是否能够执行目的权限
+     *
+     * @param r 持有的权限
+     * @param m        目的权限
+     * @return 持有权限是否能够操作目的权限
+     */
+    @Override
+    public boolean isHavePermission(RoleModel r, String m) {
+        if (r != null) {
+            for (RoleInterfaceModel roleInterfaceModel:r.getRoleInterfaces()) {
+                if (m.matches(roleInterfaceModel.getUrl().replaceAll("\\*\\*","\\.\\*"))) {
+                    return true;
+                }
             }
         }
         return false;
     }
 
-    @Override
-    public boolean isHavePermission(RoleInterfaceModel roleInterface, Method method) {
-        if (!roleInterface.getEnabled()) {
-            return false;
-        }
-        PostMapping postMapping = method.getAnnotation(PostMapping.class);
-        GetMapping getMapping = method.getAnnotation(GetMapping.class);
-        RequestMapping controllerRequestMapping = method.getDeclaringClass().getAnnotation(RequestMapping.class);
-        String[] controllerUrls = controllerRequestMapping != null ? controllerRequestMapping.value() : null;
-        String[] methodUrls = postMapping != null ? postMapping.value() : getMapping.value();
-        for (int i = 0;methodUrls != null && i < methodUrls.length;i ++) {
-            String url = "";
-            if (controllerUrls != null) {
-                for (int j = 0;j < controllerUrls.length; j ++) {
-                    url = controllerUrls[j] + methodUrls[i];
-                    if (url.matches(roleInterface.getUrl().replaceAll("\\*\\*","\\.\\*"))) {
-                        return true;
-                    }
-                }
-            } else {
-                url = methodUrls[i];
-                if (url.matches(roleInterface.getUrl().replaceAll("\\*\\*","\\.\\*"))) {
-                    return true;
-                }
+    private boolean isIgnorePath(String uri) {
+        for (String path:IGNORE_RESOURCES_PATH) {
+            if (uri.matches(path.replaceAll("\\*\\*","\\.\\*"))) {
+                return true;
             }
-            System.out.println(url);
         }
-        return false;
+        for (String path:HANDLER_RESOURCES_PATH) {
+            if (uri.matches(path.replaceAll("\\*\\*","\\.\\*"))) {
+                return false;
+            }
+        }
+        return true;
     }
 }
