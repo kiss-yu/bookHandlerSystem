@@ -19,6 +19,10 @@ body a{
 .form-control{
 	height: auto;
 }
+.clickSort{
+	float: right;
+	line-height: 22px;
+}
 .admin,.bookAdmin {
 	visibility: hidden;
 	position: absolute;

@@ -94,14 +94,22 @@ $(function () {
 
 function setThClick() {
     $('th').click(function () {
+
+        var sorts = $(".clickSort");
+        for (var i = 0;i < sorts.length;i ++) {
+            $(sorts[i]).attr("class","clickSort");
+        }
+
         if ($(this).attr("data-field") == null || $(this).attr("data-field") == undefined ||
             $(this).attr("data-field").length < 2) {
             return;
         }
         if ($(this).attr("sort") === "asc") {
+            $($($(this).children(".th-inner")[0]).children(".clickSort")[0]).attr("class","glyphicon glyphicon-chevron-down clickSort");
             $(this).attr("sort","desc");
         } else {
             $(this).attr("sort","asc");
+            $($(this).children(".th-inner")[0]).append($("<span class='glyphicon glyphicon-chevron-up clickSort'></span>"));
         }
         listParam["sort"] = $(this).attr("sort");
         listParam["order"] = $(this).attr("data-field");
