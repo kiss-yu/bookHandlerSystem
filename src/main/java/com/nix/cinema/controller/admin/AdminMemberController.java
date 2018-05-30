@@ -85,10 +85,11 @@ public class AdminMemberController {
     @PostMapping("/list")
     public ReturnObject list(@ModelAttribute Pageable<MemberModel> pageable) throws Exception {
         MemberModel current = UserCache.currentUser();
+        pageable.setTables("`member`,`role`,`memberInfo`");
         if (RoleModel.ADMIN_VALUE.equals(current.getRole().getValue())) {
+            pageable.setConditionsSql("role.id = member.role and member.memberInfo = memberInfo.id");
         } else if (RoleModel.BOOKADMIN_VALUE.equals(current.getRole().getValue())) {
-            pageable.setTables("`member`,`role`");
-            pageable.setConditionsSql("role.value = '?' and role.id = member.role",RoleModel.STUDENT_VALUE);
+            pageable.setConditionsSql("role.value = '?' and role.id = member.role and member.memberInfo = memberInfo.id",RoleModel.STUDENT_VALUE);
         } else {
             return null;
         }

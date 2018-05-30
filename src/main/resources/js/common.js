@@ -42,6 +42,7 @@ var id = getQueryString()["id"];
 
 var listTable;
 var apiRoot;
+var listParam = {};
 $(function () {
 
     if (getMemberRoleValue() == roleValue.bookAdmin) {
@@ -91,13 +92,40 @@ $(function () {
     })
 });
 
+function setThClick() {
+    $('th').click(function () {
+        if ($(this).attr("data-field") == null || $(this).attr("data-field") == undefined ||
+            $(this).attr("data-field").length < 2) {
+            return;
+        }
+        if ($(this).attr("sort") === "asc") {
+            $(this).attr("sort","desc");
+        } else {
+            $(this).attr("sort","asc");
+        }
+        listParam["sort"] = $(this).attr("sort");
+        listParam["order"] = $(this).attr("data-field");
+        $.ajax({
+            method:'POST',
+            url: apiRoot + '/list',
+            data:listParam,
+            traditional:true,
+            success : function(data) {
+                listTable.bootstrapTable('removeAll');
+                listTable.bootstrapTable('append', data.data);
+            }
+        });
+    });
+}
+
 //查询
 function search(field) {
-    $("#searchContent").attr("field",field);
+    listParam["field"] = field;
+    listParam["value"] = $("#searchContent").val();
     $.ajax({
         method:'POST',
         url: apiRoot + '/search',
-        data:{field:field,value:$("#searchContent").val()},
+        data:listParam,
         traditional:true,
         success : function(data) {
             listTable.bootstrapTable('removeAll');
@@ -108,11 +136,9 @@ function search(field) {
 
 //得到查询的参数
 var queryParams = function (params) {
-    var temp = {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
-        limit: params.limit,   //页面大小
-        page: params.offset / params.limit + 1,  //页码
-    };
-    return temp;
+    listParam["limit"] = params.limit;
+    listParam["page"] = params.offset / params.limit + 1;
+    return listParam;
 };
 function deleteRole(id) {
     $.ajax({

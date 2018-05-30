@@ -102,6 +102,9 @@ public class PermissionInterceptor implements HandlerInterceptor,PermissionHandl
      */
     @Override
     public boolean isHavePermission(RoleModel r, String m) {
+        if (RoleModel.ADMIN_VALUE.equals(r.getValue())) {
+            return true;
+        }
         if (r != null) {
             for (RoleInterfaceModel roleInterfaceModel:r.getRoleInterfaces()) {
                 if (m.matches(roleInterfaceModel.getUrl().replaceAll("\\*\\*","\\.\\*"))) {

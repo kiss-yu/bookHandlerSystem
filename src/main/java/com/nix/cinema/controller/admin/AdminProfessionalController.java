@@ -61,6 +61,8 @@ public class AdminProfessionalController {
     }
     @PostMapping("/list")
     public ReturnObject list(@ModelAttribute Pageable<ProfessionalModel> pageable) throws Exception {
+        pageable.setTables("`college`,`professional`");
+        pageable.setConditionsSql("professional.college = college.id");
         return ReturnUtil.list(pageable,professionalService);
     }
     @GetMapping("/collegeAll")

@@ -52,13 +52,17 @@ public class AdminBorrowRecordController {
 
     @PostMapping("/list")
     public ReturnObject list(@ModelAttribute Pageable<BorrowRecordModel> pageable) throws Exception {
+
+        pageable.setTables("`bookInfo`,`borrowRecord`,`member`");
+        pageable.setConditionsSql(SQLUtil.sqlFormat("bookInfo.id = borrowRecord.bookInfo and member.id = borrowRecord.member"));
         return ReturnUtil.list(pageable,borrowRecordService);
     }
 
     @PostMapping("/search")
     public ReturnObject search(@ModelAttribute Pageable pageable) throws Exception {
         pageable.setTables("`bookInfo`,`borrowRecord`,`member`");
-        pageable.setConditionsSql(SQLUtil.sqlFormat("? like '%?%' and bookInfo.id = borrowRecord.bookInfo and member.id = borrowRecord.member",pageable.getField(),pageable.getValue()));
+        pageable.setConditionsSql(SQLUtil.sqlFormat("? like '%?%' and bookInfo.id = borrowRecord.bookInfo and member.id = borrowRecord.member",
+                pageable.getField(),pageable.getValue()));
         return ReturnUtil.list(pageable,borrowRecordService);
     }
 }

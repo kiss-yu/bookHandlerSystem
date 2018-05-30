@@ -65,6 +65,7 @@
                     onLoadSuccess:function (result) {
                         listTable.bootstrapTable('removeAll');
                         listTable.bootstrapTable('append', result.data);
+                        setThClick();
                     },
                     columns: [{
                         checkbox: true

@@ -129,12 +129,15 @@ public class AdminBookInfoController {
 
     @PostMapping("/list")
     public ReturnObject list(@ModelAttribute Pageable<BookInfoModel> pageable) throws Exception {
+        pageable.setTables("`bookInfo`,`member`");
+        pageable.setConditionsSql("bookInfo.member = member.id");
         return ReturnUtil.list(pageable,bookInfoService);
     }
 
     @PostMapping("/search")
     public ReturnObject search(@ModelAttribute Pageable pageable) throws Exception {
-        pageable.setConditionsSql(SQLUtil.sqlFormat("? like '%?%'",pageable.getField(),pageable.getValue()));
+        pageable.setTables("`bookInfo`,`member`");
+        pageable.setConditionsSql(SQLUtil.sqlFormat("? like '%?%' and bookInfo.member = member.id",pageable.getField(),pageable.getValue()));
         return ReturnUtil.list(pageable,bookInfoService);
     }
 }
