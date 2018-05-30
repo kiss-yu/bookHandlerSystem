@@ -7,6 +7,7 @@
     <link href="/css/loginStyle.css" rel="stylesheet" type="text/css" media="all" />
     <srcipt type="text/javascript" src="/js/loginCheck.js"></srcipt>
     <script src="/resource/js/md5.js"></script>
+    <script src="/js/common.js"></script>
 </head>
 <body>
 <div class="htmleaf-container">
@@ -23,10 +24,22 @@
 
 <script type="text/javascript">
     //清除
-    sessionStorage.clear();
+    localStorage.clear();
 
     var loginUrl = "/login";
     $(document).ready(function () {
+
+        $.ajax({
+            type: "post",
+            url: "/currentUser",
+            success: function (data) {
+                if(data.status == "1" && data.data != null && data.data.role.value == roleValue.student){
+                    cacheMember(data.data);
+                    window.location.href="/member/index.html";
+                }
+            }
+        });
+
         $("#login").click(function () {
             var name = $("#user_name").val();
             var passWord = $("#password").val();
@@ -40,8 +53,8 @@
                     },
                     dataType: "json",
                     success: function (data) {
-                        if(data.status == "1" && data.data != null){
-                            sessionStorage.setItem("member",JSON.stringify(data.data));
+                        if(data.status == "1" && data.data != null && data.data.role.value == roleValue.student){
+                            cacheMember(data.data);
                             window.location.href="/member/index.html";
                         }
                         else{

@@ -43,6 +43,7 @@ public class PermissionInterceptor implements HandlerInterceptor,PermissionHandl
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         MemberModel user = (MemberModel) request.getSession().getAttribute(UserCache.USER_SESSION_KEY);
+
         UserCache.putUser(request.getSession());
         String uri = request.getRequestURI();
         System.out.println("uri==" + uri);

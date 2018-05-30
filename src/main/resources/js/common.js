@@ -30,13 +30,16 @@ let getOption = function(value,text) {
 };
 function getMemberRoleValue() {
     try {
-        return JSON.parse(sessionStorage.getItem("member")).role.value;
+        return JSON.parse(localStorage.getItem("member")).role.value;
     }catch (e) {
         return null;
     }
 }
+function cacheMember(member) {
+    localStorage.setItem("member",JSON.stringify(member));
+}
 function getMember() {
-    return JSON.parse(sessionStorage.getItem("member"));
+    return JSON.parse(localStorage.getItem("member"));
 }
 var id = getQueryString()["id"];
 
