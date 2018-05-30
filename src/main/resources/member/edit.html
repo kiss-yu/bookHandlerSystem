@@ -31,7 +31,7 @@
             $.ajax({
                 cache : true,
                 type : "GET",
-                url : apiRoot + "/view?id=" + getMember().id,
+                url : "/currentUser",
                 success : function(data) {
                     if (data.status == 1) {
                         var model = data.data;
@@ -47,7 +47,6 @@
                         selectRole(model);
                         $("#memberInfoId").val(model.memberInfo.id)
                         $("#studentId").val(model.memberInfo.studentId);
-                        $("#professionalSelect").val(model.memberInfo.professional.id);
                     } else {
                         alert("错误");
                     }
@@ -142,13 +141,13 @@
                             $("#collegeSelect").append(getOption(model.id,model.name));
                         }
                         $("#collegeSelect").val(member.memberInfo.college.id);
-                        selectCollege($("#collegeSelect"));
+                        selectCollege($("#collegeSelect"),member);
                     }
                 }
             });
         }
 
-        function selectCollege(college) {
+        function selectCollege(college,member) {
             //添加专业选着下拉框
             $.ajax({
                 cache : true,
@@ -161,6 +160,7 @@
                             var model = data.data[i];
                             $("#professionalSelect").append(getOption(model.id,model.name));
                         }
+                        $("#professionalSelect").val(member.memberInfo.professional.id);
                     }
                 }
             });
@@ -294,7 +294,7 @@
 				<div class="clearfix"> </div>
 			</div>
 		</div>
-		<iframe src="/admin/common/footer.html" width='100%' height='100%' frameborder='0' name="_blank" id="_blank" />
+		<iframe src="/member/common/footer.html" width='100%' height='100%' frameborder='0' name="_blank" id="_blank" />
 	</div>
 </div>
 <script type="text/javascript">

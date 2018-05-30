@@ -3,6 +3,7 @@ package com.nix.cinema.controller.admin;
 import com.nix.cinema.common.Pageable;
 import com.nix.cinema.common.ReturnObject;
 import com.nix.cinema.common.annotation.AdminController;
+import com.nix.cinema.common.annotation.Clear;
 import com.nix.cinema.common.cache.UserCache;
 import com.nix.cinema.model.MemberModel;
 import com.nix.cinema.model.RoleModel;
@@ -15,6 +16,7 @@ import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,25 +56,51 @@ public class AdminMemberController {
     }
     @PostMapping("/update")
     public ReturnObject update(@ModelAttribute MemberModel user,
-                               @RequestParam("roleId") Integer roleId,
+                               @RequestParam(value = "roleId",required = false) Integer roleId,
                                @RequestParam(value = "portraitImg",required = false) MultipartFile portraitImg) throws Exception {
         Assert.notNull(user.getId(),"id不能为空");
         //如果密码未修改
         if (user.getPassword() != null && user.getPassword().isEmpty()) {
             user.setPassword(null);
         }
-        RoleModel roleModel = roleService.findById(roleId);
+
+        //任何情况下将余额设置为空不进行修改
+        user.setBalance(null);
+        //username不进行修改
+        user.setUsername(null);RoleModel roleModel = roleService.findById(roleId);
         if (roleModel == null) {
             return ReturnUtil.fail(404,"错误的角色信息",null);
         }
         user.setRole(roleModel);
-        //任何情况下将余额设置为空不进行修改
-        user.setBalance(null);
-        //usernmae不进行修改
-        user.setUsername(null);
         memberService.update(user,portraitImg);
         return ReturnUtil.success(user);
     }
+
+    /**
+     * 管理员修改自己的信息
+     * */
+    @PostMapping("/edit")
+    public ReturnObject edit(@ModelAttribute MemberModel user,
+                               @RequestParam(value = "portraitImg",required = false) MultipartFile portraitImg,
+                             HttpServletRequest request) throws Exception {
+        Assert.notNull(user.getId(),"id不能为空");
+        Assert.isTrue(user.getId().equals(UserCache.currentUser().getId()),"只能修改自己的信息");
+        //如果密码未修改
+        if (user.getPassword() != null && user.getPassword().isEmpty()) {
+            user.setPassword(null);
+        }
+
+        //任何情况下将余额设置为空不进行修改
+        user.setBalance(null);
+        //username不进行修改
+        user.setUsername(null);
+        user.setRole(null);
+        memberService.update(user,portraitImg);
+        user = memberService.findById(UserCache.currentUser().getId());
+        request.getSession().setAttribute(UserCache.USER_SESSION_KEY,user);
+        return ReturnUtil.success(user);
+    }
+
     @GetMapping("/checkUsername")
     public Boolean checkUsername(String username) {
         return memberService.findByUsername(username) == null;
@@ -102,6 +130,7 @@ public class AdminMemberController {
         return pageable.getList(memberService);
     }
     @GetMapping("/current")
+    @Clear
     public ReturnObject current() {
         return ReturnUtil.success(UserCache.currentUser());
     }
@@ -110,11 +139,12 @@ public class AdminMemberController {
     public ReturnObject search(@ModelAttribute Pageable pageable) throws Exception {
         MemberModel current = UserCache.currentUser();
         if (RoleModel.ADMIN_VALUE.equals(current.getRole().getValue())) {
-            pageable.setTables("`member`,`memberInfo`");
-            pageable.setConditionsSql(SQLUtil.sqlFormat("? like '%?%' and memberInfo.id = member.memberInfo",pageable.getField(),pageable.getValue()));
+            pageable.setTables("`member`,`memberInfo`,`professional`,`college`");
+            pageable.setConditionsSql(SQLUtil.sqlFormat("? like '%?%' and memberInfo.id = member.memberInfo and memberInfo.college = college.id and memberInfo.professional = professional.id"
+                    ,pageable.getField(),pageable.getValue()));
         } else if (RoleModel.BOOKADMIN_VALUE.equals(current.getRole().getValue())) {
             pageable.setTables("`member`,`role`,`memberInfo`");
-            pageable.setConditionsSql("? like '%?%' and role.value = '?' and role.id = member.role and memberInfo.id = member.memberInfo",
+            pageable.setConditionsSql("? like '%?%' and role.value = '?' and role.id = member.role and memberInfo.id = member.memberInfo and memberInfo.college = college.id and memberInfo.professional = professional.id",
                     pageable.getField(),pageable.getValue(),RoleModel.STUDENT_VALUE);
         } else {
             return null;

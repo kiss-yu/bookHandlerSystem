@@ -37,7 +37,7 @@ public class PermissionInterceptor implements HandlerInterceptor,PermissionHandl
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
 
     }
-    private final static String[] IGNORE_RESOURCES_PATH = {"**/login.html"};
+    private final static String[] IGNORE_RESOURCES_PATH = {"**/login.html","**/register.html"};
     private final static String[] HANDLER_RESOURCES_PATH = {"**.html"};
 
     @Override
@@ -46,7 +46,6 @@ public class PermissionInterceptor implements HandlerInterceptor,PermissionHandl
 
         UserCache.putUser(request.getSession());
         String uri = request.getRequestURI();
-        System.out.println("uri==" + uri);
         boolean ok = true;
         if (handler instanceof HandlerMethod) {
             HandlerMethod handlerMethod = (HandlerMethod) handler;
@@ -73,6 +72,7 @@ public class PermissionInterceptor implements HandlerInterceptor,PermissionHandl
             }
         }
         if (!ok) {
+            System.out.println("uri==" + uri);
             if (uri.matches("/admin.*")) {
                 response.sendRedirect("/admin");
             } else {

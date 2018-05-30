@@ -54,7 +54,8 @@ public class MemberBorrowRecordController {
 
     @PostMapping("/list")
     public ReturnObject list(@ModelAttribute Pageable<BorrowRecordModel> pageable) throws Exception {
-        pageable.setConditionsSql("member = ?",currentMember.getId());
+        pageable.setTables("`bookInfo`,`borrowRecord`,`member`");
+        pageable.setConditionsSql("bookInfo.id = borrowRecord.bookInfo and member.id = borrowRecord.member and member.id = ?",currentMember.getId());
         return ReturnUtil.list(pageable,borrowRecordService);
     }
 

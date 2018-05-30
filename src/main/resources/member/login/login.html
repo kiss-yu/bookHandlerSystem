@@ -17,7 +17,8 @@
                 <input type="text" placeholder="用户名" id="user_name"/>
                 <input type="password" placeholder="密码" id="password"/>
             </form>
-            <button id="login">登　录</button>
+            <button id="login" style="width: 70%;float: left">登　录</button>
+            <button id="register" style="width: 28%;float: right" onclick="location.href = '/member/register.html'">注册</button>
         </div>
     </div>
 </div>
@@ -30,12 +31,17 @@
     $(document).ready(function () {
 
         $.ajax({
-            type: "post",
+            type: "get",
             url: "/currentUser",
             success: function (data) {
-                if(data.status == "1" && data.data != null && data.data.role.value == roleValue.student){
-                    cacheMember(data.data);
-                    window.location.href="/member/index.html";
+                if(data.status == "1" && data.data != null){
+                    if (data.data.role.value == roleValue.student) {
+                        cacheMember(data.data);
+                        window.location.href="/member/index.html";
+                    } else if (data.data.role.value == roleValue.admin || data.data.role.value == roleValue.bookAdmin) {
+                        cacheMember(data.data);
+                        window.location.href="/admin/index.html";
+                    }
                 }
             }
         });
@@ -53,12 +59,14 @@
                     },
                     dataType: "json",
                     success: function (data) {
-                        if(data.status == "1" && data.data != null && data.data.role.value == roleValue.student){
-                            cacheMember(data.data);
-                            window.location.href="/member/index.html";
-                        }
-                        else{
-                            alert("登录失败");
+                        if(data.status == "1" && data.data != null){
+                            if (data.data.role.value == roleValue.student) {
+                                cacheMember(data.data);
+                                window.location.href="/member/index.html";
+                            } else if (data.data.role.value == roleValue.admin || data.data.role.value == roleValue.bookAdmin) {
+                                cacheMember(data.data);
+                                window.location.href="/admin/index.html";
+                            }
                         }
                     },
                     error: function () {

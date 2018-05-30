@@ -67,11 +67,22 @@
                         listTable.bootstrapTable('append', result.data);
                         setThClick();
                     },
+                    onPostBody:function(){
+                        if (getMemberRoleValue() == roleValue.bookAdmin) {
+                            $(".bookAdmin").css("visibility","visible");
+                            $(".bookAdmin").css("position","static");
+                        } else if (getMemberRoleValue() == roleValue.admin){
+                            $(".admin").css("visibility","visible");
+                            $(".admin").css("position","static");
+
+                        }
+                    },
                     columns: [{
                         checkbox: true
                     }, {
                         field: 'id',
-                        title: 'id'
+                        title: 'id',
+                        visible : false
                     },{
                         field: 'createDate',
                         title: '创建日期'
@@ -83,7 +94,7 @@
                         title: '名称'
                     },  {
                         field: 'url',
-                        title: 'url'
+                        title: 'url',
                     },  {
                         field: 'enabled',
                         title: '是否启用',
@@ -97,6 +108,7 @@
                     },{
                         field : '',// 返回值名称
                         title : '操作',// 列名
+                        minWidth:500,
                         formatter: function (value, row, index) {
                             return "<input class='btn btn-info' type='button' style='margin-right: 5px' " +
                                 "onclick='{ location.href = \"./view.html?id=" + row.id + "\"}' value='详情'>" +

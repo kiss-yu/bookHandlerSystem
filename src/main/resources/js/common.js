@@ -131,7 +131,10 @@ function setThClick() {
 
 //查询
 function search(field) {
-    listParam["field"] = field;
+    if (field != null) {
+        $("#searchContent").attr("field",field);
+    }
+    listParam["field"] = $("#searchContent").attr("field");
     listParam["value"] = $("#searchContent").val();
     $.ajax({
         method:'POST',

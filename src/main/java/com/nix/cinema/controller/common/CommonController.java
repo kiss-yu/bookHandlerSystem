@@ -44,10 +44,10 @@ public class CommonController {
      * */
     @ResponseBody
     @PostMapping(value = "/register")
-    public ReturnObject register(@ModelAttribute("/") MemberModel user) throws Exception {
+    public ReturnObject register(@ModelAttribute("/") MemberModel user,HttpServletRequest request) throws Exception {
         Assert.notNull(user.getUsername(),"用户名不能为空");
         Assert.notNull(user.getPassword(),"密码不能为空");
-        return ReturnUtil.success(memberService.add(user));
+        return ReturnUtil.success(memberService.registered(user,request));
     }
     /**
      * 获取当前用户

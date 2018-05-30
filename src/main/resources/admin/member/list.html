@@ -67,6 +67,16 @@
                         listTable.bootstrapTable('append', result.data);
                         setThClick();
                     },
+                    onPostBody:function(){
+                        if (getMemberRoleValue() == roleValue.bookAdmin) {
+                            $(".bookAdmin").css("visibility","visible");
+                            $(".bookAdmin").css("position","static");
+                        } else if (getMemberRoleValue() == roleValue.admin){
+                            $(".admin").css("visibility","visible");
+                            $(".admin").css("position","static");
+
+                        }
+                    },
                     columns: [{
                         checkbox: true
                     }, {
@@ -101,9 +111,9 @@
                         formatter: function (value, row, index) {
                             return "<input class='btn btn-info' type='button' style='margin-right: 5px' " +
                                 "onclick='{ location.href = \"./view.html?id=" + row.id + "\"}' value='详情'>" +
-                                "<input class='btn btn-info' type='button' style='margin-right: 5px' onclick='" +
+                                "<input class='btn btn-info admin' type='button' style='margin-right: 5px' onclick='" +
                                 "{ location.href = \"./edit.html?id=" + row.id + "\"}' value='编辑'>" +
-                                "<input class='btn btn-danger' type='button' onclick='" +
+                                "<input class='btn btn-danger admin' type='button' onclick='" +
                                 "deleteModel(" + row.id + ")' value='删除'>";
                         }
                     }]
@@ -145,7 +155,7 @@
                     <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
                 </button>
                 <div class="input-group"  style="width: 300px">
-                    <input type="text" class="form-control" field="name" aria-label="..." id="searchContent">
+                    <input type="text" class="form-control" field="member.name" aria-label="..." id="searchContent">
                     <div class="input-group-btn ">
                         <button type="button" class="btn btn-success" onclick="search()">查询</button>
                         <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -157,8 +167,8 @@
                             <li><a href="javascript:search('name')" >姓名</a></li>
                             <li><a href="javascript:search('age')">年龄</a></li>
                             <li><a href="javascript:search('memberInfo.studentId')">学号</a></li>
-                            <li><a href="javascript:search('memberInfo.professional')">专业</a></li>
-                            <li><a href="javascript:search('memberInfo.college')">学院</a></li>
+                            <li><a href="javascript:search('professional.name')">专业</a></li>
+                            <li><a href="javascript:search('college.name')">学院</a></li>
                         </ul>
                     </div>
                 </div>

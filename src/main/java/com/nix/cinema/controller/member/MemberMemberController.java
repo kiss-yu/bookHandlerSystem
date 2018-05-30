@@ -28,8 +28,6 @@ import java.util.List;
 public class MemberMemberController {
     @Autowired
     private MemberService memberService;
-    @Autowired
-    private RoleService roleService;
 
     /**
      * 用户修改自己的资料
@@ -47,13 +45,20 @@ public class MemberMemberController {
         user.setBalance(null);
         //username不进行修改
         user.setUsername(null);
+        user.setRole(null);
         memberService.update(user,portraitImg);
+        user = memberService.findById(UserCache.currentUser().getId());
         request.getSession().setAttribute(UserCache.USER_SESSION_KEY,user);
         return ReturnUtil.success(user);
     }
     @GetMapping("/view")
     public ReturnObject select(@RequestParam("id") Integer id) {
         return ReturnUtil.success(memberService.findById(id));
+    }
+
+    @GetMapping("/checkUsername")
+    public Boolean checkUsername(String username) {
+        return memberService.findByUsername(username) == null;
     }
 
     @GetMapping("/current")

@@ -30,12 +30,17 @@
     $(document).ready(function () {
 
         $.ajax({
-            type: "post",
+            type: "get",
             url: "/currentUser",
             success: function (data) {
-                if(data.status == "1" && data.data != null && data.data.role.value != roleValue.student){
-                    cacheMember(data.data);
-                    window.location.href="/admin/index.html";
+                if(data.status == "1" && data.data != null){
+                    if (data.data.role.value == roleValue.student) {
+                        cacheMember(data.data);
+                        window.location.href="/member/index.html";
+                    } else if (data.data.role.value == roleValue.admin || data.data.role.value == roleValue.bookAdmin) {
+                        cacheMember(data.data);
+                        window.location.href="/admin/index.html";
+                    }
                 }
             }
         });
@@ -53,12 +58,14 @@
                     },
                     dataType: "json",
                     success: function (data) {
-                        if(data.status == "1" && data.data != null && data.data.role.value != roleValue.student){
-                            cacheMember(data.data);
-                            window.location.href="/admin/index.html";
-                        }
-                        else{
-                            alert("登录失败");
+                        if(data.status == "1" && data.data != null){
+                            if (data.data.role.value == roleValue.student) {
+                                cacheMember(data.data);
+                                window.location.href="/member/index.html";
+                            } else if (data.data.role.value == roleValue.admin || data.data.role.value == roleValue.bookAdmin) {
+                                cacheMember(data.data);
+                                window.location.href="/admin/index.html";
+                            }
                         }
                     },
                     error: function () {

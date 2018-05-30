@@ -36,7 +36,7 @@
                         $.ajax({
                             cache : true,
                             type : "GET",
-                            url : apiRoot + "/view?id=" + getMember().id,
+                            url : "/currentUser",
                             success : function(data) {
                                 if (data.status == 1) {
                                     var model = data.data;
@@ -84,7 +84,7 @@
         <script>
             $("#header").load("/admin/common/header.html");
             setTimeout(function () {
-                $("#nav").children().eq(1).addClass("cap");
+                $("#nav").children().eq(5).addClass("cap");
             },100);
         </script>
         <div class="contact">

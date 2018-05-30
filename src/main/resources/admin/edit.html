@@ -40,7 +40,7 @@
                         $.ajax({
                             cache : true,
                             type : "GET",
-                            url : apiRoot + "/view?id=" + getMember().id,
+                            url :"/currentUser",
                             success : function(data) {
                                 if (data.status == 1) {
                                     var model = data.data;
@@ -116,19 +116,19 @@
             $(validateForm());
             // 表单验证
             $("#submit").click(function () {
-                $("#password").val(hex_md5($("#_password").val()))
+                $("#password").val($("#password").val().length > 0  ? hex_md5($("#_password").val()) : "");
                 if(validateForm().form()) {
                     $.ajax({
                         cache : true,
                         type : "POST",
-                        url : apiRoot + "/update",
+                        url : apiRoot + "/edit",
                         data: new FormData($('#inputForm')[0]),
                         processData: false,
                         contentType: false,
                         async : false,
                         success : function(data) {
                             if (data.status == 1) {
-                                location.href = apiRoot + "/list.html"
+                                location.href = "./view.html"
                             }
                         }
                     });
@@ -152,7 +152,7 @@
 		<script>
             $("#header").load("/admin/common/header.html");
             setTimeout(function () {
-                $("#nav").children().eq(1).addClass("cap");
+                $("#nav").children().eq(5).addClass("cap");
             },100);
 		</script>
 		<div class="contact">

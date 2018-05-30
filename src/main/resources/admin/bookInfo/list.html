@@ -67,6 +67,16 @@
                         listTable.bootstrapTable('append', result.data);
                         setThClick();
                     },
+                    onPostBody:function(){
+                        if (getMemberRoleValue() == roleValue.bookAdmin) {
+                            $(".bookAdmin").css("visibility","visible");
+                            $(".bookAdmin").css("position","static");
+                        } else if (getMemberRoleValue() == roleValue.admin){
+                            $(".admin").css("visibility","visible");
+                            $(".admin").css("position","static");
+
+                        }
+                    },
                     columns: [{
                         checkbox: true
                     }, {
@@ -158,7 +168,7 @@
                     <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
                 </button>
                 <div class="input-group"  style="width: 300px">
-                    <input type="text" class="form-control" field="name" aria-label="..." id="searchContent">
+                    <input type="text" class="form-control" field="bookInfo.name" aria-label="..." id="searchContent">
                     <div class="input-group-btn ">
                         <button type="button" class="btn btn-success" onclick="search()">查询</button>
                         <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -167,10 +177,11 @@
                         </button>
                         <ul class="dropdown-menu">
                             <li><a href="javascript:search('sn')" >图书编号</a></li>
-                            <li><a href="javascript:search('name')" >图书名</a></li>
+                            <li><a href="javascript:search('bookInfo.name')" >图书名</a></li>
                             <li><a href="javascript:search('author')">作者</a></li>
                             <li><a href="javascript:search('translator')">译者</a></li>
                             <li><a href="javascript:search('introduce')">介绍</a></li>
+                            <li><a href="javascript:search('member.name')">入库用户</a></li>
                         </ul>
                     </div>
                 </div>

@@ -1,5 +1,6 @@
 package com.nix.cinema.controller.admin;
 
+import com.nix.cinema.Exception.WebException;
 import com.nix.cinema.common.Pageable;
 import com.nix.cinema.common.ReturnObject;
 import com.nix.cinema.common.annotation.AdminController;
@@ -108,7 +109,12 @@ public class AdminBookInfoController {
     public ReturnObject returnBack(@RequestParam("bookInfoId") Integer bookInfoId) throws Exception {
         BookInfoModel bookInfo = bookInfoService.findById(bookInfoId);
         Assert.notNull(bookInfo,"图书不存在");
-        MemberModel member = borrowRecordService.list(null,null,null,null,"`status` = 0 and bookInfo = " + bookInfoId).get(0).getMember();
+        MemberModel member = null;
+        try {
+            member = borrowRecordService.list(null,null,null,null,"`status` = 0 and bookInfo = " + bookInfoId).get(0).getMember();
+        }catch (Exception e) {
+            throw new WebException(404,"图书未借出");
+        }
         MemberInfoModel memberInfo = member.getMemberInfo();
         memberInfo.setBorrowedNum(memberInfo.getBorrowedNum() + 1);
         memberService.update(member,null);

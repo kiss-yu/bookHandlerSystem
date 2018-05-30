@@ -4,6 +4,7 @@ import com.nix.cinema.Exception.WebException;
 import com.nix.cinema.common.cache.UserCache;
 import com.nix.cinema.dao.MemberInfoMapper;
 import com.nix.cinema.dao.MemberMapper;
+import com.nix.cinema.model.MemberInfoModel;
 import com.nix.cinema.model.MemberModel;
 import com.nix.cinema.service.BaseService;
 import com.nix.cinema.util.ServiceUtil;
@@ -26,6 +27,9 @@ public class MemberService extends BaseService<MemberModel> {
     public final static String MEMBER_DEFAULT_IMG = "default.jpg";
 
     @Autowired
+    private RoleService roleService;
+
+    @Autowired
     private MemberMapper memberMapper;
     @Autowired
     private MemberInfoService memberInfoService;
@@ -40,7 +44,8 @@ public class MemberService extends BaseService<MemberModel> {
     }
 
     public MemberModel registered(MemberModel user, HttpServletRequest request) throws Exception {
-        add(user);
+        user.setRole(roleService.findByOneField("value","student").get(0));
+        add(user,null);
         user = findByUsername(user.getUsername());
         if (user != null) {
             request.getSession(true).setAttribute(UserCache.USER_SESSION_KEY,user);
@@ -57,9 +62,10 @@ public class MemberService extends BaseService<MemberModel> {
         if (ADMIN_USERNAME.equals(model.getUsername())) {
             throw new WebException(401,"不能使用admin做完用户名");
         }
-        if (model.getMemberInfo() != null) {
-            memberInfoService.add(model.getMemberInfo());
+        if (model.getMemberInfo() == null) {
+            model.setMemberInfo(new MemberInfoModel());
         }
+        memberInfoService.add(model.getMemberInfo());
         return super.add(model);
     }
 

@@ -4,6 +4,7 @@ Author URL: http://w3layouts.com
 License: Creative Commons Attribution 3.0 Unported
 License URL: http://creativecommons.org/licenses/by/3.0/
 --*/
+
 body,html{
 	padding:0px;
 	margin:0px;
@@ -16,16 +17,20 @@ body a{
 	-o-transition:0.5s all;
 	-ms-transition:0.5s all;
 }
+
+.btn-group .admin,.bookAdmin, .admin,.bookAdmin{
+	visibility: hidden;
+	position: absolute;
+}
+table thead tr th:last-child{
+	min-width: 190px;
+}
 .form-control{
 	height: auto;
 }
 .clickSort{
 	float: right;
 	line-height: 22px;
-}
-.admin,.bookAdmin {
-	visibility: hidden;
-	position: absolute;
 }
 h1,h2,h3,h4,h5,h6{
 	margin:0;			   

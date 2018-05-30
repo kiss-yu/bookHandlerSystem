@@ -15,11 +15,11 @@ public class MemberInfoModel extends BaseModel<MemberInfoModel> {
     //专业
     private ProfessionalModel professional;
     //可借阅最大数量
-    private Integer max;
+    private Integer max = 10;
     //可借阅期限（小时）
-    private Integer timeLimit;
+    private Integer timeLimit = 10;
     //已经借阅数量
-    private Integer borrowedNum;
+    private Integer borrowedNum = 0;
 
     public String getStudentId() {
         return studentId;
