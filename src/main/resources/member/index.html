@@ -20,7 +20,38 @@
 <script type="text/javascript" src="../js/common.js"></script>
 <script type="text/javascript">
 	jQuery(document).ready(function($) {
-
+	    $("#search-btn").click(function () {
+            $.ajax({
+                cache : true,
+                type : "POST",
+                url : "/member/index/search",
+				data : {content : $("#search-content-input").val()},
+                async : false,
+                success : function(data) {
+                    if (data.status == 1 && data.data != null) {
+                        for (var i = 0;i < data.data.length;i ++) {
+                            var bookInfo = data.data[i];
+                            $("#search-result").append($(`
+						<a href="/member/bookInfo/view.html?id=${bookInfo.id}">
+							<div class="super-flex search-content">
+								<img src="${bookInfo.image}">
+								<div>
+									<h3 class="title">${bookInfo.name}</h3>
+									<ul>
+										<li class="list-item">作者：${bookInfo.author}</li>
+										<li class="list-item">译者：${bookInfo.translator}</li>
+										<li class="list-item">状态：${bookInfo.status ? "可借" : "不可借"}</li>
+									</ul>
+									简介：<div class="introduce">${bookInfo.introduce}</div>
+									<hr/>
+								</div>
+							</div>
+						</a>`))
+						}
+                    }
+                }
+            });
+        })
 	});
 </script>
 <!-- start-smoth-scrolling -->
@@ -40,18 +71,17 @@
 		</script>
 	<div class="banner">
 			<div  id="top" class="callbacks_container wow fadeInUp" data-wow-delay="0.5s">
-				<ul class="rslides" id="slider3">
-					<li>
-						<div class="banner1" id="cinema_1">
-							<p>当前图书一共有：800本</p>
-							<p>当前图书一共有：800本</p>
-							<p>当前图书一共有：800本</p>
-							<p>当前图书一共有：800本</p>
-							<p>当前图书一共有：800本</p>
-							<p>当前图书一共有：800本</p>
+				<div class="flex super-flex box-flex">
+					<div class="search">
+						<div class="input-group">
+							<input type="text" id="search-content-input" class="form-control" aria-describedby="basic-addon2">
+							<span class="input-group-addon" id="search-btn">百度一下</span>
 						</div>
-					</li>
-				</ul>
+					</div>
+					<div class="search-content flex super-flex  box-flex" id="search-result">
+
+					</div>
+				</div>
 			</div>
 	</div>
 

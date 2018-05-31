@@ -45,13 +45,18 @@
                         $("#enteringDate").html(model.enteringDate);
                         $("#member").html(model.member.username);
                         $("#exist").html(model.status ? "在库" : "已借出") ;
-                        if (!model.status) {
+                        if (model.status) {
+                            $("#borrow").show();
+                        } else {
                             $.ajax({
                                 cache : true,
                                 type : "GET",
                                 url : apiRoot + "/borrowInfo?bookInfoId=" + id,
                                 success : function(data) {
                                     if (data.status == 1) {
+                                        if (data.data.member.username === getMember().username) {
+                                            $("#returnBack").show();
+                                        }
                                         $("#borrowMember").html(data.data.member.name);
                                         $("#borrowTime").html(data.data.borrowTime);
                                         $("#borrowInfo").show();
@@ -66,6 +71,39 @@
                     }
                 }
             });
+
+            $("#returnBack").click(function () {
+                $.ajax({
+                    cache : true,
+                    type : "POST",
+                    url : apiRoot + "/returnBack?bookInfoId=" + id,
+                    async : false,
+                    success : function(data) {
+                        if (data.status == 1) {
+                            alert("归还成功");
+                            location.reload();
+                        }else {
+                            alert(data.msg);
+                        }
+                    }
+                });
+            });
+            $("#borrow").click(function () {
+                $.ajax({
+                    cache : true,
+                    type : "POST",
+                    url : apiRoot + "/borrow?bookInfoId=" + id,
+                    async : false,
+                    success : function(data) {
+                        if (data.status == 1) {
+                            alert("借阅完成");
+                            location.reload();
+                        }else {
+                            alert(data.msg);
+                        }
+                    }
+                });
+            })
         });
     </script>
 
@@ -99,7 +137,7 @@
                                     <span class="glyphicon-class">封面</span>
                                 </th>
                                 <td>
-                                    <img id="portrait" src="/images/bookInfo/default.jpg" ">
+                                    <img id="portrait" src="/images/bookInfo/default.jpg" >
                                 </td>
                             </tr>
                             <tr>
@@ -211,6 +249,8 @@
                                     &nbsp;
                                 </th>
                                 <td>
+                                    <input type="button" class="button" id="borrow" value="借阅" style="display: none"/>
+                                    <input type="button" class="button" id="returnBack" value="归还" style="display: none"/>
                                     <input type="button" class="button" value="返回" onclick="history.back(); return false;" />
                                 </td>
                             </tr>

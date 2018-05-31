@@ -84,8 +84,8 @@ public class MemberBookInfoController {
     }
     @GetMapping("/borrowInfo")
     public ReturnObject getBorrowMember(@RequestParam("bookInfoId") Integer bookInfoId) {
-        return ReturnUtil.success(borrowRecordService.list(null,null,null,null,
-                "status = 0 and bookInfo = " + bookInfoId).get(0) + " and member = " + currentMember.getId());
+        return ReturnUtil.success(borrowRecordService.select("status = 0 and bookInfo = ? and member = ?",
+                bookInfoId,currentMember.getId()).get(0));
     }
 
     @PostMapping("/list")

@@ -2,6 +2,7 @@ package com.nix.cinema.service.impl;
 
 import com.nix.cinema.Exception.WebException;
 import com.nix.cinema.dao.BorrowRecordMapper;
+import com.nix.cinema.dao.MemberInfoMapper;
 import com.nix.cinema.model.BookInfoModel;
 import com.nix.cinema.model.BorrowRecordModel;
 import com.nix.cinema.model.MemberModel;
@@ -23,6 +24,8 @@ import java.util.List;
 public class BorrowRecordService extends BaseService<BorrowRecordModel> {
     @Autowired
     private BookInfoService bookInfoService;
+    @Autowired
+    private MemberInfoMapper memberInfoMapper;
 
     @Transactional(rollbackFor = Exception.class)
     public BorrowRecordModel create(BookInfoModel bookInfo, MemberModel member) throws Exception {
@@ -42,7 +45,8 @@ public class BorrowRecordService extends BaseService<BorrowRecordModel> {
                 throw new WebException(100,"图书已经被借阅出");
             }
         }
-
+        member.getMemberInfo().setBorrowedNum(member.getMemberInfo().getBorrowedNum() + 1);
+        memberInfoMapper.update(member.getMemberInfo());
         WebSocketServer.setBasicBorrowRecordCunt();
         WebSocketServer.setBasicMsgWaitReturnBackCount();
         WebSocketServer.setBasicMsgBorrowCount();
@@ -63,6 +67,9 @@ public class BorrowRecordService extends BaseService<BorrowRecordModel> {
         super.update(borrowRecordModel);
         model.setStatus(true);
         bookInfoService.update(model);
+
+        model.getMember().getMemberInfo().setBorrowedNum(model.getMember().getMemberInfo().getBorrowedNum() - 1);
+        memberInfoMapper.update(model.getMember().getMemberInfo());
         WebSocketServer.setBasicBorrowRecordCunt();
         WebSocketServer.setBasicMsgWaitReturnBackCount();
         WebSocketServer.setBasicMsgBorrowCount();

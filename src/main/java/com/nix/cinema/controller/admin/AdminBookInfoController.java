@@ -100,24 +100,13 @@ public class AdminBookInfoController {
         }
         MemberModel member = memberService.findByUsername(username);
         Assert.notNull(member,"用户不存在");
-        MemberInfoModel memberInfo = member.getMemberInfo();
-        memberInfo.setBorrowedNum(memberInfo.getBorrowedNum() + 1);
-        memberService.update(member,null);
         return ReturnUtil.success(borrowRecordService.create(bookInfo,member));
     }
     @PostMapping("/returnBack")
     public ReturnObject returnBack(@RequestParam("bookInfoId") Integer bookInfoId) throws Exception {
         BookInfoModel bookInfo = bookInfoService.findById(bookInfoId);
         Assert.notNull(bookInfo,"图书不存在");
-        MemberModel member = null;
-        try {
-            member = borrowRecordService.list(null,null,null,null,"`status` = 0 and bookInfo = " + bookInfoId).get(0).getMember();
-        }catch (Exception e) {
-            throw new WebException(404,"图书未借出");
-        }
-        MemberInfoModel memberInfo = member.getMemberInfo();
-        memberInfo.setBorrowedNum(memberInfo.getBorrowedNum() + 1);
-        memberService.update(member,null);
+        Assert.isTrue(!bookInfo.getStatus(),"图书未借出");
         return ReturnUtil.success(borrowRecordService.returnBack(bookInfo));
     }
     @GetMapping("/borrowInfo")

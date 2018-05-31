@@ -17,7 +17,7 @@ body a{
 	-o-transition:0.5s all;
 	-ms-transition:0.5s all;
 }
-
+input {outline:none;}
 .btn-group .admin,.bookAdmin, .admin,.bookAdmin{
 	visibility: hidden;
 	position: absolute;
@@ -42,8 +42,40 @@ h1,h2,h3,h4,h5,h6{
 	width: 100%;
 	flex-direction:column;
 }
+.center-flex{
+	flex-direction: initial;
+}
 .super-flex{
 	width: 100%;
+}
+.search{
+	margin: 40px 0;
+	padding: 0 20%;
+}
+#search-btn:hover{
+	cursor:pointer;
+}
+.search-content img{
+	width: 100px;
+	height: 150px;
+}
+.search-content .list-item{
+	list-style: none;
+}
+.search-content a:hover{
+	text-decoration: none;
+	color: black;
+}
+.search-content a{
+	text-decoration: none;
+	color: black;
+	display: block;
+	margin: 5px 0;
+}
+.search-content .introduce{
+	max-height: 200px;
+	overflow: hidden;
+	background-color: white;
 }
 .statistical-figure{
 	width: 100%;
