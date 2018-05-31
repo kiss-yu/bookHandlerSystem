@@ -67,7 +67,9 @@
                         cache : true,
                         type : "POST",
                         url : apiRoot + "/add",
-                        data : $('#inputForm').serialize(),
+                        data: new FormData($('#inputForm')[0]),
+                        processData: false,
+                        contentType: false,
                         async : false,
                         success : function(data) {
                             if (data.status == 1) {
@@ -134,7 +136,7 @@
             <h3>图书添加</h3>
             <div class="blog" >
                 <div class="blog-left">
-                    <form id="inputForm" method="post">
+                    <form id="inputForm" method="post"  enctype="multipart/form-data">
                         <ul id="tab" class="tab">
                             <li>
                                 <input type="button" value="基本信息" onclick="{

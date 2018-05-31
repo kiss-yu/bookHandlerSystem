@@ -21,6 +21,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -127,6 +128,12 @@ public class AdminBookInfoController {
         pageable.setTables("`bookInfo`,`member`");
         pageable.setConditionsSql("bookInfo.member = member.id");
         return ReturnUtil.list(pageable,bookInfoService);
+    }
+
+    @PostMapping("/importBookInfo")
+    public ReturnObject importBookInfo(@RequestParam("xlsxFile") MultipartFile xlsxFile) throws Exception {
+        return bookInfoService.importBookInfo(xlsxFile);
+
     }
 
     @PostMapping("/search")

@@ -54,7 +54,6 @@
                     cardView: false,                    //是否显示详细视图
                     detailView: false,                   //是否显示父子表
                     responseHandler: function(result) {
-                        console.log(result)
                         return {
                             //总页数,前面的key必须为"total"
                             total : result.additionalData.total,
@@ -125,7 +124,39 @@
             $("#btn_return").click(function () {
                 location.href = "./returnBack.html";
             });
+
+            $("#btn_import").click(function () {
+                $("#xlsxFile").click();
+            })
         });
+
+        function importFileClick(file) {
+            if (file.files && file.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(evt) {
+                    console.log(evt);
+                    $.ajax({
+                        cache : true,
+                        type : "POST",
+                        url : apiRoot + "/importBookInfo",
+                        data: new FormData($('#importFileForm')[0]),
+                        processData: false,
+                        contentType: false,
+                        async : false,
+                        success : function(data) {
+                            if (data.status == 1) {
+                                alert(data.msg);
+                                location.reload();
+                            }else {
+                                alert(data.msg);
+                            }
+                        }
+                    });
+                };
+                reader.readAsDataURL(file.files[0]);
+            }
+        }
+
     </script>
     <!-- start-smoth-scrolling -->
     <!-- for-portfolio -->
@@ -151,6 +182,10 @@
         <!-- portfolio -->
         <div class="contact">
             <h3>图书管理</h3>
+            <form id="importFileForm" method="post"  enctype="multipart/form-data">
+                <input name="xlsxFile" class="hidden" type="file" id="xlsxFile" onchange="importFileClick(this)">
+                <input name="name" class="hidden" type="text" value="1111">
+            </form>
             <div id="toolbar" class="btn-group">
                 <button id="btn_add" type="button" class="btn btn-default">
                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>添加

@@ -92,7 +92,9 @@
                         cache : true,
                         type : "POST",
                         url : apiRoot + "/update",
-                        data : $('#inputForm').serialize(),
+                        data: new FormData($('#inputForm')[0]),
+                        processData: false,
+                        contentType: false,
                         async : false,
                         success : function(data) {
                             if (data.status == 1) {
@@ -242,7 +244,7 @@
                                 }">
                         </li>
                     </ul>
-                    <form id="inputForm" method="post">
+                    <form id="inputForm" method="post"  enctype="multipart/form-data">
                         <table class="input tab-content" style="display: table" id="baseMessage">
                             <tr>
                                 <th>
