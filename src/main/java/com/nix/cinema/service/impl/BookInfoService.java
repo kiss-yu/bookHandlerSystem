@@ -2,6 +2,7 @@ package com.nix.cinema.service.impl;
 
 import com.nix.cinema.model.BookInfoModel;
 import com.nix.cinema.service.BaseService;
+import com.nix.cinema.service.WebSocketServer;
 import com.nix.cinema.util.ServiceUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +33,7 @@ public class BookInfoService extends BaseService<BookInfoModel> {
             File image = new File(this.getClass().getResource("/").getFile() + IMAGE_PATH + portraitImg.getOriginalFilename());
             portraitImg.transferTo(image);
         }
+        WebSocketServer.setBasicMsgSumCount();
         return model;
     }
     public BookInfoModel update(BookInfoModel model,MultipartFile portraitImg) throws Exception {

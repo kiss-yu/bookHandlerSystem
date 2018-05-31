@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.beans.Transient;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -120,13 +121,21 @@ public class BaseService <M extends BaseModel<M>>{
             return (List<M>) find;
         }catch (Exception e){
             e.printStackTrace();
-            return null;
+            return new ArrayList<>();
         }
     }
 
     public List<M> list(Integer page,Integer size,String order,String sort,String conditionsSql){
         String tables = this.getClass().getSimpleName().replaceFirst("Service","");
         return list(tables,page,size,order,sort,conditionsSql);
+    }
+
+    public List<M> select(String conditionsSql,Object ... param) {
+        return list(null,null,null,null,SQLUtil.sqlFormat(conditionsSql,param));
+    }
+
+    public List<M> select(boolean b,String tables,String conditionsSql,Object ... param) {
+        return list(tables,null,null,null,null,SQLUtil.sqlFormat(conditionsSql,param));
     }
 
     /**

@@ -6,6 +6,7 @@ import com.nix.cinema.model.BookInfoModel;
 import com.nix.cinema.model.BorrowRecordModel;
 import com.nix.cinema.model.MemberModel;
 import com.nix.cinema.service.BaseService;
+import com.nix.cinema.service.WebSocketServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,6 +42,12 @@ public class BorrowRecordService extends BaseService<BorrowRecordModel> {
                 throw new WebException(100,"图书已经被借阅出");
             }
         }
+
+        WebSocketServer.setBasicBorrowRecordCunt();
+        WebSocketServer.setBasicMsgWaitReturnBackCount();
+        WebSocketServer.setBasicMsgBorrowCount();
+        WebSocketServer.setBorrowAndReturnBackMgsDate(new Date(),6);
+        WebSocketServer.setNotice(borrowRecord);
         return borrowRecord;
     }
 
@@ -56,6 +63,11 @@ public class BorrowRecordService extends BaseService<BorrowRecordModel> {
         super.update(borrowRecordModel);
         model.setStatus(true);
         bookInfoService.update(model);
+        WebSocketServer.setBasicBorrowRecordCunt();
+        WebSocketServer.setBasicMsgWaitReturnBackCount();
+        WebSocketServer.setBasicMsgBorrowCount();
+        WebSocketServer.setBorrowAndReturnBackMgsDate(new Date(),6);
+        WebSocketServer.setNotice(borrowRecordModel);
         return borrowRecordModel;
     }
 }
